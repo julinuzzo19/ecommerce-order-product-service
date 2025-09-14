@@ -1,0 +1,9 @@
+node_modules
+build
+dist
+.github
+
+CONCEPTS.md
+PRINCIPLES.md
+README.md
+TODO.md
