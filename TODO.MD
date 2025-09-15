@@ -1,3 +1,7 @@
+# TASKS
+
+- Terminar implementaciones de entidades
+
 # TODO
 
 Una vez implementada la arquitectura, realizar los siguientes cambios y ver si es complejo o simple de realizar:

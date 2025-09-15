@@ -1,4 +1,4 @@
-import { ProductError } from "../errors/ProductError";
+import { ProductError } from "../errors/ProductError.js";
 import {
   validate as uuidValidate,
   version as uuidVersion,

@@ -4,7 +4,7 @@
  * Solo puede ser creado y modificado a través de la raíz del Agregado.
  */
 
-import { IOrderItem } from "./types/IOrderItem";
+import { IOrderItem } from "./types/IOrderItem.js";
 
 export class OrderItem implements IOrderItem {
   constructor(

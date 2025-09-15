@@ -1,5 +1,5 @@
-import { Customer } from "./Customer";
-import { CustomerId } from "./value-objects/CustomerId";
+import { Customer } from "./Customer.js";
+import { CustomerId } from "./value-objects/CustomerId.js";
 
 /**
  * Interfaz que define el contrato del Repositorio de Cliente para la persistencia.

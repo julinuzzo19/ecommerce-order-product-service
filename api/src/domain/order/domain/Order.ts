@@ -1,7 +1,7 @@
-import { OrderItem } from "./OrderItem";
-import { IOrder } from "./types/IOrder";
-import { OrderStatus } from "./types/OrderStatus";
-import { OrderId } from "./value-objects/OrderId";
+import { OrderItem } from "./OrderItem.js";
+import { IOrder } from "./types/IOrder.js";
+import { OrderStatus } from "./types/OrderStatus.js";
+import { OrderId } from "./value-objects/OrderId.js";
 
 /**
  * La raíz del Agregado Order.

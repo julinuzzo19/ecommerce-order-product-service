@@ -1,13 +1,11 @@
-import { Order } from "../../order/domain/Order";
-import { OrderId } from "../../order/domain/value-objects/OrderId";
-import { Product } from "./Product";
-import { ProductId } from "./value-objects/ProductId";
+import { Product } from "./Product.js";
+import { ProductId } from "./value-objects/ProductId.js";
 
 /**
  * Interfaz que define el contrato del Repositorio de Producto para la persistencia.
  * Los casos de uso de la capa de aplicación interactuarán con esta interfaz.
  */
-export interface IProductRepository  {
+export interface IProductRepository {
   /**
    * Find a product by its ID.
    * @param id The ID of the product to find.

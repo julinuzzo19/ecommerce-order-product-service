@@ -1,7 +1,7 @@
 import { Router } from "express";
 // // Importa los routers desde la capa de infraestructura de cada módulo.
-import CustomerRouter from "../domain/customer/infrastructure/customer.routes";
-import ProductRouter from "../domain/product/infrastructure/product.routes";
+import CustomerRouter from "../domain/customer/infrastructure/customer.routes.js";
+import ProductRouter from "../domain/product/infrastructure/product.routes.js";
 // import { customerRouter } from "../domain/customer/infrastructure/customer.routes";
 // import { productRouter } from "../domain/product/infrastructure/product.routes";
 // import { orderRouter } from "../domain/order/infrastructure/order.routes";

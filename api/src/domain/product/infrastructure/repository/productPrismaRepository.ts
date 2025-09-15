@@ -29,16 +29,16 @@ export class ProductPrismaRepository implements IProductRepository {
 
   async findAll(): Promise<Product[]> {
     const products = await this.prisma.product.findMany();
-    return products.map(productData => this.mapToDomainEntity(productData));
+    return products.map((productData) => this.mapToDomainEntity(productData));
   }
 
   async findById(id: ProductId): Promise<Product | null> {
     const productData = await this.prisma.product.findUnique({
-      where: { id: id.value }
+      where: { id: id.value },
     });
 
     if (!productData) return null;
-    
+
     return this.mapToDomainEntity(productData);
   }
 
@@ -46,9 +46,9 @@ export class ProductPrismaRepository implements IProductRepository {
     return new Product(
       new ProductId(productData.id),
       productData.name,
-      productData.description || "",
+      productData.description,
       productData.price,
-      new ProductCategory(productData.category || "General"),
+      new ProductCategory(productData.category),
       productData.stockQuantity,
       productData.sku,
       productData.isActive,

@@ -1,5 +1,5 @@
-import { OrderItem } from "../OrderItem";
-import { OrderId } from "../value-objects/OrderId";
+import { OrderItem } from "../OrderItem.js";
+import { OrderId } from "../value-objects/OrderId.js";
 
 export interface IOrder {
   getId(): OrderId;

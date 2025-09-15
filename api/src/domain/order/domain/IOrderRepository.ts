@@ -1,5 +1,5 @@
-import { Order } from "./Order";
-import { OrderId } from "./value-objects/OrderId";
+import { Order } from "./Order.js";
+import { OrderId } from "./value-objects/OrderId.js";
 
 /**
  * Interfaz que define el contrato del Repositorio de Orden para la persistencia.

@@ -1,4 +1,4 @@
-import { IEmailValidator } from "../value-objects/IEmailValidator";
+import { IEmailValidator } from "../value-objects/IEmailValidator.js";
 import { z } from "zod";
 
 export class EmailValidatorImpl implements IEmailValidator {

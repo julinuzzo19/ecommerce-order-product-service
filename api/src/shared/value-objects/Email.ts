@@ -1,5 +1,5 @@
-import { ValidationError } from "../errors/ValidationError";
-import { IEmailValidator } from "./IEmailValidator";
+import { ValidationError } from "../errors/ValidationError.js";
+import { IEmailValidator } from "./IEmailValidator.js";
 
 export class Email {
   constructor(

@@ -1,5 +1,5 @@
-import { ProductCategory } from "./value-objects/ProductCategory";
-import { ProductId } from "./value-objects/ProductId";
+import { ProductCategory } from "./value-objects/ProductCategory.js";
+import { ProductId } from "./value-objects/ProductId.js";
 
 export interface IProduct {
   getId(): ProductId;

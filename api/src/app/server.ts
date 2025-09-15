@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import helmet from "helmet";
 import cors from "cors";
-import { router } from "./routes";
+import { router } from "./routes.js";
 
 class Server {
   private app: Application;

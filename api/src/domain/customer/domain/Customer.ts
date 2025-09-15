@@ -1,7 +1,7 @@
-import { Email } from "../../../shared/value-objects/Email";
-import { Address } from "../../../shared/value-objects/Address";
-import { CustomerId } from "./value-objects/CustomerId";
-import { ICustomer } from "./ICustomer";
+import { Email } from "../../../shared/value-objects/Email.js";
+import { Address } from "../../../shared/value-objects/Address.js";
+import { CustomerId } from "./value-objects/CustomerId.js";
+import { ICustomer } from "./ICustomer.js";
 
 export class Customer implements ICustomer {
   constructor(

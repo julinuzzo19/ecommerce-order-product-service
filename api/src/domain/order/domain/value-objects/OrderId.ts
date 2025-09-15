@@ -3,7 +3,7 @@ import {
   version as uuidVersion,
   v4 as uuidv4,
 } from "uuid";
-import { OrderError } from "../errors/OrderError";
+import { OrderError } from "../errors/OrderError.js";
 
 export class OrderId {
   public readonly value: string;

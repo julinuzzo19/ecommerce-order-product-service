@@ -1,4 +1,4 @@
-import { ValidationError } from "../errors/ValidationError";
+import { ValidationError } from "../errors/ValidationError.js";
 
 export class Address {
   constructor(
