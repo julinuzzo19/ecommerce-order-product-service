@@ -16,5 +16,33 @@ model Product {
   stockQuantity Int
   isActive      Boolean  @default(true)
   createdAt     DateTime
-  category      String?
+  category      String
 }
+
+model Customer {
+  id            String   @id @default(uuid())
+  name           String   @unique
+  email          String
+  addressId      String   @unique
+  address        Address  @relation(fields: [addressId], references: [id])
+  phoneNumber    String?
+  createdAt      DateTime
+  isActive       Boolean  @default(true)
+}
+
+  
+
+model Address {
+  id            String   @id @default(uuid())
+  street        String
+  city          String
+  state         String
+  zipCode       String
+  country       String
+  customer      Customer?
+  createdAt     DateTime
+}
+
+
+       
+  
