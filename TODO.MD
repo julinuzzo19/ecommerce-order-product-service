@@ -2,6 +2,8 @@
 
 - Terminar implementaciones de entidades
 
+- Error handlers
+
 # TODO
 
 Una vez implementada la arquitectura, realizar los siguientes cambios y ver si es complejo o simple de realizar:
