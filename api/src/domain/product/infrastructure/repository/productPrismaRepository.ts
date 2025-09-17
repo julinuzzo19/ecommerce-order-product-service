@@ -2,57 +2,32 @@ import { PrismaClient } from "@prisma/client";
 import { IProductRepository } from "../../domain/IProductRepository.js";
 import { ProductId } from "../../domain/value-objects/ProductId.js";
 import { Product } from "../../domain/Product.js";
-import { ProductCategory } from "../../domain/value-objects/ProductCategory.js";
+import { ProductMapper } from "../mappers/ProductMapper.js";
 
 export class ProductPrismaRepository implements IProductRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  delete(id: ProductId): Promise<void> {
-    throw new Error("Method not implemented.");
+  async delete(id: ProductId): Promise<void> {
+    await this.prisma.product.delete({ where: { id: id.value } });
   }
   async save(product: Product): Promise<void> {
-    // Mapear la entidad de dominio `Product` a un objeto que Prisma entiende.
-    const data = {
-      id: product.getId().value,
-      sku: product.getSku(),
-      name: product.getName(),
-      description: product.getDescription() || null,
-      price: product.getPrice(),
-      stockQuantity: product.getStockQuantity(),
-      isActive: product.getIsActive(),
-      createdAt: product.getCreatedAt(),
-      category: product.getCategory().getName(),
-    };
-
-    await this.prisma.product.create({ data });
+    await this.prisma.product.create({
+      data: ProductMapper.toPrisma(product),
+    });
   }
 
   async findAll(): Promise<Product[]> {
     const products = await this.prisma.product.findMany();
-    return products.map((productData) => this.mapToDomainEntity(productData));
+    return products.map(ProductMapper.fromPrisma);
   }
 
   async findById(id: ProductId): Promise<Product | null> {
-    const productData = await this.prisma.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { id: id.value },
     });
 
-    if (!productData) return null;
+    if (!product) return null;
 
-    return this.mapToDomainEntity(productData);
-  }
-
-  private mapToDomainEntity(productData: any): Product {
-    return new Product(
-      new ProductId(productData.id),
-      productData.name,
-      productData.description,
-      productData.price,
-      new ProductCategory(productData.category),
-      productData.stockQuantity,
-      productData.sku,
-      productData.isActive,
-      productData.createdAt
-    );
+    return product ? ProductMapper.fromPrisma(product) : null;
   }
 }

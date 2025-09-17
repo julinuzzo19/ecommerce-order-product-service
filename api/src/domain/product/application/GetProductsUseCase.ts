@@ -7,7 +7,7 @@ export class GetProductsUseCase {
 
   public execute = async (): Promise<ProductResponseDTO[]> => {
     const products = await this.productRepository.findAll();
-    return products.map(product => this.mapToDTO(product));
+    return products.map(this.mapToDTO);
   };
 
   private mapToDTO(product: Product): ProductResponseDTO {
@@ -21,7 +21,7 @@ export class GetProductsUseCase {
       isActive: product.getIsActive(),
       createdAt: product.getCreatedAt(),
       category: product.getCategory().getName(),
-      isAvailable: product.isAvailable()
+      isAvailable: product.isAvailable(),
     };
   }
 }
