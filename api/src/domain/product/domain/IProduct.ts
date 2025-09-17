@@ -5,7 +5,7 @@ export interface IProduct {
   getId(): ProductId;
   getName(): string;
   getPrice(): number;
-  getDescription(): string;
+  getDescription(): string | undefined;
   getCategory(): ProductCategory;
   getSku(): string;
   getIsActive(): boolean;

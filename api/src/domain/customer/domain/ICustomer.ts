@@ -9,7 +9,7 @@ export interface ICustomer {
   getAddress(): Address;
   getCreatedAt(): Date;
   getIsActive(): boolean;
-  getPhoneNumber(): string;
+  getPhoneNumber(): string | undefined;
 
   updateAddress(newAddress: Address): void;
   deactivate(): void;

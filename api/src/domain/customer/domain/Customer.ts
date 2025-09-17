@@ -3,16 +3,34 @@ import { Address } from "../../../shared/value-objects/Address.js";
 import { CustomerId } from "./value-objects/CustomerId.js";
 import { ICustomer } from "./ICustomer.js";
 
+interface CustomerProps {
+  id: CustomerId;
+  name: string;
+  email: Email;
+  address: Address;
+  phoneNumber?: string;
+  createdAt?: Date;
+  isActive?: boolean;
+}
+
 export class Customer implements ICustomer {
-  constructor(
-    private id: CustomerId,
-    private name: string,
-    private email: Email,
-    private address: Address,
-    private createdAt: Date = new Date(),
-    private isActive: boolean = true,
-    private phoneNumber: string
-  ) {}
+  private id: CustomerId;
+  private name: string;
+  private email: Email;
+  private address: Address;
+  private phoneNumber?: string;
+  private createdAt: Date;
+  private isActive: boolean;
+
+  constructor(private props: CustomerProps) {
+    this.id = props.id;
+    this.name = props.name;
+    this.email = props.email;
+    this.address = props.address;
+    this.phoneNumber = props.phoneNumber;
+    this.createdAt = props.createdAt ?? new Date();
+    this.isActive = props.isActive ?? true;
+  }
 
   public updateAddress(newAddress: Address): void {
     this.address = newAddress;
@@ -63,7 +81,7 @@ export class Customer implements ICustomer {
     return this.isActive;
   }
 
-  public getPhoneNumber(): string {
+  public getPhoneNumber(): string | undefined {
     return this.phoneNumber;
   }
 }

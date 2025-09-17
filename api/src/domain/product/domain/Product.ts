@@ -3,18 +3,40 @@ import { ProductCategory } from "./value-objects/ProductCategory.js";
 import { ProductError } from "./errors/ProductError.js";
 import { IProduct } from "./IProduct.js";
 
+interface ProductProps {
+  id: ProductId;
+  name: string;
+  description: string | undefined;
+  price: number;
+  category: ProductCategory;
+  stockQuantity: number;
+  sku: string;
+  isActive?: boolean;
+  createdAt?: Date;
+}
+
 export class Product implements IProduct {
-  constructor(
-    private id: ProductId,
-    private name: string,
-    private description: string,
-    private price: number,
-    private category: ProductCategory,
-    private stockQuantity: number,
-    private sku: string,
-    private isActive: boolean = true,
-    private createdAt: Date = new Date()
-  ) {
+  private id: ProductId;
+  private name: string;
+  private description?: string;
+  private price: number;
+  private category: ProductCategory;
+  private stockQuantity: number;
+  private sku: string;
+  private isActive: boolean;
+  private createdAt: Date;
+
+  constructor(props: ProductProps) {
+    this.id = props.id;
+    this.name = props.name;
+    this.description = props.description;
+    this.price = props.price;
+    this.category = props.category;
+    this.stockQuantity = props.stockQuantity;
+    this.sku = props.sku;
+    this.createdAt = props.createdAt ?? new Date();
+    this.isActive = props.isActive ?? true;
+
     this.validate();
   }
 
@@ -41,7 +63,7 @@ export class Product implements IProduct {
   public reserveStock(quantity: number): void {
     if (!this.isInStock(quantity)) {
       throw new ProductError(
-        `Insufficient stock. Available: ${this.stockQuantity}, Requested: ${quantity}`
+        `Insufficient stock. Available ${this.stockQuantity}; Requested: ${quantity}`
       );
     }
     this.stockQuantity -= quantity;
@@ -75,7 +97,7 @@ export class Product implements IProduct {
   public getStockQuantity(): number {
     return this.stockQuantity;
   }
-  public getDescription(): string {
+  public getDescription(): string | undefined {
     return this.description;
   }
   public getCategory(): ProductCategory {
