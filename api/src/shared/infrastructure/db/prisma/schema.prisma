@@ -12,37 +12,96 @@ model Product {
   sku           String   @unique
   name          String
   description   String?
-  price         Float
-  stockQuantity Int
+  price         Decimal  @db.Decimal(10, 2)
+  stockQuantity Int      @db.SmallInt
   isActive      Boolean  @default(true)
-  createdAt     DateTime
   category      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  OrderItem OrderItem[]
+
+  @@index([category])
+  @@map("products")
 }
 
 model Customer {
-  id            String   @id @default(uuid())
-  name           String   @unique
-  email          String
-  addressId      String   @unique
-  address        Address  @relation(fields: [addressId], references: [id])
-  phoneNumber    String?
-  createdAt      DateTime
-  isActive       Boolean  @default(true)
-}
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  phoneNumber String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
 
-  
+  // Foreign keys
+  addressId String @unique
+
+  // Relations
+  Order   Order[]
+  address Address @relation(fields: [addressId], references: [id])
+
+  @@index([email])
+  @@map("customers")
+}
 
 model Address {
-  id            String   @id @default(uuid())
-  street        String
-  city          String
-  state         String
-  zipCode       String
-  country       String
-  customer      Customer?
-  createdAt     DateTime
+  id        String   @id @default(uuid())
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  country   String
+  createdAt DateTime
+
+  // Relations
+  customer Customer?
+
+  @@map("addresses")
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  CANCELLED
+}
 
-       
-  
+model Order {
+  id          String      @id @default(uuid())
+  orderNumber String      @unique
+  status      OrderStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Foreign keys
+  customerId String
+
+  // Relations
+  orderItems OrderItem[]
+  customer   Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  @@index([customerId])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id       String  @id @default(uuid())
+  quantity Int     @db.SmallInt
+  price    Decimal @db.Decimal(10, 2)
+
+  // Foreign keys
+  orderId   String
+  productId String
+
+  // Relations
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([orderId, productId])
+  @@index([orderId])
+  @@index([productId])
+  @@index([orderId, productId]) // Índice compuesto para consultas específicas
+  @@map("order_items")
+}

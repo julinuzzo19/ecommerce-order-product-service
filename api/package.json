@@ -11,6 +11,7 @@
     "prisma:generate": "npx prisma generate --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:migrate:dev": "npx prisma migrate dev --name init --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:db:push": "npx prisma db push --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
+    "prisma:migrate:reset": "npx prisma migrate reset --force --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
