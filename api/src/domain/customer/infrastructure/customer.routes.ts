@@ -1,32 +1,41 @@
 import { Router } from "express";
-// import { UserUseCase } from "../../application/userUseCase";
-// import { UserController } from "../controller/user.ctrl";
-// import { MockRepository } from "../repository/mock.repository";
-// import { MongoRepository } from "../repository/mongo.repository";
+import { CreateCustomerUseCase } from "../application/CreateCustomerUseCase.js";
+import { EmailValidatorImpl } from "../../../shared/infrastructure/EmailValidatorImpl.js";
+import { CustomerPrismaRepository } from "./repository/customerPrismaRepository.js";
+import { prisma } from "../../../shared/infrastructure/db/prisma/prisma.client.js";
+import { CustomerController } from "./customer.controller.js";
+import { GetCustomersUseCase } from "../application/GetCustomersUseCase.js";
 
 const route = Router();
 // /**
 //  * Iniciar Repository
 //  */
-// const userRepo = new MongoRepository();
+const customerRepository = new CustomerPrismaRepository(prisma);
 
 // /**
 //  * Iniciamos casos de uso
 //  */
 
-// const userUseCase = new UserUseCase(userRepo);
+const customerCreateUseCase = new CreateCustomerUseCase(
+  customerRepository,
+  new EmailValidatorImpl()
+);
+const getCustomersUseCase = new GetCustomersUseCase(customerRepository);
 
 // /**
 //  * Iniciar User Controller
 //  */
 
-// const userCtrl = new UserController(userUseCase);
+const customerCtrl = new CustomerController(
+  customerCreateUseCase,
+  getCustomersUseCase
+);
 
 // /**
-//  *
+//  * Mapping routes to controller methods
 //  */
 
-// route.post(`/user`, userCtrl.insertCtrl);
-// route.get(`/user`, userCtrl.getCtrl);
+route.post(`/`, customerCtrl.createCustomer);
+route.get(`/`, customerCtrl.getCustomers);
 
 export default route;
