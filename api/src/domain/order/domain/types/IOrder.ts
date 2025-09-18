@@ -11,4 +11,5 @@ export interface IOrder {
   markAsPaid(): void;
   markAsShipped(): void;
   markAsCancelled(): void;
+  getOrderNumber(): string;
 }

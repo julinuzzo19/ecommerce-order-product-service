@@ -5,13 +5,30 @@
  */
 
 import { IOrderItem } from "./types/IOrderItem.js";
+import { OrderId } from "./value-objects/OrderId.js";
+
+interface OrderItemProps {
+  id: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  orderId: OrderId;
+}
 
 export class OrderItem implements IOrderItem {
-  constructor(
-    private productId: string,
-    private quantity: number,
-    private price: number
-  ) {}
+  private id: string;
+  private productId: string;
+  private quantity: number;
+  private price: number;
+  private orderId: OrderId;
+
+  constructor(props: OrderItemProps) {
+    this.id = props.id;
+    this.productId = props.productId;
+    this.quantity = props.quantity;
+    this.price = props.price;
+    this.orderId = props.orderId;
+  }
 
   /**
    * Actualiza la cantidad del item.
@@ -34,5 +51,11 @@ export class OrderItem implements IOrderItem {
   }
   public getPrice(): number {
     return this.price;
+  }
+  public getId(): string {
+    return this.id;
+  }
+  public getOrderId(): OrderId {
+    return this.orderId;
   }
 }

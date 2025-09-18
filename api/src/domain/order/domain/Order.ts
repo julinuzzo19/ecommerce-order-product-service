@@ -2,22 +2,39 @@ import { OrderItem } from "./OrderItem.js";
 import { IOrder } from "./types/IOrder.js";
 import { OrderStatus } from "./types/OrderStatus.js";
 import { OrderId } from "./value-objects/OrderId.js";
+import { v4 as uuidv4 } from "uuid";
+
+interface OrderProps {
+  id?: OrderId;
+  customerId: string;
+  orderNumber: string;
+  status?: OrderStatus;
+  items?: OrderItem[];
+  created_at?: Date;
+  updated_at?: Date;
+}
 
 /**
  * La raíz del Agregado Order.
  * Encapsula la lógica de negocio y las invariantes de la orden.
  */
 export class Order implements IOrder {
-  // El constructor recibe el ID como un Value Object o lo crea.
-  constructor(
-    private id: OrderId,
-    private customerId: string,
-    private status: OrderStatus,
-    private items: OrderItem[]
-  ) {
-    this.id = id || OrderId.create();
-    this.status = status || "pending";
-    this.items = items || [];
+  private id: OrderId;
+  private customerId: string;
+  private orderNumber: string;
+  private status: OrderStatus;
+  private items: OrderItem[];
+  private created_at: Date;
+  private updated_at: Date;
+
+  constructor(props: OrderProps) {
+    this.id = props.id || OrderId.create();
+    this.status = props.status || "PENDING";
+    this.items = props.items || [];
+    this.customerId = props.customerId;
+    this.orderNumber = props.orderNumber;
+    this.created_at = props.created_at || new Date();
+    this.updated_at = props.updated_at || new Date();
   }
 
   /**
@@ -31,7 +48,13 @@ export class Order implements IOrder {
     if (existingItem) {
       existingItem.updateQuantity(quantity);
     } else {
-      const newItem = new OrderItem(productId, quantity, price);
+      const newItem = new OrderItem({
+        id: uuidv4(),
+        productId,
+        quantity,
+        price,
+        orderId: this.id,
+      });
       this.items.push(newItem);
     }
   }
@@ -41,20 +64,20 @@ export class Order implements IOrder {
    * Este método garantiza que solo el agregado pueda cambiar su estado.
    */
   public markAsPaid(): void {
-    if (this.status === "pending") {
-      this.status = "paid";
+    if (this.status === "PENDING") {
+      this.status = "PAID";
     }
   }
 
   public markAsShipped(): void {
-    if (this.status === "paid") {
-      this.status = "shipped";
+    if (this.status === "PAID") {
+      this.status = "SHIPPED";
     }
   }
 
   public markAsCancelled(): void {
-    if (this.status === "pending") {
-      this.status = "cancelled";
+    if (this.status === "PENDING") {
+      this.status = "CANCELLED";
     }
   }
 
@@ -74,5 +97,16 @@ export class Order implements IOrder {
 
   public getTotalAmount(): number {
     return this.items.reduce((total, item) => total + item.getTotalPrice(), 0);
+  }
+
+  public getOrderNumber(): string {
+    return this.orderNumber;
+  }
+
+  public getCreatedAt(): Date {
+    return this.created_at;
+  }
+  public getUpdatedAt(): Date {
+    return this.updated_at;
   }
 }
