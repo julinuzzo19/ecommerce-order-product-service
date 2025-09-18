@@ -18,14 +18,14 @@ export class CreateProductUseCase {
       throw new ProductError("Invalid product data");
     }
 
-    const product = this.mapToDTO(validation.data);
+    const product = this.mapToEntity(validation.data);
 
     await this.productRepository.save(product);
 
     return product;
   };
 
-  private mapToDTO(product: CreateProductDTO): Product {
+  private mapToEntity(product: CreateProductDTO): Product {
     const productId = new ProductId(product.id);
     const productCategory = new ProductCategory(product.category);
 

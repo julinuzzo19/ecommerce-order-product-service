@@ -24,7 +24,7 @@ export class ProductMapper {
       category: new ProductCategory(data.category),
       name: data.name,
       description: data.description ?? undefined,
-      price: data.price,
+      price: data.price.toNumber(),
       createdAt: data.createdAt,
       sku: data.sku,
       stockQuantity: data.stockQuantity,
