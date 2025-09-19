@@ -12,11 +12,11 @@ export class ProductController {
   public createProduct = async (req: Request, res: Response) => {
     const data = req.body;
     const product = await this.createProductUseCase.execute(data);
-    res.status(201).json(product);
+    return res.status(201).json(product);
   };
 
   public getProducts = async (req: Request, res: Response) => {
     const products = await this.getProductsUseCase.execute();
-    res.status(200).json(products);
+    return res.status(200).json(products);
   };
 }

@@ -10,12 +10,11 @@ export class CustomerController {
 
   public createCustomer = async (req: Request, res: Response) => {
     const data = req.body;
-    console.log({ data });
     const customer = await this.createCustomerUseCase.execute(data);
-    res.status(201).json(customer);
+    return res.status(201).json(customer);
   };
   public getCustomers = async (req: Request, res: Response) => {
     const customers = await this.getCustomersUseCase.execute();
-    res.status(200).json(customers);
+    return res.status(200).json(customers);
   };
 }
