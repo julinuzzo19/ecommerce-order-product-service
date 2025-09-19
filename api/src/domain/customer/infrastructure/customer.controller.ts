@@ -10,6 +10,7 @@ export class CustomerController {
 
   public createCustomer = async (req: Request, res: Response) => {
     const data = req.body;
+    console.log({ data });
     const customer = await this.createCustomerUseCase.execute(data);
     res.status(201).json(customer);
   };

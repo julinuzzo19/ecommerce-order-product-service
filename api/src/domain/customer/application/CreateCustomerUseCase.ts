@@ -7,6 +7,8 @@ import { CustomerId } from "../domain/value-objects/CustomerId.js";
 import { Email } from "../../../shared/value-objects/Email.js";
 import { Address } from "../../../shared/value-objects/Address.js";
 import { IEmailValidator } from "../../../shared/value-objects/IEmailValidator.js";
+import { CustomerResponseDTO } from "./dtos/CustomerResponseDTO.js";
+import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
 
 export class CreateCustomerUseCase {
   constructor(
@@ -16,7 +18,6 @@ export class CreateCustomerUseCase {
 
   // Implement the logic to create a customer
   public execute = async (data: CreateCustomerDTO) => {
-    console.log({ data });
     // Validate and transform the incoming data
     const validation = createCustomerSchema.safeParse(data);
 
@@ -28,9 +29,11 @@ export class CreateCustomerUseCase {
 
     const customer = this.mapToEntity(validation.data);
 
+    console.log({ customer });
+
     await this.customerRepository.save(customer);
 
-    return customer;
+    return this.mapToDTO(customer);
   };
 
   private mapToEntity(customer: CreateCustomerDTO): Customer {
@@ -42,6 +45,25 @@ export class CreateCustomerUseCase {
       email: new Email(customer.email, this.emailValidator),
       address: new Address(customer.address),
       phoneNumber: customer.phoneNumber,
+    });
+  }
+
+  private mapToDTO(customer: Customer): CustomerResponseDTO {
+    return genericMapToDTO<Customer, CustomerResponseDTO>(customer, {
+      id: (entity) => entity.getId().value,
+      email: (entity) => entity.getEmail().getValue(),
+      name: (entity) => entity.getName(),
+      phoneNumber: (entity) => entity.getPhoneNumber() || "",
+      address: (entity) => {
+        const addressData = entity.getAddress();
+        return {
+          city: addressData.getCity(),
+          country: addressData.getCountry(),
+          state: addressData.getState(),
+          street: addressData.getStreet(),
+          zipCode: addressData.getZipCode(),
+        };
+      },
     });
   }
 }

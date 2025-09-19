@@ -1,6 +1,7 @@
 import { IProductRepository } from "../domain/IProductRepository.js";
 import { ProductResponseDTO } from "./dtos/ProductResponseDTO.js";
 import { Product } from "../domain/Product.js";
+import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
 
 export class GetProductsUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
@@ -11,17 +12,17 @@ export class GetProductsUseCase {
   };
 
   private mapToDTO(product: Product): ProductResponseDTO {
-    return {
-      id: product.getId().value,
-      sku: product.getSku(),
-      name: product.getName(),
-      description: product.getDescription(),
-      price: product.getPrice(),
-      stockQuantity: product.getStockQuantity(),
-      isActive: product.getIsActive(),
-      createdAt: product.getCreatedAt(),
-      category: product.getCategory().getName(),
-      isAvailable: product.isAvailable(),
-    };
+    return genericMapToDTO<Product, ProductResponseDTO>(product, {
+      id: (entity) => entity.getId().value,
+      sku: (entity) => entity.getSku(),
+      name: (entity) => entity.getName(),
+      description: (entity) => entity.getDescription(),
+      price: (entity) => entity.getPrice(),
+      stockQuantity: (entity) => entity.getStockQuantity(),
+      isActive: (entity) => entity.getIsActive(),
+      createdAt: (entity) => entity.getCreatedAt(),
+      category: (entity) => entity.getCategory().getName(),
+      isAvailable: (entity) => entity.isAvailable(),
+    });
   }
 }

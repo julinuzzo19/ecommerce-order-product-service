@@ -5,6 +5,8 @@ import { ProductCategory } from "../domain/value-objects/ProductCategory.js";
 import { ProductId } from "../domain/value-objects/ProductId.js";
 import { CreateProductDTO } from "./dtos/CreateProductDTO.js";
 import { createProductSchema } from "./createProductSchema.js";
+import { ProductResponseDTO } from "./dtos/ProductResponseDTO.js";
+import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
 
 export class CreateProductUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
@@ -22,7 +24,7 @@ export class CreateProductUseCase {
 
     await this.productRepository.save(product);
 
-    return product;
+    return this.mapToDTO(product);
   };
 
   private mapToEntity(product: CreateProductDTO): Product {
@@ -37,6 +39,21 @@ export class CreateProductUseCase {
       category: productCategory,
       sku: product.sku,
       stockQuantity: product.stockQuantity,
+    });
+  }
+
+  private mapToDTO(product: Product): ProductResponseDTO {
+    return genericMapToDTO<Product, ProductResponseDTO>(product, {
+      id: (entity) => entity.getId().value,
+      sku: (entity) => entity.getSku(),
+      name: (entity) => entity.getName(),
+      description: (entity) => entity.getDescription(),
+      price: (entity) => entity.getPrice(),
+      stockQuantity: (entity) => entity.getStockQuantity(),
+      isActive: (entity) => entity.getIsActive(),
+      createdAt: (entity) => entity.getCreatedAt(),
+      category: (entity) => entity.getCategory().getName(),
+      isAvailable: (entity) => entity.isAvailable(),
     });
   }
 }

@@ -1,6 +1,6 @@
+import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
 import { Customer } from "../domain/Customer.js";
 import { ICustomerRepository } from "../domain/ICustomerRepository.js";
-
 import { CustomerResponseDTO } from "./dtos/CustomerResponseDTO.js";
 
 export class GetCustomersUseCase {
@@ -12,20 +12,21 @@ export class GetCustomersUseCase {
   };
 
   private mapToDTO(customer: Customer): CustomerResponseDTO {
-    const addressCustomer = customer.getAddress();
-
-    return {
-      id: customer.getId().value,
-      name: customer.getName(),
-      email: customer.getEmail().getValue(),
-      phoneNumber: customer.getPhoneNumber(),
-      address: {
-        city: addressCustomer.getCity(),
-        country: addressCustomer.getCountry(),
-        state: addressCustomer.getState(),
-        street: addressCustomer.getStreet(),
-        zipCode: addressCustomer.getZipCode(),
+    return genericMapToDTO<Customer, CustomerResponseDTO>(customer, {
+      id: (entity) => entity.getId().value,
+      email: (entity) => entity.getEmail().getValue(),
+      name: (entity) => entity.getName(),
+      phoneNumber: (entity) => entity.getPhoneNumber() || "",
+      address: (entity) => {
+        const addressData = entity.getAddress();
+        return {
+          city: addressData.getCity(),
+          country: addressData.getCountry(),
+          state: addressData.getState(),
+          street: addressData.getStreet(),
+          zipCode: addressData.getZipCode(),
+        };
       },
-    };
+    });
   }
 }
