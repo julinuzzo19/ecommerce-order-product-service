@@ -30,4 +30,19 @@ export class ProductPrismaRepository implements IProductRepository {
 
     return product ? ProductMapper.fromPrisma(product) : null;
   }
+
+  async isProductInStock(
+    productId: ProductId,
+    quantity: number
+  ): Promise<boolean> {
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId.value },
+    });
+
+    if (!product?.id) {
+      return false;
+    }
+
+    return product.stockQuantity >= quantity;
+  }
 }

@@ -30,4 +30,12 @@ export interface IProductRepository {
    * @returns An array of all products.
    */
   findAll(): Promise<Product[]>;
+
+  /**
+   * Check if a product is in stock.
+   * @param productId The ID of the product to check.
+   * @param quantity The quantity to check for availability.
+   * @returns boolean indicating if the product is in stock.
+   */
+  isProductInStock(productId: ProductId, quantity: number): Promise<boolean>;
 }
