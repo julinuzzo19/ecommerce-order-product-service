@@ -1,3 +1,5 @@
+import { CustomerId } from "../../../shared/value-objects/CustomerId.js";
+import { OrderError } from "./errors/OrderError.js";
 import { OrderItem } from "./OrderItem.js";
 import { IOrder } from "./types/IOrder.js";
 import { OrderStatus } from "./types/OrderStatus.js";
@@ -6,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 
 interface OrderProps {
   id?: OrderId;
-  customerId: string;
+  customerId: CustomerId;
   orderNumber: string;
   status?: OrderStatus;
   items?: OrderItem[];
@@ -20,7 +22,7 @@ interface OrderProps {
  */
 export class Order implements IOrder {
   private id: OrderId;
-  private customerId: string;
+  private customerId: CustomerId;
   private orderNumber: string;
   private status: OrderStatus;
   private items: OrderItem[];
@@ -35,6 +37,21 @@ export class Order implements IOrder {
     this.orderNumber = props.orderNumber;
     this.created_at = props.created_at || new Date();
     this.updated_at = props.updated_at || new Date();
+
+    this.validate();
+  }
+
+  private validate(): void {
+    if (!this.orderNumber || this.orderNumber.trim().length < 2) {
+      throw new OrderError("Order number must be at least 2 characters");
+    }
+
+    if (
+      !this.status ||
+      !["PENDING", "PAID", "SHIPPED", "CANCELLED"].includes(this.status)
+    ) {
+      throw new OrderError("Invalid order status");
+    }
   }
 
   /**
@@ -53,7 +70,7 @@ export class Order implements IOrder {
         productId,
         quantity,
         price,
-        orderId: this.id,
+        orderNumber: this.orderNumber,
       });
       this.items.push(newItem);
     }
@@ -85,13 +102,13 @@ export class Order implements IOrder {
     return this.items;
   }
 
-  public getStatus(): string {
+  public getStatus(): OrderStatus {
     return this.status;
   }
   public getId(): OrderId {
     return this.id;
   }
-  public getCustomerId(): string {
+  public getCustomerId(): CustomerId {
     return this.customerId;
   }
 

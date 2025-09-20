@@ -1,8 +1,6 @@
-import { OrderId } from "../value-objects/OrderId.js";
-
 export interface IOrderItem {
   getId(): string;
-  getOrderId(): OrderId;
+  getOrderNumber(): string;
   getProductId(): string;
   getQuantity(): number;
   getPrice(): number;

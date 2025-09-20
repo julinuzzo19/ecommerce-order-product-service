@@ -4,15 +4,15 @@
  * Solo puede ser creado y modificado a través de la raíz del Agregado.
  */
 
+import { generateUuidV4 } from "../../../shared/utils/uuidGenerator.js";
 import { IOrderItem } from "./types/IOrderItem.js";
-import { OrderId } from "./value-objects/OrderId.js";
 
 interface OrderItemProps {
-  id: string;
+  id?: string;
   productId: string;
   quantity: number;
   price: number;
-  orderId: OrderId;
+  orderNumber: string;
 }
 
 export class OrderItem implements IOrderItem {
@@ -20,14 +20,14 @@ export class OrderItem implements IOrderItem {
   private productId: string;
   private quantity: number;
   private price: number;
-  private orderId: OrderId;
+  private orderNumber: string;
 
   constructor(props: OrderItemProps) {
-    this.id = props.id;
+    this.id = props.id || generateUuidV4();
     this.productId = props.productId;
     this.quantity = props.quantity;
     this.price = props.price;
-    this.orderId = props.orderId;
+    this.orderNumber = props.orderNumber;
   }
 
   /**
@@ -55,7 +55,7 @@ export class OrderItem implements IOrderItem {
   public getId(): string {
     return this.id;
   }
-  public getOrderId(): OrderId {
-    return this.orderId;
+  public getOrderNumber(): string {
+    return this.orderNumber;
   }
 }

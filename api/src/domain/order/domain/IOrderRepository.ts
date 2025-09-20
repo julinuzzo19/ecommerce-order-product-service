@@ -1,3 +1,4 @@
+import { ProductId } from "../../../shared/value-objects/ProductId.js";
 import { Order } from "./Order.js";
 import { OrderId } from "./value-objects/OrderId.js";
 
@@ -12,6 +13,13 @@ export interface IOrderRepository {
    * @returns The found order, or null if not found.
    */
   findById(id: OrderId): Promise<Order | null>;
+
+  /**
+   * Find an order by its ID.
+   * @param id The ID of the order to find.
+   * @returns The found order, or null if not found.
+   */
+  findByOrderNumber(orderNumber: Order["orderNumber"]): Promise<Order | null>;
 
   /**
    * Save or update an order to the database.
