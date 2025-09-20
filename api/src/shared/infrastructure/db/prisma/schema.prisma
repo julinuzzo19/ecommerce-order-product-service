@@ -83,6 +83,7 @@ model Order {
 
   @@index([customerId])
   @@index([status])
+  @@index([orderNumber])
   @@map("orders")
 }
 
@@ -92,16 +93,16 @@ model OrderItem {
   price    Decimal @db.Decimal(10, 2)
 
   // Foreign keys
-  orderId   String
-  productId String
+  orderNumber String
+  productId   String
 
   // Relations
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderNumber], references: [orderNumber], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
-  @@unique([orderId, productId])
-  @@index([orderId])
+  @@unique([orderNumber, productId])
+  @@index([orderNumber])
   @@index([productId])
-  @@index([orderId, productId]) // Índice compuesto para consultas específicas
+  @@index([orderNumber, productId]) // Índice compuesto para consultas específicas
   @@map("order_items")
 }

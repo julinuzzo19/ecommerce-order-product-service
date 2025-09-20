@@ -21,15 +21,11 @@ export class CreateCustomerUseCase {
     // Validate and transform the incoming data
     const validation = createCustomerSchema.safeParse(data);
 
-    console.log({ error: validation.error });
-
     if (!validation.success) {
       throw new CustomerError("Invalid customer data");
     }
 
     const customer = this.mapToEntity(validation.data);
-
-    console.log({ customer });
 
     await this.customerRepository.save(customer);
 

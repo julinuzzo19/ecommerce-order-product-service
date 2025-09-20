@@ -1,5 +1,5 @@
+import { ProductId } from "../../../shared/value-objects/ProductId.js";
 import { ProductCategory } from "./value-objects/ProductCategory.js";
-import { ProductId } from "./value-objects/ProductId.js";
 
 export interface IProduct {
   getId(): ProductId;

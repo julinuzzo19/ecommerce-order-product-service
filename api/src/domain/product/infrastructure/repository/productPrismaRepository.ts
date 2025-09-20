@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { IProductRepository } from "../../domain/IProductRepository.js";
-import { ProductId } from "../../domain/value-objects/ProductId.js";
 import { Product } from "../../domain/Product.js";
 import { ProductMapper } from "../mappers/ProductMapper.js";
+import { ProductId } from "../../../../shared/value-objects/ProductId.js";
 
 export class ProductPrismaRepository implements IProductRepository {
   constructor(private readonly prisma: PrismaClient) {}

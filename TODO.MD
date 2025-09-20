@@ -1,10 +1,10 @@
 # TASKS
 
-AL CREAR CUSTOEMR DEVUELVE DATOS DE MAS
-
 - Terminar implementaciones de entidades (ORDER)
 
 - Error handlers
+
+- OPTIMIZAR CreateOrUpdateOrderWithItemsUseCase
 
 - Logging
 

@@ -1,5 +1,5 @@
+import { ProductId } from "../../../shared/value-objects/ProductId.js";
 import { Product } from "./Product.js";
-import { ProductId } from "./value-objects/ProductId.js";
 
 /**
  * Interfaz que define el contrato del Repositorio de Producto para la persistencia.
