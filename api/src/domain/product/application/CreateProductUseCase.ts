@@ -1,5 +1,4 @@
-import { ProductError } from "../domain/errors/ProductError.js";
-import { IProductRepository } from "../domain/IProductRepository.js";
+ import { IProductRepository } from "../domain/IProductRepository.js";
 import { Product } from "../domain/Product.js";
 import { ProductCategory } from "../domain/value-objects/ProductCategory.js";
 import { CreateProductDTO } from "./dtos/CreateProductDTO.js";
@@ -7,6 +6,7 @@ import { createProductSchema } from "./createProductSchema.js";
 import { ProductResponseDTO } from "./dtos/ProductResponseDTO.js";
 import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
 import { ProductId } from "../../../shared/value-objects/ProductId.js";
+import { ProductError } from "../../../shared/errors/ProductError.js";
 
 export class CreateProductUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
