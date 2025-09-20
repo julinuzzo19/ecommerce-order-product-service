@@ -1,7 +1,7 @@
 import { ProductCategory } from "./value-objects/ProductCategory.js";
-import { ProductError } from "./errors/ProductError.js";
 import { IProduct } from "./IProduct.js";
 import { ProductId } from "../../../shared/value-objects/ProductId.js";
+import { ProductError } from "../../../shared/errors/ProductError.js";
 
 interface ProductProps {
   id: ProductId;

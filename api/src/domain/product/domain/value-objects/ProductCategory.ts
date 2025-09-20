@@ -1,4 +1,4 @@
-import { ProductError } from "../errors/ProductError.js";
+import { ProductError } from "../../../../shared/errors/ProductError.js";
 
 export class ProductCategory {
   constructor(private name: string) {
