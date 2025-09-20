@@ -3,7 +3,7 @@ import { ICustomerRepository } from "../domain/ICustomerRepository.js";
 import { createCustomerSchema } from "./createCustomerSchema.js";
 import { CreateCustomerDTO } from "./dtos/CreateCustomerDTO.js";
 import { Customer } from "../domain/Customer.js";
-import { CustomerId } from "../domain/value-objects/CustomerId.js";
+import { CustomerId } from "../../../shared/value-objects/CustomerId.js";
 import { Email } from "../../../shared/value-objects/Email.js";
 import { Address } from "../../../shared/value-objects/Address.js";
 import { IEmailValidator } from "../../../shared/value-objects/IEmailValidator.js";

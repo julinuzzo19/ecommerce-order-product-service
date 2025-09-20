@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Customer } from "../../domain/Customer.js";
 import { ICustomerRepository } from "../../domain/ICustomerRepository.js";
 import { CustomerMapper } from "../mappers/CustomerMapper.js";
-import { CustomerId } from "../../domain/value-objects/CustomerId.js";
+import { CustomerId } from "../../../../shared/value-objects/CustomerId.js";
 
 export class CustomerPrismaRepository implements ICustomerRepository {
   constructor(private readonly prisma: PrismaClient) {}
