@@ -21,6 +21,7 @@ export class CreateCustomerUseCase {
     // Validate and transform the incoming data
     const validation = createCustomerSchema.safeParse(data);
 
+    console.log(validation, data);
     if (!validation.success) {
       throw new CustomerError("Invalid customer data");
     }

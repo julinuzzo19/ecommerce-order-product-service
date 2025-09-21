@@ -39,6 +39,8 @@ export class ProductPrismaRepository implements IProductRepository {
       where: { id: productId.value },
     });
 
+    console.log({ product });
+
     if (!product?.id) {
       return false;
     }

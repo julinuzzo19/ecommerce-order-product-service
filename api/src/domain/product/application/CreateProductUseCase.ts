@@ -1,4 +1,4 @@
- import { IProductRepository } from "../domain/IProductRepository.js";
+import { IProductRepository } from "../domain/IProductRepository.js";
 import { Product } from "../domain/Product.js";
 import { ProductCategory } from "../domain/value-objects/ProductCategory.js";
 import { CreateProductDTO } from "./dtos/CreateProductDTO.js";
@@ -13,6 +13,7 @@ export class CreateProductUseCase {
 
   // Implement the logic to create a product
   public execute = async (data: CreateProductDTO) => {
+    console.log({ data });
     // Validate and transform the incoming data
     const validation = createProductSchema.safeParse(data);
 
