@@ -1,10 +1,14 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { IOrderRepository } from "../../domain/IOrderRepository.js";
 import { OrderId } from "../../domain/value-objects/OrderId.js";
 import { Order } from "../../domain/Order.js";
 import { OrderMapper } from "../mappers/OrderMapper.js";
+import { IOrderQueryRepository } from "../../application/IOrderQueryRepository.js";
+import { OrderReadDTO } from "../../application/dtos/OrderReadDTO.js";
 
-export class OrderPrismaRepository implements IOrderRepository {
+export class OrderPrismaRepository
+  implements IOrderRepository, IOrderQueryRepository
+{
   constructor(private readonly prisma: PrismaClient) {}
 
   async delete(id: OrderId): Promise<void> {
@@ -16,7 +20,11 @@ export class OrderPrismaRepository implements IOrderRepository {
   async findAll(): Promise<Order[]> {
     const orders = await this.prisma.order.findMany({
       include: {
-        orderItems: true,
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
 
@@ -29,7 +37,11 @@ export class OrderPrismaRepository implements IOrderRepository {
         id: id.value,
       },
       include: {
-        orderItems: true,
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
 
@@ -44,7 +56,11 @@ export class OrderPrismaRepository implements IOrderRepository {
         orderNumber: orderNumber,
       },
       include: {
-        orderItems: true,
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
 
@@ -66,8 +82,6 @@ export class OrderPrismaRepository implements IOrderRepository {
       const existingItems = await tx.orderItem.findMany({
         where: { orderNumber: order.getOrderNumber() },
       });
-
-      // 3. Mapear items actuales del dominio
       const currentItems = OrderMapper.toPrismaOrderItems(order);
 
       // 4. Calcular diffs
@@ -101,5 +115,36 @@ export class OrderPrismaRepository implements IOrderRepository {
         });
       }
     });
+  }
+
+  async findOrderWithDetails(id: OrderId): Promise<OrderReadDTO | null> {
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id: id.value,
+      },
+      include: {
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    return order ? OrderMapper.toReadDTO(order) : null;
+  }
+
+  async findAllOrdersWithDetails(): Promise<OrderReadDTO[]> {
+    const orders = await this.prisma.order.findMany({
+      include: {
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    return orders.map(OrderMapper.toReadDTO);
   }
 }

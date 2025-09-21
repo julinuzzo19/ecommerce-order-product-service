@@ -8,6 +8,7 @@ import { OrderId } from "../domain/value-objects/OrderId.js";
 import { OrderItem } from "../domain/OrderItem.js";
 import { ProductId } from "../../../shared/value-objects/ProductId.js";
 import { CustomerId } from "../../../shared/value-objects/CustomerId.js";
+import { ProductError } from "../../../shared/errors/ProductError.js";
 
 export class CreateOrUpdateOrderWithItemsUseCase {
   constructor(
@@ -30,10 +31,10 @@ export class CreateOrUpdateOrderWithItemsUseCase {
       );
 
       if (isInStock === null) {
-        throw new OrderError(`Product with ID ${item.productId} not found`);
+        throw new ProductError(`Product with ID ${item.productId} not found`);
       }
       if (!isInStock) {
-        throw new OrderError(`Product ${item.productId} is out of stock`);
+        throw new ProductError(`Product ${item.productId} is out of stock`);
       }
     }
 
