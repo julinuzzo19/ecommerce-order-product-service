@@ -9,7 +9,6 @@ export const CreateOrUpdateOrderWithItemsSchema = z.object({
     z.object({
       productId: z.uuid({ version: "v4" }),
       quantity: z.number().min(1),
-      price: z.number().min(0),
     })
   ),
 });
