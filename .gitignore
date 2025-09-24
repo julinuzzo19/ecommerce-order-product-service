@@ -1,0 +1,16 @@
+node_modules
+build
+dist
+.github
+
+.env
+
+CONCEPTS.md
+PRINCIPLES.md
+README.md
+TODO.md
+
+**/migrations/
+
+
+README_REAL.md
