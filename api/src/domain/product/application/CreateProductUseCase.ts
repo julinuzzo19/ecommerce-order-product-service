@@ -5,27 +5,42 @@ import { CreateProductDTO } from "./dtos/CreateProductDTO.js";
 import { createProductSchema } from "./createProductSchema.js";
 import { ProductResponseDTO } from "./dtos/ProductResponseDTO.js";
 import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
-import { ProductId } from "../../../shared/value-objects/ProductId.js";
-import { ProductError } from "../../../shared/errors/ProductError.js";
+import { ProductApplicationException } from "../../../shared/application/exceptions/ProductApplicationException.js";
+import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
+import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
 
 export class CreateProductUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
 
   // Implement the logic to create a product
   public execute = async (data: CreateProductDTO) => {
-    console.log({ data });
-    // Validate and transform the incoming data
-    const validation = createProductSchema.safeParse(data);
+    try {
+      // Validate and transform the incoming data
+      const validation = createProductSchema.safeParse(data);
 
-    if (!validation.success) {
-      throw new ProductError("Invalid product data");
+      console.log({ validation });
+      if (!validation.success) {
+        throw ProductApplicationException.validationError(validation.error);
+      }
+
+      const product = this.mapToEntity(validation.data);
+
+      await this.productRepository.save(product);
+
+      return this.mapToDTO(product);
+    } catch (error) {
+      if (
+        error instanceof ProductDomainException ||
+        error instanceof ProductApplicationException
+      ) {
+        throw error;
+      }
+
+      throw ProductApplicationException.useCaseError(
+        "creation",
+        error instanceof Error ? error.message : String(error)
+      );
     }
-
-    const product = this.mapToEntity(validation.data);
-
-    await this.productRepository.save(product);
-
-    return this.mapToDTO(product);
   };
 
   private mapToEntity(product: CreateProductDTO): Product {

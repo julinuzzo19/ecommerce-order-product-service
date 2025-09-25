@@ -1,7 +1,7 @@
 import { ProductCategory } from "./value-objects/ProductCategory.js";
 import { IProduct } from "./IProduct.js";
-import { ProductId } from "../../../shared/value-objects/ProductId.js";
-import { ProductError } from "../../../shared/errors/ProductError.js";
+import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
+import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
 
 interface ProductProps {
   id: ProductId;
@@ -42,13 +42,19 @@ export class Product implements IProduct {
 
   private validate(): void {
     if (!this.name || this.name.trim().length < 2) {
-      throw new ProductError("Product name must be at least 2 characters");
+      throw ProductDomainException.validationError(
+        `Invalid name for product ${this.id.toString()}. Given: ${this.name}`
+      );
     }
     if (this.stockQuantity < 0) {
-      throw new ProductError("Stock quantity cannot be negative");
+      throw ProductDomainException.validationError(
+        `Stock cannot be negative for product ${this.id.toString()}. Given: ${
+          this.stockQuantity
+        }`
+      );
     }
     if (!this.sku || this.sku.trim().length === 0) {
-      throw new ProductError("SKU is required");
+      throw ProductDomainException.validationError(`Invalid SKU: ${this.sku}`);
     }
   }
 
@@ -62,8 +68,8 @@ export class Product implements IProduct {
 
   public reserveStock(quantity: number): void {
     if (!this.isInStock(quantity)) {
-      throw new ProductError(
-        `Insufficient stock. Available ${this.stockQuantity}; Requested: ${quantity}`
+      throw ProductDomainException.validationError(
+        `Insufficient stock for product ${this.id.toString()}. Requested: ${quantity}, Available: ${this.stockQuantity}`
       );
     }
     this.stockQuantity -= quantity;
@@ -75,7 +81,9 @@ export class Product implements IProduct {
 
   public updatePrice(newPrice: number): void {
     if (newPrice <= 0) {
-      throw new ProductError("Price must be a positive number");
+      throw ProductDomainException.validationError(
+        `Price must be a positive number for product ${this.id.toString()}. Given: ${newPrice}`
+      );
     }
     this.price = newPrice;
   }

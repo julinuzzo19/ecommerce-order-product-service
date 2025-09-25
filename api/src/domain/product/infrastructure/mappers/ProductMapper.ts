@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { Product } from "../../domain/Product.js";
 import { ProductCategory } from "../../domain/value-objects/ProductCategory.js";
-import { ProductId } from "../../../../shared/value-objects/ProductId.js";
+import { ProductId } from "../../../../shared/domain/value-objects/ProductId.js";
 
 export class ProductMapper {
   static toPrisma(product: Product): Prisma.ProductCreateInput {

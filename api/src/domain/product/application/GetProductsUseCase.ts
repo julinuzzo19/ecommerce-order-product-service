@@ -2,13 +2,29 @@ import { IProductRepository } from "../domain/IProductRepository.js";
 import { ProductResponseDTO } from "./dtos/ProductResponseDTO.js";
 import { Product } from "../domain/Product.js";
 import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
+import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
+import { ProductApplicationException } from "../../../shared/application/exceptions/ProductApplicationException.js";
 
 export class GetProductsUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
 
   public execute = async (): Promise<ProductResponseDTO[]> => {
-    const products = await this.productRepository.findAll();
-    return products.map(this.mapToDTO);
+    try {
+      const products = await this.productRepository.findAll();
+      return products.map(this.mapToDTO);
+    } catch (error) {
+      if (
+        error instanceof ProductDomainException ||
+        error instanceof ProductApplicationException
+      ) {
+        throw error;
+      }
+
+      throw ProductApplicationException.useCaseError(
+        "getting products",
+        error instanceof Error ? error.message : String(error)
+      );
+    }
   };
 
   private mapToDTO(product: Product): ProductResponseDTO {

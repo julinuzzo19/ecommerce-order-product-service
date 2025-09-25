@@ -1,4 +1,4 @@
-import { ProductId } from "../../../shared/value-objects/ProductId.js";
+import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
 import { Product } from "./Product.js";
 
 /**

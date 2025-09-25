@@ -1,9 +1,11 @@
-import { ProductError } from "../../../../shared/errors/ProductError.js";
+import { ProductDomainException } from "../../../../shared/domain/exceptions/ProductDomainException.js";
 
 export class ProductCategory {
   constructor(private name: string) {
     if (!name || name.trim().length < 2) {
-      throw new ProductError("Category name must be at least 2 characters");
+      throw ProductDomainException.validationError(
+        "Category name must be at least 2 characters"
+      );
     }
   }
 
