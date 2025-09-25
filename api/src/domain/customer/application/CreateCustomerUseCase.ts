@@ -1,14 +1,14 @@
-import { CustomerError } from "../domain/errors/CustomerError.js";
 import { ICustomerRepository } from "../domain/ICustomerRepository.js";
 import { createCustomerSchema } from "./createCustomerSchema.js";
 import { CreateCustomerDTO } from "./dtos/CreateCustomerDTO.js";
 import { Customer } from "../domain/Customer.js";
-import { CustomerId } from "../../../shared/value-objects/CustomerId.js";
-import { Email } from "../../../shared/value-objects/Email.js";
-import { Address } from "../../../shared/value-objects/Address.js";
-import { IEmailValidator } from "../../../shared/value-objects/IEmailValidator.js";
 import { CustomerResponseDTO } from "./dtos/CustomerResponseDTO.js";
 import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
+import { IEmailValidator } from "../../../shared/domain/value-objects/IEmailValidator.js";
+import { Email } from "../../../shared/domain/value-objects/Email.js";
+import { Address } from "../../../shared/domain/value-objects/Address.js";
+import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { CustomerDomainException } from "../domain/exceptions/CustomerDomainException.js";
 
 export class CreateCustomerUseCase {
   constructor(
@@ -23,7 +23,10 @@ export class CreateCustomerUseCase {
 
     console.log(validation, data);
     if (!validation.success) {
-      throw new CustomerError("Invalid customer data");
+      const errorDetails = validation.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      throw CustomerDomainException.validationError(errorDetails);
     }
 
     const customer = this.mapToEntity(validation.data);
@@ -34,7 +37,7 @@ export class CreateCustomerUseCase {
   };
 
   private mapToEntity(customer: CreateCustomerDTO): Customer {
-    const customerId: CustomerId = new CustomerId(customer.id);
+    const customerId = new CustomerId(customer.id);
 
     return new Customer({
       id: customerId,

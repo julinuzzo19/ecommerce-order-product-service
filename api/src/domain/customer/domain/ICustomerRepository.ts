@@ -1,5 +1,5 @@
+import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
 import { Customer } from "./Customer.js";
-import { CustomerId } from "../../../shared/value-objects/CustomerId.js";
 
 /**
  * Interfaz que define el contrato del Repositorio de Cliente para la persistencia.

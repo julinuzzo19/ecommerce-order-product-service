@@ -1,6 +1,6 @@
-import { Email } from "../../../shared/value-objects/Email.js";
-import { Address } from "../../../shared/value-objects/Address.js";
-import { CustomerId } from "../../../shared/value-objects/CustomerId.js";
+import { Address } from "../../../shared/domain/value-objects/Address.js";
+import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { Email } from "../../../shared/domain/value-objects/Email.js";
 import { ICustomer } from "./ICustomer.js";
 
 interface CustomerProps {

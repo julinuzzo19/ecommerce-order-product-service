@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { Customer } from "../../domain/Customer.js";
-import { CustomerId } from "../../../../shared/value-objects/CustomerId.js";
-import { Email } from "../../../../shared/value-objects/Email.js";
 import { EmailValidatorImpl } from "../../../../shared/infrastructure/EmailValidatorImpl.js";
-import { Address } from "../../../../shared/value-objects/Address.js";
+import { CustomerId } from "../../../../shared/domain/value-objects/CustomerId.js";
+import { Email } from "../../../../shared/domain/value-objects/Email.js";
+import { Address } from "../../../../shared/domain/value-objects/Address.js";
 
 export class CustomerMapper {
   static toPrisma(customer: Customer): Prisma.CustomerCreateInput {

@@ -3,14 +3,16 @@ import {
   version as uuidVersion,
   v4 as uuidv4,
 } from "uuid";
-import { CustomerError } from "../../domain/customer/domain/errors/CustomerError.js";
+import { ValueObjectException } from "../exceptions/ValidationError.js";
 
 export class CustomerId {
   public readonly value: string;
 
   constructor(value: string) {
     if (!uuidValidate(value) || uuidVersion(value) !== 4) {
-      throw new CustomerError("The customer ID format is not valid (UUIDv4).");
+      throw ValueObjectException.validationError(
+        "The customer ID format is not valid (UUIDv4)."
+      );
     }
     this.value = value;
   }
