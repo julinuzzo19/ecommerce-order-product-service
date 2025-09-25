@@ -1,5 +1,5 @@
-import { CustomerId } from "../../../shared/value-objects/CustomerId.js";
-import { OrderError } from "./errors/OrderError.js";
+import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { OrderDomainException } from "../exceptions/OrderDomainException.js";
 import { OrderItem } from "./OrderItem.js";
 import { IOrder } from "./types/IOrder.js";
 import { OrderStatus } from "./types/OrderStatus.js";
@@ -43,14 +43,16 @@ export class Order implements IOrder {
 
   private validate(): void {
     if (!this.orderNumber || this.orderNumber.trim().length < 2) {
-      throw new OrderError("Order number must be at least 2 characters");
+      throw OrderDomainException.validationError(
+        "Order number must be at least 2 characters"
+      );
     }
 
     if (
       !this.status ||
       !["PENDING", "PAID", "SHIPPED", "CANCELLED"].includes(this.status)
     ) {
-      throw new OrderError("Invalid order status");
+      throw OrderDomainException.validationError("Invalid order status");
     }
   }
 

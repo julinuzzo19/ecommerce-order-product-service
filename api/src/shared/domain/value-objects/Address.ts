@@ -1,4 +1,4 @@
-import { ValidationError } from "../errors/ValidationError.js";
+import { ValueObjectException } from "../exceptions/ValidationError.js";
 
 interface AddressProps {
   street: string;
@@ -30,13 +30,17 @@ export class Address {
 
   private validate(): void {
     if (!this.props.street || this.props.street.trim().length < 5) {
-      throw new ValidationError("Street must be at least 5 characters");
+      throw ValueObjectException.validationError(
+        "Street must be at least 5 characters"
+      );
     }
     if (!this.props.city || this.props.city.trim().length < 2) {
-      throw new ValidationError("City must be at least 2 characters");
+      throw ValueObjectException.validationError(
+        "City must be at least 2 characters"
+      );
     }
     if (!this.props.zipCode) {
-      throw new ValidationError("Zip code is required");
+      throw ValueObjectException.validationError("Zip code is required");
     }
   }
 

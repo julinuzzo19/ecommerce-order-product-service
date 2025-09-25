@@ -1,4 +1,3 @@
-import { OrderError } from "../domain/errors/OrderError.js";
 import { IOrderRepository } from "../domain/IOrderRepository.js";
 import { IProductRepository } from "../../product/domain/IProductRepository.js";
 import { CreateOrUpdateOrderWithItemsSchema } from "./CreateOrUpdateOrderWithItemsSchema.js";
@@ -6,10 +5,11 @@ import { CreateOrUpdateOrderWithItemsDTO } from "./dtos/CreateOrUpdateOrderWithI
 import { Order } from "../domain/Order.js";
 import { OrderId } from "../domain/value-objects/OrderId.js";
 import { OrderItem } from "../domain/OrderItem.js";
-import { ProductId } from "../../../shared/value-objects/ProductId.js";
-import { CustomerId } from "../../../shared/value-objects/CustomerId.js";
-import { ProductError } from "../../../shared/errors/ProductError.js";
 import { Product } from "../../product/domain/Product.js";
+import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
+import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
+import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { OrderDomainException } from "../exceptions/OrderDomainException.js";
 
 export class CreateOrUpdateOrderWithItemsUseCase {
   constructor(
@@ -42,7 +42,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
       const errorDetails = validation.error.issues
         .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
         .join(", ");
-      throw new OrderError(`Invalid order data: ${errorDetails}`);
+      throw OrderDomainException.validationError(errorDetails);
     }
 
     return validation.data;
@@ -60,7 +60,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
         new ProductId(productId)
       );
       if (!product) {
-        throw new ProductError(`Product with ID ${productId} not found`);
+        throw ProductDomainException.notFound(productId);
       }
       return { productId, product };
     });
@@ -87,11 +87,9 @@ export class CreateOrUpdateOrderWithItemsUseCase {
       const product = productsMap.get(item.productId)!;
 
       if (!product.isInStock(item.quantity)) {
-        throw new ProductError(
+        throw ProductDomainException.validationError(
           `Insufficient stock for product ${item.productId}. ` +
-            `Available: ${product.getStockQuantity()}, Required: ${
-              item.quantity
-            }`
+            `Available: ${product.getStockQuantity()}, Given: ${item.quantity}`
         );
       }
     }

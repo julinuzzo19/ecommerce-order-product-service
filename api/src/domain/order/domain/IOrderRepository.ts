@@ -1,4 +1,3 @@
-import { ProductId } from "../../../shared/value-objects/ProductId.js";
 import { Order } from "./Order.js";
 import { OrderId } from "./value-objects/OrderId.js";
 

@@ -1,4 +1,4 @@
-import { CustomerId } from "../../../../shared/value-objects/CustomerId.js";
+import { CustomerId } from "../../../../shared/domain/value-objects/CustomerId.js";
 import { OrderItem } from "../OrderItem.js";
 import { OrderId } from "../value-objects/OrderId.js";
 

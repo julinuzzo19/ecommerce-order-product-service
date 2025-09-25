@@ -1,5 +1,5 @@
-import { IEmailValidator } from "../value-objects/IEmailValidator.js";
 import { z } from "zod";
+import { IEmailValidator } from "../domain/value-objects/IEmailValidator.js";
 
 export class EmailValidatorImpl implements IEmailValidator {
   isValid(email: string): boolean {

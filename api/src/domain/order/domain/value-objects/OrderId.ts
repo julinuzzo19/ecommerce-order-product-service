@@ -3,14 +3,16 @@ import {
   version as uuidVersion,
   v4 as uuidv4,
 } from "uuid";
-import { OrderError } from "../errors/OrderError.js";
+import { OrderDomainException } from "../../exceptions/OrderDomainException.js";
 
 export class OrderId {
   public readonly value: string;
 
   constructor(value: string) {
     if (!uuidValidate(value) || uuidVersion(value) !== 4) {
-      throw new OrderError("The order ID format is not valid (UUIDv4).");
+      throw OrderDomainException.validationError(
+        "The order ID format is not valid (UUIDv4)."
+      );
     }
     this.value = value;
   }

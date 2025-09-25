@@ -1,4 +1,4 @@
-import { ValidationError } from "../errors/ValidationError.js";
+import { ValueObjectException } from "../exceptions/ValidationError.js";
 import { IEmailValidator } from "./IEmailValidator.js";
 
 export class Email {
@@ -7,7 +7,7 @@ export class Email {
     private readonly validator: IEmailValidator
   ) {
     if (!this.validator.isValid(value)) {
-      throw new ValidationError("Invalid email format");
+      throw ValueObjectException.validationError("Invalid email format");
     }
   }
 
