@@ -20,7 +20,10 @@ export class CreateProductUseCase {
 
       console.log({ validation });
       if (!validation.success) {
-        throw ProductApplicationException.validationError(validation.error);
+        const errorDetails = validation.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ");
+        throw ProductApplicationException.validationError(errorDetails);
       }
 
       const product = this.mapToEntity(validation.data);

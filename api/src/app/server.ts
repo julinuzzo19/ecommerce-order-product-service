@@ -2,6 +2,8 @@ import express, { Application } from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { router } from "./routes.js";
+import { errorHandler } from "../shared/infrastructure/middlewares/errorHandler.js";
+import { requestIdMiddleware } from "../shared/infrastructure/middlewares/requestIdMiddleware.js";
 
 class Server {
   private app: Application;
@@ -12,6 +14,8 @@ class Server {
     this.port = process.env.PORT || 3000;
     this.middlewares();
     this.routes();
+    // Manejo de errores, luego de routes para capturar errores de toda la app
+    this.errorHandling();
   }
 
   /**
@@ -24,10 +28,15 @@ class Server {
     this.app.use(helmet());
     this.app.use(cors());
     this.app.use(express.json());
+    this.app.use(requestIdMiddleware);
   }
 
   private routes(): void {
     this.app.use("/api/v1", router);
+  }
+
+  private errorHandling(): void {
+    this.app.use(errorHandler);
   }
 
   public listen(): void {

@@ -1,15 +1,10 @@
-import { ZodError } from "zod";
 import { ErrorCode } from "../../domain/exceptions/BaseError.js";
-import { DomainException } from "../../domain/exceptions/DomainException.js";
+import { ApplicationException } from "./ApplicationException.js";
 
-export class ProductApplicationException extends DomainException {
-  static validationError(details: ZodError): ProductApplicationException {
-    const issues = details.issues
-      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-      .join("; ");
-
+export class ProductApplicationException extends ApplicationException {
+  static validationError(details: string): ProductApplicationException {
     return new ProductApplicationException(
-      `Product validation failed: ${issues}`,
+      `Product validation failed: ${details}`,
       ErrorCode.VALIDATION_ERROR
     );
   }
