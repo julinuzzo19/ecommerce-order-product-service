@@ -1,14 +1,29 @@
 import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
 import { Customer } from "../domain/Customer.js";
+import { CustomerDomainException } from "../domain/exceptions/CustomerDomainException.js";
 import { ICustomerRepository } from "../domain/ICustomerRepository.js";
 import { CustomerResponseDTO } from "./dtos/CustomerResponseDTO.js";
+import { CustomerApplicationExceptions } from "./exceptions/CustomerApplicationExceptions.js";
 
 export class GetCustomersUseCase {
   constructor(private readonly customerRepository: ICustomerRepository) {}
 
   public execute = async (): Promise<CustomerResponseDTO[]> => {
-    const customers = await this.customerRepository.findAll();
-    return customers.map(this.mapToDTO);
+    try {
+      const customers = await this.customerRepository.findAll();
+      return customers.map(this.mapToDTO);
+    } catch (error) {
+      if (
+        error instanceof CustomerDomainException ||
+        error instanceof CustomerApplicationExceptions
+      ) {
+        throw error;
+      }
+      throw CustomerApplicationExceptions.useCaseError(
+        "getting customers",
+        error instanceof Error ? error.message : String(error)
+      );
+    }
   };
 
   private mapToDTO(customer: Customer): CustomerResponseDTO {

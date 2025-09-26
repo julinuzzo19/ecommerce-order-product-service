@@ -9,6 +9,7 @@ import { Email } from "../../../shared/domain/value-objects/Email.js";
 import { Address } from "../../../shared/domain/value-objects/Address.js";
 import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
 import { CustomerDomainException } from "../domain/exceptions/CustomerDomainException.js";
+import { CustomerApplicationExceptions } from "./exceptions/CustomerApplicationExceptions.js";
 
 export class CreateCustomerUseCase {
   constructor(
@@ -18,22 +19,35 @@ export class CreateCustomerUseCase {
 
   // Implement the logic to create a customer
   public execute = async (data: CreateCustomerDTO) => {
-    // Validate and transform the incoming data
-    const validation = createCustomerSchema.safeParse(data);
+    try {
+      // Validate and transform the incoming data
+      const validation = createCustomerSchema.safeParse(data);
 
-    console.log(validation, data);
-    if (!validation.success) {
-      const errorDetails = validation.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join(", ");
-      throw CustomerDomainException.validationError(errorDetails);
+      console.log(validation, data);
+      if (!validation.success) {
+        const errorDetails = validation.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ");
+        throw CustomerApplicationExceptions.validationError(errorDetails);
+      }
+
+      const customer = this.mapToEntity(validation.data);
+
+      await this.customerRepository.save(customer);
+
+      return this.mapToDTO(customer);
+    } catch (error) {
+      if (
+        error instanceof CustomerDomainException ||
+        error instanceof CustomerApplicationExceptions
+      ) {
+        throw error;
+      }
+      throw CustomerApplicationExceptions.useCaseError(
+        "creating customer",
+        error instanceof Error ? error.message : String(error)
+      );
     }
-
-    const customer = this.mapToEntity(validation.data);
-
-    await this.customerRepository.save(customer);
-
-    return this.mapToDTO(customer);
   };
 
   private mapToEntity(customer: CreateCustomerDTO): Customer {

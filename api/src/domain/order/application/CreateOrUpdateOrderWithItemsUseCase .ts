@@ -10,6 +10,7 @@ import { ProductDomainException } from "../../../shared/domain/exceptions/Produc
 import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
 import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
 import { OrderDomainException } from "../exceptions/OrderDomainException.js";
+import { OrderApplicationException } from "./exceptions/OrderApplicationException.js";
 
 export class CreateOrUpdateOrderWithItemsUseCase {
   constructor(
@@ -18,19 +19,35 @@ export class CreateOrUpdateOrderWithItemsUseCase {
   ) {}
 
   public async execute(data: CreateOrUpdateOrderWithItemsDTO): Promise<string> {
-    // 1. Validar entrada
-    const validatedData = this.validateInput(data);
+    try {
+      // 1. Validar entrada
+      const validatedData = this.validateInput(data);
 
-    // 2. Obtener y validar productos
-    const productsData = await this.validateAndGetProducts(validatedData.items);
+      // 2. Obtener y validar productos
+      const productsData = await this.validateAndGetProducts(
+        validatedData.items
+      );
 
-    // 3. Crear entidad Order
-    const order = this.createOrderEntity(validatedData, productsData);
+      // 3. Crear entidad Order
+      const order = this.createOrderEntity(validatedData, productsData);
 
-    // 4. Persistir
-    await this.orderRepository.save(order);
+      // 4. Persistir
+      await this.orderRepository.save(order);
 
-    return "Order saved successfully";
+      return "Order saved successfully";
+    } catch (error) {
+      if (
+        error instanceof OrderDomainException ||
+        error instanceof OrderApplicationException ||
+        error instanceof ProductDomainException
+      ) {
+        throw error;
+      }
+      throw OrderApplicationException.useCaseError(
+        "creating or updating order with items",
+        error instanceof Error ? error.message : String(error)
+      );
+    }
   }
 
   private validateInput(
@@ -42,7 +59,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
       const errorDetails = validation.error.issues
         .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
         .join(", ");
-      throw OrderDomainException.validationError(errorDetails);
+      throw OrderApplicationException.validationError(errorDetails);
     }
 
     return validation.data;
