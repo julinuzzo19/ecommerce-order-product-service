@@ -2,46 +2,85 @@ import { NextFunction, Request, Response } from "express";
 import { DomainException } from "../../domain/exceptions/DomainException.js";
 import { ApplicationException } from "../../application/exceptions/ApplicationException.js";
 import { InfrastructureException } from "../exceptions/InfrastructureException.js";
+import { ILogger } from "../../domain/ILogger.js";
 
-export const errorHandler = (
-  error: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Response => {
-  // Opcional: loggea el error para debugging
-  // logger.error("Unhandled error", { error, url: req.url, method: req.method });
-  const requestId = (req as any).id || "unknown"; // Agrega ID de solicitud si usas middleware
+export const errorHandler = (logger: ILogger) => {
+  return (
+    error: unknown,
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Response => {
+    const requestId = (req as any).id || "unknown";
 
-  // Manejo específico por tipo de excepción
-  if (error instanceof DomainException) {
-    return res.status(400).json({
-      error: "Bad Request",
-      message: error.message, // Expone mensaje de dominio, ya que es seguro
+    const requestInfo = {
       requestId,
-    });
-  }
+      method: req.method,
+      url: req.url,
+      // ip: req.ip,
+      // userAgent: req.get("User-Agent"),
+      body: req.method !== "GET" ? JSON.stringify(req.body) : undefined,
+    };
 
-  if (error instanceof ApplicationException) {
-    return res.status(error.statusCode || 400).json({
-      error: "Application Error",
-      message: error.message,
-      requestId,
-    });
-  }
+    // Manejo específico por tipo de excepción
+    if (error instanceof DomainException) {
+      // Log de warning para excepciones de dominio (no son errores críticos)
+      logger.warn("Domain exception occurred", {
+        ...requestInfo,
+        exceptionType: "DomainException",
+        message: error.message,
+        stack: error.stack,
+      });
 
-  if (error instanceof InfrastructureException) {
-    return res.status(error.statusCode || 500).json({
+      return res.status(400).json({
+        error: "Bad Request",
+        message: error.message,
+        requestId,
+      });
+    }
+
+    if (error instanceof ApplicationException) {
+      logger.error("Application exception occurred", error, {
+        ...requestInfo,
+        exceptionType: "ApplicationException",
+        statusCode: error.statusCode || 400,
+      });
+
+      return res.status(error.statusCode || 400).json({
+        error: "Application Error",
+        message: error.message,
+        requestId,
+      });
+    }
+
+    if (error instanceof InfrastructureException) {
+      // Log de error crítico para excepciones de infraestructura
+      logger.error("Infrastructure exception occurred", error, {
+        ...requestInfo,
+        exceptionType: "InfrastructureException",
+        statusCode: error.statusCode || 500,
+        critical: true,
+      });
+
+      return res.status(error.statusCode || 500).json({
+        error: "Internal Server Error",
+        message: "Please try again later",
+        requestId,
+      });
+    }
+
+    // Error desconocido o genérico - MUY CRÍTICO
+    logger.error("Unhandled error occurred", error as Error, {
+      ...requestInfo,
+      exceptionType: "UnknownError",
+      critical: true,
+      needsInvestigation: true,
+    });
+
+    return res.status(500).json({
       error: "Internal Server Error",
-      message: "Please try again later",
+      message: "An unexpected error occurred",
       requestId,
     });
-  }
-
-  // Error desconocido o genérico
-  return res.status(500).json({
-    error: "Internal Server Error",
-    message: "An unexpected error occurred",
-    requestId,
-  });
+  };
 };
