@@ -3,48 +3,70 @@ import { IProductRepository } from "../../domain/IProductRepository.js";
 import { Product } from "../../domain/Product.js";
 import { ProductMapper } from "../mappers/ProductMapper.js";
 import { ProductId } from "../../../../shared/domain/value-objects/ProductId.js";
+import { PrismaErrorHandler } from "../../../../shared/infrastructure/database/PrismaErrorHandler.js";
 
 export class ProductPrismaRepository implements IProductRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly errorHandler: PrismaErrorHandler = new PrismaErrorHandler()
+  ) {}
 
   async delete(id: ProductId): Promise<void> {
-    await this.prisma.product.delete({ where: { id: id.value } });
+    try {
+      await this.prisma.product.delete({ where: { id: id.value } });
+    } catch (error) {
+      this.errorHandler.handleError(error, "delete product");
+    }
   }
   async save(product: Product): Promise<void> {
-    await this.prisma.product.create({
-      data: ProductMapper.toPrisma(product),
-    });
+    try {
+      await this.prisma.product.create({
+        data: ProductMapper.toPrisma(product),
+      });
+    } catch (error) {
+      this.errorHandler.handleError(error, "save product");
+    }
   }
 
   async findAll(): Promise<Product[]> {
-    const products = await this.prisma.product.findMany();
-    return products.map(ProductMapper.fromPrisma);
+    try {
+      const products = await this.prisma.product.findMany();
+      return products.map(ProductMapper.fromPrisma);
+    } catch (error) {
+      this.errorHandler.handleError(error, "find all products");
+    }
   }
 
   async findById(id: ProductId): Promise<Product | null> {
-    const product = await this.prisma.product.findUnique({
-      where: { id: id.value },
-    });
+    try {
+      const product = await this.prisma.product.findUnique({
+        where: { id: id.value },
+      });
 
-    if (!product) return null;
+      if (!product) return null;
 
-    return product ? ProductMapper.fromPrisma(product) : null;
+      return product ? ProductMapper.fromPrisma(product) : null;
+    } catch (error) {
+      this.errorHandler.handleError(error, "find product by ID");
+    }
   }
 
   async isProductInStock(
     productId: ProductId,
     quantity: number
   ): Promise<boolean> {
-    const product = await this.prisma.product.findUnique({
-      where: { id: productId.value },
-    });
+    try {
+      const product = await this.prisma.product.findUnique({
+        where: { id: productId.value },
+      });
 
-    console.log({ product });
+      if (!product?.id) {
+        return false;
+      }
 
-    if (!product?.id) {
-      return false;
+      return product.stockQuantity >= quantity;
+    } catch (error) {
+      this.errorHandler.handleError(error, "check product stock");
     }
-
-    return product.stockQuantity >= quantity;
   }
 }

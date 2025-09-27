@@ -9,7 +9,6 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): Response => {
-  console.log({ error });
   // Opcional: loggea el error para debugging
   // logger.error("Unhandled error", { error, url: req.url, method: req.method });
   const requestId = (req as any).id || "unknown"; // Agrega ID de solicitud si usas middleware
