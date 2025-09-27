@@ -1,10 +1,9 @@
+import { ApplicationException } from "../../../../shared/application/exceptions/ApplicationException.js";
 import { ErrorCode } from "../../../../shared/domain/exceptions/BaseError.js";
-import { DomainException } from "../../../../shared/domain/exceptions/DomainException.js";
-import { CustomerDomainException } from "../../domain/exceptions/CustomerDomainException.js";
 
-export class CustomerApplicationExceptions extends DomainException {
+export class CustomerApplicationExceptions extends ApplicationException {
   static validationError(details: string): CustomerApplicationExceptions {
-    return new CustomerDomainException(
+    return new CustomerApplicationExceptions(
       `Customer validation failed: ${details}`,
       ErrorCode.VALIDATION_ERROR
     );

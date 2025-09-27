@@ -1,7 +1,7 @@
+import { ApplicationException } from "../../../../shared/application/exceptions/ApplicationException.js";
 import { ErrorCode } from "../../../../shared/domain/exceptions/BaseError.js";
-import { DomainException } from "../../../../shared/domain/exceptions/DomainException.js";
 
-export class OrderApplicationException extends DomainException {
+export class OrderApplicationException extends ApplicationException {
   static validationError(details: string): OrderApplicationException {
     return new OrderApplicationException(
       `Order validation failed: ${details}`,

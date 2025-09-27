@@ -18,7 +18,6 @@ export class CreateProductUseCase {
       // Validate and transform the incoming data
       const validation = createProductSchema.safeParse(data);
 
-      console.log({ validation });
       if (!validation.success) {
         const errorDetails = validation.error.issues
           .map((issue) => `${issue.path.join(".")}: ${issue.message}`)

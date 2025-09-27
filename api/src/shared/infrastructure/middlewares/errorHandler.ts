@@ -1,17 +1,18 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { DomainException } from "../../domain/exceptions/DomainException.js";
 import { ApplicationException } from "../../application/exceptions/ApplicationException.js";
 import { InfrastructureException } from "../exceptions/InfrastructureException.js";
-// Opcional: importa un logger si lo tienes, e.g., import { logger } from "../utils/logger.js";
 
 export const errorHandler = (
   error: unknown,
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Response => {
+  console.log({ error });
   // Opcional: loggea el error para debugging
   // logger.error("Unhandled error", { error, url: req.url, method: req.method });
-  const requestId = req.headers["x-request-id"] || "unknown"; // Agrega ID de solicitud si usas middleware
+  const requestId = (req as any).id || "unknown"; // Agrega ID de solicitud si usas middleware
 
   // Manejo específico por tipo de excepción
   if (error instanceof DomainException) {
