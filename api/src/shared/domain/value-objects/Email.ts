@@ -1,12 +1,13 @@
+import { z } from "zod";
 import { ValueObjectException } from "../exceptions/ValidationError.js";
-import { IEmailValidator } from "./IEmailValidator.js";
 
 export class Email {
-  constructor(
-    private readonly value: string,
-    private readonly validator: IEmailValidator
-  ) {
-    if (!this.validator.isValid(value)) {
+  private static readonly emailSchema = z.email();
+
+  constructor(private readonly value: string) {
+    const result = Email.emailSchema.safeParse(value);
+
+    if (!result.success) {
       throw ValueObjectException.validationError("Invalid email format");
     }
   }
