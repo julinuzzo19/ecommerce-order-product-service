@@ -4,7 +4,6 @@ import { CreateCustomerDTO } from "./dtos/CreateCustomerDTO.js";
 import { Customer } from "../domain/Customer.js";
 import { CustomerResponseDTO } from "./dtos/CustomerResponseDTO.js";
 import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
-import { IEmailValidator } from "../../../shared/domain/value-objects/IEmailValidator.js";
 import { Email } from "../../../shared/domain/value-objects/Email.js";
 import { Address } from "../../../shared/domain/value-objects/Address.js";
 import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
@@ -12,10 +11,7 @@ import { CustomerDomainException } from "../domain/exceptions/CustomerDomainExce
 import { CustomerApplicationExceptions } from "./exceptions/CustomerApplicationExceptions.js";
 
 export class CreateCustomerUseCase {
-  constructor(
-    private readonly customerRepository: ICustomerRepository,
-    private readonly emailValidator: IEmailValidator
-  ) {}
+  constructor(private readonly customerRepository: ICustomerRepository) {}
 
   // Implement the logic to create a customer
   public execute = async (data: CreateCustomerDTO) => {
@@ -56,7 +52,7 @@ export class CreateCustomerUseCase {
     return new Customer({
       id: customerId,
       name: customer.name,
-      email: new Email(customer.email, this.emailValidator),
+      email: new Email(customer.email),
       address: new Address(customer.address),
       phoneNumber: customer.phoneNumber,
     });

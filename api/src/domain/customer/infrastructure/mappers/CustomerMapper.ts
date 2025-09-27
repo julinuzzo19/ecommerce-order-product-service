@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { Customer } from "../../domain/Customer.js";
-import { EmailValidatorImpl } from "../../../../shared/infrastructure/EmailValidatorImpl.js";
 import { CustomerId } from "../../../../shared/domain/value-objects/CustomerId.js";
 import { Email } from "../../../../shared/domain/value-objects/Email.js";
 import { Address } from "../../../../shared/domain/value-objects/Address.js";
@@ -34,7 +33,7 @@ export class CustomerMapper {
     return new Customer({
       id: new CustomerId(data.id),
       name: data.name,
-      email: new Email(data.email, new EmailValidatorImpl()),
+      email: new Email(data.email),
       address: new Address(data.address),
       phoneNumber: data.phoneNumber || undefined,
       createdAt: data.createdAt,

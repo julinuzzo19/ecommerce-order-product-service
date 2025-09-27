@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { CreateCustomerUseCase } from "../application/CreateCustomerUseCase.js";
-import { EmailValidatorImpl } from "../../../shared/infrastructure/EmailValidatorImpl.js";
 import { CustomerPrismaRepository } from "./repository/customerPrismaRepository.js";
 import { prisma } from "../../../shared/infrastructure/db/prisma/prisma.client.js";
 import { CustomerController } from "./customer.controller.js";
@@ -16,10 +15,7 @@ const customerRepository = new CustomerPrismaRepository(prisma);
 //  * Iniciamos casos de uso
 //  */
 
-const customerCreateUseCase = new CreateCustomerUseCase(
-  customerRepository,
-  new EmailValidatorImpl()
-);
+const customerCreateUseCase = new CreateCustomerUseCase(customerRepository);
 const getCustomersUseCase = new GetCustomersUseCase(customerRepository);
 
 // /**
