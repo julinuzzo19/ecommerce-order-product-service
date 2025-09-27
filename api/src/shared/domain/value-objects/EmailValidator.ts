@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { InfrastructureException } from "../infrastructure/exceptions/InfrastructureException.js";
+import { InfrastructureException } from "../../infrastructure/exceptions/InfrastructureException.js";
 
 export class EmailValidator {
   static isValid(email: string): boolean {
