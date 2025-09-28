@@ -1,6 +1,7 @@
 import { Address } from "../../../shared/domain/value-objects/Address.js";
 import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
 import { Email } from "../../../shared/domain/value-objects/Email.js";
+import { CustomerDomainException } from "./exceptions/CustomerDomainException.js";
 import { ICustomer } from "./ICustomer.js";
 
 interface CustomerProps {
@@ -30,6 +31,16 @@ export class Customer implements ICustomer {
     this.phoneNumber = props.phoneNumber;
     this.createdAt = props.createdAt ?? new Date();
     this.isActive = props.isActive ?? true;
+
+    this.validate();
+  }
+
+  private validate(): void {
+    if (!this.name || this.name.trim().length < 2) {
+      throw CustomerDomainException.validationError(
+        `Invalid name for customer`
+      );
+    }
   }
 
   public updateAddress(newAddress: Address): void {

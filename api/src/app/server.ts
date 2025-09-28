@@ -7,6 +7,7 @@ import { requestIdMiddleware } from "../shared/infrastructure/middlewares/reques
 import { ILogger } from "../shared/domain/ILogger.js";
 import { loggingMiddleware } from "../shared/infrastructure/middlewares/loggingMiddleware.js";
 import { createLogger } from "../shared/infrastructure/logger/logger.js";
+import { prisma } from "../shared/infrastructure/db/prisma/prisma.client.js";
 
 class Server {
   private app: Application;
@@ -55,6 +56,19 @@ class Server {
     this.app.use(errorHandler(this.errorLogger));
   }
 
+  // Nuevo método para inicializar BD
+  private async initializeDatabase(): Promise<void> {
+    try {
+      await prisma.$connect();
+      this.logger.info("Database connected successfully");
+    } catch (error) {
+      this.logger.error("Database connection failed", error as Error, {
+        critical: true,
+      });
+      throw error;
+    }
+  }
+
   // ✅ AGREGAR GRACEFUL SHUTDOWN
   private setupGracefulShutdown(): void {
     process.on("uncaughtException", (error) => {
@@ -81,23 +95,31 @@ class Server {
     });
   }
 
-  public listen(): void {
-    const server = this.app.listen(this.port, () => {
-      // console.log(`Server running on port ${this.port}`);
+  public async listen(): Promise<void> {
+    try {
+      await this.initializeDatabase();
 
-      this.logger.info("Server started successfully", {
-        port: this.port,
-        environment: process.env.NODE_ENV || "development",
+      const server = this.app.listen(this.port, () => {
+        this.logger.info("Server started successfully", {
+          port: this.port,
+          environment: process.env.NODE_ENV || "development",
+        });
       });
-    });
 
-    server.on("close", () => {
-      this.logger.info("Server closed successfully");
-    });
+      server.on("close", async () => {
+        await prisma.$disconnect();
+        this.logger.info("Server closed successfully");
+      });
 
-    server.on("error", (error) => {
-      this.logger.error("Server error", error, { critical: true });
-    });
+      server.on("error", (error) => {
+        this.logger.error("Server error", error, { critical: true });
+      });
+    } catch (error) {
+      this.logger.error("Failed to start server", error as Error, {
+        critical: true,
+      });
+      process.exit(1);
+    }
   }
 }
 

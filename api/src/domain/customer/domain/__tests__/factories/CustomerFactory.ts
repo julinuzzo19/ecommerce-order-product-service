@@ -5,17 +5,50 @@ import { Email } from "../../../../../shared/domain/value-objects/Email.js";
 import { generateUuidV4 } from "../../../../../shared/utils/uuidGenerator.js";
 import { Customer } from "../../Customer.js";
 
-export class CustomerFactory {
-  private id = generateUuidV4();
-  private name = "John Doe";
-  private email = "john.doe@example.com";
-  private addressFactory = AddressFactory.create();
-  private phoneNumber = "555-1234";
-  private createdAt = new Date();
-  private isActive = true;
+export interface CustomerFixture {
+  id?: string;
+  name?: string;
+  email?: string;
+  phoneNumber?: string;
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  createdAt?: Date;
+  isActive?: boolean;
+}
 
-  static create(): CustomerFactory {
-    return new CustomerFactory();
+export class CustomerFactory {
+  private id: string;
+  private name: string;
+  private email: string;
+  private addressFactory: AddressFactory;
+  private phoneNumber: string;
+  private createdAt: Date;
+  private isActive: boolean;
+
+  constructor(fixture?: CustomerFixture) {
+    this.id = fixture?.id || generateUuidV4();
+    this.name = fixture?.name || "John Doe";
+    this.email = fixture?.email || "john.doe@example.com";
+    this.addressFactory = fixture?.address
+      ? AddressFactory.create()
+          .withStreet(fixture.address.street)
+          .withCity(fixture.address.city)
+          .withState(fixture.address.state)
+          .withZipCode(fixture.address.zipCode)
+          .withCountry(fixture.address.country)
+      : AddressFactory.create();
+    this.phoneNumber = fixture?.phoneNumber || "555-1234";
+    this.createdAt = fixture?.createdAt || new Date();
+    this.isActive = fixture?.isActive ?? true;
+  }
+
+  static create(fixture?: CustomerFixture): CustomerFactory {
+    return new CustomerFactory(fixture);
   }
 
   withId(id: string): CustomerFactory {
@@ -61,6 +94,11 @@ export class CustomerFactory {
     return this;
   }
 
+  /**
+   * Replace the default AddressFactory with a custom one
+   * @param addressFactory
+   * @returns
+   */
   withAddress(addressFactory: AddressFactory): CustomerFactory {
     this.addressFactory = addressFactory;
     return this;

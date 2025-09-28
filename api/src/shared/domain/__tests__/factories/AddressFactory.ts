@@ -56,6 +56,15 @@ export class AddressFactory {
     return this;
   }
 
+  withAddress(address: Address): AddressFactory {
+    this.street = address.getStreet();
+    this.city = address.getCity();
+    this.state = address.getState();
+    this.zipCode = address.getZipCode();
+    this.country = address.getCountry();
+    return this;
+  }
+
   build(): Address {
     return new Address({
       city: this.city,
