@@ -8,15 +8,15 @@ export const loggingMiddleware = (logger: ILogger) => {
     const requestId = (req as any).id || "unknown";
 
     // Log request entrante
-    logger.http("Request received", {
-      requestId,
-      method,
-      url,
-      // ip,
-      // userAgent: req.get("User-Agent"),
-      // contentType: req.get("Content-Type"),
-      timestamp: new Date().toISOString(),
-    });
+    // logger.http("Request received", {
+    //   requestId,
+    //   method,
+    //   url,
+    //   // ip,
+    //   // userAgent: req.get("User-Agent"),
+    //   // contentType: req.get("Content-Type"),
+    //   timestamp: new Date().toISOString(),
+    // });
 
     // Capturar response
     const originalSend = res.send;

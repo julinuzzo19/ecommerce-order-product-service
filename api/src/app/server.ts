@@ -1,4 +1,6 @@
-import express, { Application } from "express";
+import "newrelic";
+import express from "express";
+import type { Application } from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { router } from "./routes.js";

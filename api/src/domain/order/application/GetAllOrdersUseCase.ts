@@ -1,3 +1,4 @@
+import { NewRelicMonitoring } from "../../../shared/infrastructure/monitoring/NewRelicMonitoring.js";
 import { OrderDomainException } from "../exceptions/OrderDomainException.js";
 import { IOrderQueryRepository } from "./IOrderQueryRepository.js";
 import { OrderReadDTO } from "./dtos/OrderReadDTO.js";
@@ -8,7 +9,18 @@ export class GetAllOrdersUseCase {
 
   public execute = async (): Promise<OrderReadDTO[]> => {
     try {
-      return await this.orderQueryRepository.findAllOrdersWithDetails();
+      const startTime = Date.now();
+
+      const result = await this.orderQueryRepository.findAllOrdersWithDetails();
+
+      const duration = Date.now() - startTime;
+
+      NewRelicMonitoring.recordEvent("OrdersRetrieved_Duration", {
+        length: result.length,
+        duration,
+      });
+
+      return result;
     } catch (error) {
       if (
         error instanceof OrderDomainException ||
