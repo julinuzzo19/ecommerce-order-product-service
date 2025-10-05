@@ -26,6 +26,20 @@ export class OrderController {
     res: Response,
     next: NextFunction
   ) => {
+    const userRole = req.headers["x-user-role"];
+    const userEmail = req.headers["x-user-email"];
+    const userId = req.headers["x-user-id"];
+    const gatewaySignature = req.headers["x-gateway-secret"];
+    const requestId = req.headers["x-request-id"];
+
+    // console.log({
+    //   userRole,
+    //   userEmail,
+    //   userId,
+    //   gatewaySignature,
+    //   requestId,
+    // });
+
     const result = await this.getAllOrdersUseCase.execute();
     return res.status(200).json(result);
   };

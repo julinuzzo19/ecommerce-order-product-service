@@ -5,7 +5,7 @@ import { prisma } from "../../../shared/infrastructure/db/prisma/prisma.client.j
 import { CustomerController } from "./customer.controller.js";
 import { GetCustomersUseCase } from "../application/GetCustomersUseCase.js";
 
-const route = Router();
+const router = Router();
 // /**
 //  * Iniciar Repository
 //  */
@@ -31,7 +31,7 @@ const customerCtrl = new CustomerController(
 //  * Mapping routes to controller methods
 //  */
 
-route.post(`/`, customerCtrl.createCustomer);
-route.get(`/`, customerCtrl.getCustomers);
+router.post(`/`, customerCtrl.createCustomer);
+router.get(`/`, customerCtrl.getCustomers);
 
-export default route;
+export default router;
