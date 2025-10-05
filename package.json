@@ -1,7 +1,6 @@
 {
-  "name": "backend",
+  "name": "ecommerce-order-product-service",
   "version": "1.0.0",
-  "description": "",
   "main": "server.ts",
   "type": "module",
   "scripts": {
@@ -24,15 +23,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/julinuzzo19/Backend.git"
+    "url": "git+https://github.com/julinuzzo19/ecommerce-order-product-service.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/julinuzzo19/Backend/issues"
+    "url": "https://github.com/julinuzzo19/ecommerce-order-product-service/issues"
   },
-  "homepage": "https://github.com/julinuzzo19/Backend#readme",
+  "homepage": "https://github.com/julinuzzo19/ecommerce-order-product-service#readme",
   "dependencies": {
     "@prisma/client": "^6.16.1",
     "cors": "^2.8.5",
