@@ -21,17 +21,6 @@
     "test:e2e:fresh": "npm run test:e2e:stop && npm run test:e2e:docker",
     "test:e2e:stop": "docker stop postgres-test && docker rm postgres-test"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/julinuzzo19/ecommerce-order-product-service.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/julinuzzo19/ecommerce-order-product-service/issues"
-  },
-  "homepage": "https://github.com/julinuzzo19/ecommerce-order-product-service#readme",
   "dependencies": {
     "@prisma/client": "^6.16.1",
     "cors": "^2.8.5",
