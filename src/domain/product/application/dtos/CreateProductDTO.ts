@@ -4,6 +4,5 @@ export interface CreateProductDTO {
   description: string;
   price: number;
   category: string;
-  stockQuantity: number;
   sku: string;
 }

@@ -50,23 +50,4 @@ export class ProductPrismaRepository implements IProductRepository {
       this.errorHandler.handleError(error, "find product by ID");
     }
   }
-
-  async isProductInStock(
-    productId: CustomId,
-    quantity: number
-  ): Promise<boolean> {
-    try {
-      const product = await this.prisma.product.findUnique({
-        where: { id: productId.value },
-      });
-
-      if (!product?.id) {
-        return false;
-      }
-
-      return product.stockQuantity >= quantity;
-    } catch (error) {
-      this.errorHandler.handleError(error, "check product stock");
-    }
-  }
 }

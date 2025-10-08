@@ -6,6 +6,5 @@ export const createProductSchema = z.object({
   description: z.string().max(1000),
   price: z.number().min(0),
   category: z.string().min(2).max(100),
-  stockQuantity: z.number().min(0),
   sku: z.string().min(2).max(100),
 });

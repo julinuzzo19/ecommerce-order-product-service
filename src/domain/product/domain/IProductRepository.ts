@@ -1,4 +1,4 @@
-import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { Product } from "./Product.js";
 
 /**
@@ -11,7 +11,7 @@ export interface IProductRepository {
    * @param id The ID of the product to find.
    * @returns The found product, or null if not found.
    */
-  findById(id: ProductId): Promise<Product | null>;
+  findById(id: CustomId): Promise<Product | null>;
 
   /**
    * Save or update a product to the database.
@@ -23,7 +23,7 @@ export interface IProductRepository {
    * Delete a product from the database by its ID.
    * @param id The ID of the product to delete.
    */
-  delete(id: ProductId): Promise<void>;
+  delete(id: CustomId): Promise<void>;
 
   /**
    * List all products.
@@ -37,5 +37,5 @@ export interface IProductRepository {
    * @param quantity The quantity to check for availability.
    * @returns boolean indicating if the product is in stock.
    */
-  isProductInStock(productId: ProductId, quantity: number): Promise<boolean>;
+  // isProductInStock(productId: ProductId, quantity: number): Promise<boolean>;
 }

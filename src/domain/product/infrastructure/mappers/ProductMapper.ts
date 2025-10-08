@@ -12,7 +12,6 @@ export class ProductMapper {
       price: product.getPrice(),
       createdAt: product.getCreatedAt(),
       sku: product.getSku(),
-      stockQuantity: product.getStockQuantity(),
       isActive: product.getIsActive(),
       category: product.getCategory().getName(),
     };
@@ -27,7 +26,6 @@ export class ProductMapper {
       price: data.price.toNumber(),
       createdAt: data.createdAt,
       sku: data.sku,
-      stockQuantity: data.stockQuantity,
       isActive: data.isActive,
     });
   }

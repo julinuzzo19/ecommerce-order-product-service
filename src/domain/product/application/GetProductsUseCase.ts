@@ -41,11 +41,9 @@ export class GetProductsUseCase {
       name: (entity) => entity.getName(),
       description: (entity) => entity.getDescription(),
       price: (entity) => entity.getPrice(),
-      stockQuantity: (entity) => entity.getStockQuantity(),
       isActive: (entity) => entity.getIsActive(),
       createdAt: (entity) => entity.getCreatedAt(),
       category: (entity) => entity.getCategory().getName(),
-      isAvailable: (entity) => entity.isAvailable(),
     });
   }
 }

@@ -88,6 +88,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
       productsMap.set(productId, product);
     });
 
+    // TODO
     // Validar stock para cada item
     this.validateStock(items, productsMap);
 
@@ -101,12 +102,12 @@ export class CreateOrUpdateOrderWithItemsUseCase {
     for (const item of items) {
       const product = productsMap.get(item.productId)!;
 
-      if (!product.isInStock(item.quantity)) {
-        throw ProductDomainException.validationError(
-          `Insufficient stock for product ${item.productId}. ` +
-            `Available: ${product.getStockQuantity()}, Given: ${item.quantity}`
-        );
-      }
+      // if (!product.isInStock(item.quantity)) {
+      //   throw ProductDomainException.validationError(
+      //     `Insufficient stock for product ${item.productId}. ` +
+      //       `Available: ${product.getStockQuantity()}, Given: ${item.quantity}`
+      //   );
+      // }
     }
   }
 

@@ -10,11 +10,6 @@ export interface IProduct {
   getSku(): string;
   getIsActive(): boolean;
   getCreatedAt(): Date;
-  getStockQuantity(): number;
-  isAvailable(): boolean;
-  isInStock(quantity: number): boolean;
-  reserveStock(quantity: number): void;
-  releaseStock(quantity: number): void;
   updatePrice(newPrice: number): void;
   deactivate(): void;
 }
