@@ -6,7 +6,6 @@ import { Order } from "../domain/Order.js";
 import { OrderItem } from "../domain/OrderItem.js";
 import { Product } from "../../product/domain/Product.js";
 import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
-import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
 import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { OrderDomainException } from "../exceptions/OrderDomainException.js";
 import { OrderApplicationException } from "./exceptions/OrderApplicationException.js";
@@ -73,7 +72,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
     // Consultar productos en paralelo para mejor rendimiento
     const productPromises = uniqueProductIds.map(async (productId) => {
       const product = await this.productRepository.findById(
-        new ProductId(productId)
+        new CustomId(productId)
       );
       if (!product) {
         throw ProductDomainException.notFound(productId);

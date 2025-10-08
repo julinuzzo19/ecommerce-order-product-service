@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { IProductRepository } from "../../domain/IProductRepository.js";
 import { Product } from "../../domain/Product.js";
 import { ProductMapper } from "../mappers/ProductMapper.js";
-import { ProductId } from "../../../../shared/domain/value-objects/ProductId.js";
 import { PrismaErrorHandler } from "../../../../shared/infrastructure/database/PrismaErrorHandler.js";
+import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 
 export class ProductPrismaRepository implements IProductRepository {
   constructor(
@@ -11,7 +11,7 @@ export class ProductPrismaRepository implements IProductRepository {
     private readonly errorHandler: PrismaErrorHandler = new PrismaErrorHandler()
   ) {}
 
-  async delete(id: ProductId): Promise<void> {
+  async delete(id: CustomId): Promise<void> {
     try {
       await this.prisma.product.delete({ where: { id: id.value } });
     } catch (error) {
@@ -37,7 +37,7 @@ export class ProductPrismaRepository implements IProductRepository {
     }
   }
 
-  async findById(id: ProductId): Promise<Product | null> {
+  async findById(id: CustomId): Promise<Product | null> {
     try {
       const product = await this.prisma.product.findUnique({
         where: { id: id.value },
@@ -52,7 +52,7 @@ export class ProductPrismaRepository implements IProductRepository {
   }
 
   async isProductInStock(
-    productId: ProductId,
+    productId: CustomId,
     quantity: number
   ): Promise<boolean> {
     try {

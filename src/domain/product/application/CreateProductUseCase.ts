@@ -7,7 +7,7 @@ import { ProductResponseDTO } from "./dtos/ProductResponseDTO.js";
 import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
 import { ProductApplicationException } from "../../../shared/application/exceptions/ProductApplicationException.js";
 import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
-import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 
 export class CreateProductUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
@@ -46,7 +46,7 @@ export class CreateProductUseCase {
   };
 
   private mapToEntity(product: CreateProductDTO): Product {
-    const productId = new ProductId(product.id);
+    const productId = new CustomId(product.id);
     const productCategory = new ProductCategory(product.category);
 
     return new Product({

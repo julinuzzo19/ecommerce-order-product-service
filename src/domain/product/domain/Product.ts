@@ -1,10 +1,10 @@
 import { ProductCategory } from "./value-objects/ProductCategory.js";
 import { IProduct } from "./IProduct.js";
 import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
-import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 
 interface ProductProps {
-  id: ProductId;
+  id: CustomId;
   name: string;
   description: string | undefined;
   price: number;
@@ -16,7 +16,7 @@ interface ProductProps {
 }
 
 export class Product implements IProduct {
-  private id: ProductId;
+  private id: CustomId;
   private name: string;
   private description?: string;
   private price: number;
@@ -69,7 +69,9 @@ export class Product implements IProduct {
   public reserveStock(quantity: number): void {
     if (!this.isInStock(quantity)) {
       throw ProductDomainException.validationError(
-        `Insufficient stock for product ${this.id.toString()}. Requested: ${quantity}, Available: ${this.stockQuantity}`
+        `Insufficient stock for product ${this.id.toString()}. Requested: ${quantity}, Available: ${
+          this.stockQuantity
+        }`
       );
     }
     this.stockQuantity -= quantity;
@@ -93,7 +95,7 @@ export class Product implements IProduct {
   }
 
   // Getters
-  public getId(): ProductId {
+  public getId(): CustomId {
     return this.id;
   }
   public getName(): string {

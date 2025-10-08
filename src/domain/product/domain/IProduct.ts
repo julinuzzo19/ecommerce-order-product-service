@@ -1,8 +1,8 @@
-import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { ProductCategory } from "./value-objects/ProductCategory.js";
 
 export interface IProduct {
-  getId(): ProductId;
+  getId(): CustomId;
   getName(): string;
   getPrice(): number;
   getDescription(): string | undefined;
