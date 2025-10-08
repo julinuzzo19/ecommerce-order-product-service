@@ -5,7 +5,7 @@ import {
 } from "uuid";
 import { ValueObjectException } from "../exceptions/ValidationError.js";
 
-export class CustomerId {
+export class CustomId {
   public readonly value: string;
 
   constructor(value: string) {
@@ -17,11 +17,11 @@ export class CustomerId {
     this.value = value;
   }
 
-  public static create(): CustomerId {
-    return new CustomerId(uuidv4());
+  public static create(): CustomId {
+    return new CustomId(uuidv4());
   }
 
-  public equals(other: CustomerId): boolean {
+  public equals(other: CustomId): boolean {
     return this.value === other.value;
   }
 }

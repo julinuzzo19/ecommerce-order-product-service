@@ -1,5 +1,5 @@
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { Order } from "./Order.js";
-import { OrderId } from "./value-objects/OrderId.js";
 
 /**
  * Interfaz que define el contrato del Repositorio de Orden para la persistencia.
@@ -11,7 +11,7 @@ export interface IOrderRepository {
    * @param id The ID of the order to find.
    * @returns The found order, or null if not found.
    */
-  findById(id: OrderId): Promise<Order | null>;
+  findById(id: CustomId): Promise<Order | null>;
 
   /**
    * Find an order by its ID.
@@ -30,7 +30,7 @@ export interface IOrderRepository {
    * Delete an order from the database by its ID.
    * @param id The ID of the order to delete.
    */
-  delete(id: OrderId): Promise<void>;
+  delete(id: CustomId): Promise<void>;
 
   /**
    * List all orders.

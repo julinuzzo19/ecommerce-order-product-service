@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { IOrderRepository } from "../../domain/IOrderRepository.js";
-import { OrderId } from "../../domain/value-objects/OrderId.js";
 import { Order } from "../../domain/Order.js";
 import { OrderMapper } from "../mappers/OrderMapper.js";
 import { IOrderQueryRepository } from "../../application/IOrderQueryRepository.js";
 import { OrderReadDTO } from "../../application/dtos/OrderReadDTO.js";
 import { PrismaErrorHandler } from "../../../../shared/infrastructure/database/PrismaErrorHandler.js";
+import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 
 export class OrderPrismaRepository
   implements IOrderRepository, IOrderQueryRepository
@@ -15,7 +15,7 @@ export class OrderPrismaRepository
     private readonly errorHandler: PrismaErrorHandler = new PrismaErrorHandler()
   ) {}
 
-  async delete(id: OrderId): Promise<void> {
+  async delete(id: CustomId): Promise<void> {
     try {
       await this.prisma.order.delete({
         where: { id: id.value },
@@ -43,7 +43,7 @@ export class OrderPrismaRepository
     }
   }
 
-  async findById(id: OrderId): Promise<Order | null> {
+  async findById(id: CustomId): Promise<Order | null> {
     try {
       const order = await this.prisma.order.findUnique({
         where: {
@@ -151,7 +151,7 @@ export class OrderPrismaRepository
     }
   }
 
-  async findOrderWithDetails(id: OrderId): Promise<OrderReadDTO | null> {
+  async findOrderWithDetails(id: CustomId): Promise<OrderReadDTO | null> {
     try {
       const order = await this.prisma.order.findUnique({
         where: {

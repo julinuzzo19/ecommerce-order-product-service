@@ -1,4 +1,4 @@
-import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { Customer } from "./Customer.js";
 
 /**
@@ -11,7 +11,7 @@ export interface ICustomerRepository {
    * @param id The ID of the customer to find.
    * @returns The found customer, or null if not found.
    */
-  findById(id: CustomerId): Promise<Customer | null>;
+  findById(id: CustomId): Promise<Customer | null>;
 
   /**
    * Save or update a customer to the database.
@@ -23,7 +23,7 @@ export interface ICustomerRepository {
    * Delete a customer from the database by their ID.
    * @param id The ID of the customer to delete.
    */
-  delete(id: CustomerId): Promise<void>;
+  delete(id: CustomId): Promise<void>;
 
   /**
    * List all customers.

@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Customer } from "../../domain/Customer.js";
 import { ICustomerRepository } from "../../domain/ICustomerRepository.js";
 import { CustomerMapper } from "../mappers/CustomerMapper.js";
-import { CustomerId } from "../../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 import { PrismaErrorHandler } from "../../../../shared/infrastructure/database/PrismaErrorHandler.js";
 
 export class CustomerPrismaRepository implements ICustomerRepository {
@@ -32,7 +32,7 @@ export class CustomerPrismaRepository implements ICustomerRepository {
     }
   }
 
-  async delete(id: CustomerId): Promise<void> {
+  async delete(id: CustomId): Promise<void> {
     try {
       await this.prisma.customer.delete({
         where: { id: id.value },
@@ -42,7 +42,7 @@ export class CustomerPrismaRepository implements ICustomerRepository {
     }
   }
 
-  async findById(id: CustomerId): Promise<Customer | null> {
+  async findById(id: CustomId): Promise<Customer | null> {
     try {
       const customer = await this.prisma.customer.findUnique({
         where: { id: id.value },

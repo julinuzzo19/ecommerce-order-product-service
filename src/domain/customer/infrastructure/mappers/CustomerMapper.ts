@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { Customer } from "../../domain/Customer.js";
-import { CustomerId } from "../../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 import { Email } from "../../../../shared/domain/value-objects/Email.js";
 import { Address } from "../../../../shared/domain/value-objects/Address.js";
 
@@ -31,7 +31,7 @@ export class CustomerMapper {
     data: Prisma.CustomerGetPayload<{ include: { address: true } }>
   ): Customer {
     return new Customer({
-      id: new CustomerId(data.id),
+      id: new CustomId(data.id),
       name: data.name,
       email: new Email(data.email),
       address: new Address(data.address),

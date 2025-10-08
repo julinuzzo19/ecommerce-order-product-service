@@ -1,10 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { Order } from "../../domain/Order.js";
-import { OrderId } from "../../domain/value-objects/OrderId.js";
 import { OrderItem } from "../../domain/OrderItem.js";
 import { OrderResponseDTO } from "../../application/dtos/OrderResponseDTO.js";
 import { OrderReadDTO } from "../../application/dtos/OrderReadDTO.js";
-import { CustomerId } from "../../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 
 export class OrderMapper {
   static toPrisma(order: Order): Prisma.OrderCreateInput {
@@ -30,8 +29,8 @@ export class OrderMapper {
     }>
   ): Order {
     return new Order({
-      id: new OrderId(data.id),
-      customerId: new CustomerId(data.customerId),
+      id: new CustomId(data.id),
+      customerId: new CustomId(data.customerId),
       orderNumber: data.orderNumber,
       status: data.status,
       items: data.orderItems.map((item) => {

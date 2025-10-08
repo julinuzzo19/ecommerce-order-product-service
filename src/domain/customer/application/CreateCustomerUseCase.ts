@@ -6,7 +6,7 @@ import { CustomerResponseDTO } from "./dtos/CustomerResponseDTO.js";
 import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
 import { Email } from "../../../shared/domain/value-objects/Email.js";
 import { Address } from "../../../shared/domain/value-objects/Address.js";
-import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { CustomerDomainException } from "../domain/exceptions/CustomerDomainException.js";
 import { CustomerApplicationExceptions } from "./exceptions/CustomerApplicationExceptions.js";
 
@@ -47,7 +47,7 @@ export class CreateCustomerUseCase {
   };
 
   private mapToEntity(customer: CreateCustomerDTO): Customer {
-    const customerId = new CustomerId(customer.id);
+    const customerId = new CustomId(customer.id);
 
     return new Customer({
       id: customerId,

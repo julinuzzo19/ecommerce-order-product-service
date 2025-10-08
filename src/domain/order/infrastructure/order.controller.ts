@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { CreateOrUpdateOrderWithItemsUseCase } from "../application/CreateOrUpdateOrderWithItemsUseCase .js";
 import { GetAllOrdersUseCase } from "../application/GetAllOrdersUseCase.js";
 import { GetOrderByIdUseCase } from "../application/GetOrderByIdUseCase.js";
-import { OrderId } from "../domain/value-objects/OrderId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 
 export class OrderController {
   constructor(
@@ -50,7 +50,7 @@ export class OrderController {
     next: NextFunction
   ) => {
     const { id } = req.params;
-    const result = await this.getOrderByIdUseCase.execute(new OrderId(id));
+    const result = await this.getOrderByIdUseCase.execute(id);
     return res.status(200).json(result);
   };
 }

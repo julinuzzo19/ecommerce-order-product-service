@@ -1,6 +1,6 @@
 import { AddressFactory } from "../../../../../shared/domain/__tests__/factories/AddressFactory.js";
 import { Address } from "../../../../../shared/domain/value-objects/Address.js";
-import { CustomerId } from "../../../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../../../shared/domain/value-objects/CustomId.js";
 import { Email } from "../../../../../shared/domain/value-objects/Email.js";
 import { generateUuidV4 } from "../../../../../shared/utils/uuidGenerator.js";
 import { Customer } from "../../Customer.js";
@@ -106,7 +106,7 @@ export class CustomerFactory {
 
   build(): Customer {
     return new Customer({
-      id: new CustomerId(this.id),
+      id: new CustomId(this.id),
       name: this.name,
       email: new Email(this.email),
       address: this.addressFactory.build(),
@@ -117,8 +117,8 @@ export class CustomerFactory {
   }
 
   // Helpers para tests específicos
-  buildId(): CustomerId {
-    return new CustomerId(this.id);
+  buildId(): CustomId {
+    return new CustomId(this.id);
   }
 
   buildEmail(): Email {

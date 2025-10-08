@@ -1,10 +1,9 @@
-import { CustomerId } from "../../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 import { OrderItem } from "../OrderItem.js";
-import { OrderId } from "../value-objects/OrderId.js";
 
 export interface IOrder {
-  getId(): OrderId;
-  getCustomerId(): CustomerId;
+  getId(): CustomId;
+  getCustomerId(): CustomId;
   getStatus(): string;
   getItems(): OrderItem[];
   getTotalAmount(): number;

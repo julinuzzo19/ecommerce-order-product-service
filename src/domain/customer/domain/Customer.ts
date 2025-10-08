@@ -1,11 +1,11 @@
 import { Address } from "../../../shared/domain/value-objects/Address.js";
-import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { Email } from "../../../shared/domain/value-objects/Email.js";
 import { CustomerDomainException } from "./exceptions/CustomerDomainException.js";
 import { ICustomer } from "./ICustomer.js";
 
 interface CustomerProps {
-  id: CustomerId;
+  id: CustomId;
   name: string;
   email: Email;
   address: Address;
@@ -15,7 +15,7 @@ interface CustomerProps {
 }
 
 export class Customer implements ICustomer {
-  private id: CustomerId;
+  private id: CustomId;
   private name: string;
   private email: Email;
   private address: Address;
@@ -68,7 +68,7 @@ export class Customer implements ICustomer {
   }
 
   // Getters
-  public getId(): CustomerId {
+  public getId(): CustomId {
     return this.id;
   }
 

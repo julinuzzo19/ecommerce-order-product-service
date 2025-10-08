@@ -1,14 +1,13 @@
-import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { OrderDomainException } from "../exceptions/OrderDomainException.js";
 import { OrderItem } from "./OrderItem.js";
 import { IOrder } from "./types/IOrder.js";
 import { OrderStatus } from "./types/OrderStatus.js";
-import { OrderId } from "./value-objects/OrderId.js";
-import { v4 as uuidv4 } from "uuid";
+ import { v4 as uuidv4 } from "uuid";
 
 interface OrderProps {
-  id?: OrderId;
-  customerId: CustomerId;
+  id?: CustomId;
+  customerId: CustomId;
   orderNumber: string;
   status?: OrderStatus;
   items?: OrderItem[];
@@ -21,8 +20,8 @@ interface OrderProps {
  * Encapsula la lógica de negocio y las invariantes de la orden.
  */
 export class Order implements IOrder {
-  private id: OrderId;
-  private customerId: CustomerId;
+  private id: CustomId;
+  private customerId: CustomId;
   private orderNumber: string;
   private status: OrderStatus;
   private items: OrderItem[];
@@ -30,7 +29,7 @@ export class Order implements IOrder {
   private updated_at: Date;
 
   constructor(props: OrderProps) {
-    this.id = props.id || OrderId.create();
+    this.id = props.id || CustomId.create();
     this.status = props.status || "PENDING";
     this.items = props.items || [];
     this.customerId = props.customerId;
@@ -107,10 +106,10 @@ export class Order implements IOrder {
   public getStatus(): OrderStatus {
     return this.status;
   }
-  public getId(): OrderId {
+  public getId(): CustomId {
     return this.id;
   }
-  public getCustomerId(): CustomerId {
+  public getCustomerId(): CustomId {
     return this.customerId;
   }
 

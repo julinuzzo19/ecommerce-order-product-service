@@ -1,9 +1,9 @@
 import { Address } from "../../../shared/domain/value-objects/Address.js";
-import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { Email } from "../../../shared/domain/value-objects/Email.js";
 
 export interface ICustomer {
-  getId(): CustomerId;
+  getId(): CustomId;
   getName(): string;
   getEmail(): Email;
   getAddress(): Address;

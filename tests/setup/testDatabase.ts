@@ -12,7 +12,7 @@ export async function initializeTestDatabase(): Promise<void> {
     return;
   }
 
-  const testDatabaseUrl = process.env.DATABASE_URL_TEST;
+  const testDatabaseUrl = process.env.DATABASE_URL_TEST as string;
 
   console.log("🚀 Initializing test database...");
 

@@ -3,12 +3,11 @@ import { IProductRepository } from "../../product/domain/IProductRepository.js";
 import { CreateOrUpdateOrderWithItemsSchema } from "./CreateOrUpdateOrderWithItemsSchema.js";
 import { CreateOrUpdateOrderWithItemsDTO } from "./dtos/CreateOrUpdateOrderWithItemsDTO.js";
 import { Order } from "../domain/Order.js";
-import { OrderId } from "../domain/value-objects/OrderId.js";
 import { OrderItem } from "../domain/OrderItem.js";
 import { Product } from "../../product/domain/Product.js";
 import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
 import { ProductId } from "../../../shared/domain/value-objects/ProductId.js";
-import { CustomerId } from "../../../shared/domain/value-objects/CustomerId.js";
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { OrderDomainException } from "../exceptions/OrderDomainException.js";
 import { OrderApplicationException } from "./exceptions/OrderApplicationException.js";
 
@@ -119,8 +118,8 @@ export class CreateOrUpdateOrderWithItemsUseCase {
     const orderItems = this.createOrderItems(orderData, productsMap);
 
     return new Order({
-      id: new OrderId(orderData.id),
-      customerId: new CustomerId(orderData.customerId),
+      id: new CustomId(orderData.id),
+      customerId: new CustomId(orderData.customerId),
       orderNumber: orderData.orderNumber,
       status: orderData.status,
       items: orderItems,
