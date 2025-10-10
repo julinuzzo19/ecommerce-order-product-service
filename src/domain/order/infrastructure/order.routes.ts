@@ -6,40 +6,37 @@ import { CreateOrUpdateOrderWithItemsUseCase } from "../application/CreateOrUpda
 import { ProductPrismaRepository } from "../../product/infrastructure/repository/productPrismaRepository.js";
 import { GetAllOrdersUseCase } from "../application/GetAllOrdersUseCase.js";
 import { GetOrderByIdUseCase } from "../application/GetOrderByIdUseCase.js";
+import { OrderEventPublisher } from "../application/events/OrderEventPublisher.js";
 
-const route = Router();
-// /**
-//  * Iniciar Repository
-//  */
-const orderRepository = new OrderPrismaRepository(prisma);
-const productRepository = new ProductPrismaRepository(prisma);
+/**
+ * Configura las rutas del dominio Order.
+ * Recibe el publisher inicializado para inyectarlo en los casos de uso.
+ */
+export default (orderPublisher: OrderEventPublisher) => {
+  const route = Router();
 
-// /**
-//  * Iniciamos casos de uso
-//  */
+  const orderRepository = new OrderPrismaRepository(prisma);
+  const productRepository = new ProductPrismaRepository(prisma);
 
-const createOrUpdateOrderWithItemsUseCase =
-  new CreateOrUpdateOrderWithItemsUseCase(orderRepository, productRepository);
+  const createOrUpdateOrderWithItemsUseCase =
+    new CreateOrUpdateOrderWithItemsUseCase(
+      orderRepository,
+      productRepository,
+      orderPublisher
+    );
 
-const getAllOrdersUseCase = new GetAllOrdersUseCase(orderRepository);
+  const getAllOrdersUseCase = new GetAllOrdersUseCase(orderRepository);
+  const getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository);
 
-const getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository);
+  const orderCtrl = new OrderController(
+    createOrUpdateOrderWithItemsUseCase,
+    getAllOrdersUseCase,
+    getOrderByIdUseCase
+  );
 
-// /**
-//  * Iniciar User Controller
-//  */
+  route.post(`/`, orderCtrl.CreateOrUpdateOrderWithItem);
+  route.get(`/`, orderCtrl.getAllOrders);
+  route.get(`/:id`, orderCtrl.getOrderById);
 
-const orderCtrl = new OrderController(
-  createOrUpdateOrderWithItemsUseCase,
-  getAllOrdersUseCase,
-  getOrderByIdUseCase
-);
-
-// /**
-//  * Mapping routes to controller methods
-//  */
-
-route.post(`/`, orderCtrl.CreateOrUpdateOrderWithItem);
-route.get(`/`, orderCtrl.getAllOrders);
-route.get(`/:id`, orderCtrl.getOrderById);
-export default route;
+  return route;
+};

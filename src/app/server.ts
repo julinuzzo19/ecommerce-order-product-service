@@ -10,55 +10,65 @@ import { ILogger } from "../shared/domain/ILogger.js";
 import { loggingMiddleware } from "../shared/infrastructure/middlewares/loggingMiddleware.js";
 import { createLogger } from "../shared/infrastructure/logger/logger.js";
 import { prisma } from "../shared/infrastructure/db/prisma/prisma.client.js";
+import { OrderEventPublisher } from "../domain/order/application/events/OrderEventPublisher.js";
+import { IEventPublisher } from "../shared/domain/IEventPublisher.js";
+import { EventBus } from "../shared/infrastructure/events/EventBus.js";
 
+/**
+ * Servidor principal de la aplicación.
+ * Gestiona el ciclo de vida completo: inicialización, ejecución y cierre limpio.
+ */
 class Server {
   private app: Application;
   private readonly port: string | number;
   private readonly logger: ILogger;
   private readonly httpLogger: ILogger;
   private readonly errorLogger: ILogger;
+  private publishers: IEventPublisher[] = [];
+  private eventBus!: EventBus;
+  private orderPublisher!: OrderEventPublisher;
+  private isShuttingDown = false;
 
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 3000;
 
-    // Crear loggers una sola vez como propiedades de clase
     this.logger = createLogger("SERVER");
     this.httpLogger = createLogger("HTTP");
     this.errorLogger = createLogger("ERROR");
 
     this.middlewares();
-    this.routes();
-    // Manejo de errores, luego de routes para capturar errores de toda la app
-    this.errorHandling();
     this.setupGracefulShutdown();
   }
 
   /**
-   * Configura los middlewares globales para la aplicación.
-   * - helmet: Para seguridad básica.
-   * - cors: Para permitir peticiones desde otros orígenes.
-   * - express.json: Para parsear el cuerpo de las peticiones JSON.
+   * Configura middlewares globales de la aplicación.
    */
   private middlewares(): void {
     this.app.use(helmet());
     this.app.use(cors());
     this.app.use(express.json());
     this.app.use(requestIdMiddleware);
-
-    // Usa el mismo logger pero con contexto HTTP
     this.app.use(loggingMiddleware(this.httpLogger));
   }
 
+  /**
+   * Configura las rutas de la aplicación.
+   */
   private routes(): void {
-    this.app.use("/api/v1", router);
+    this.app.use("/api/v1", router(this.orderPublisher));
   }
 
+  /**
+   * Configura el manejador de errores global.
+   */
   private errorHandling(): void {
     this.app.use(errorHandler(this.errorLogger));
   }
 
-  // Nuevo método para inicializar BD
+  /**
+   * Inicializa la conexión a la base de datos.
+   */
   private async initializeDatabase(): Promise<void> {
     try {
       await prisma.$connect();
@@ -71,7 +81,60 @@ class Server {
     }
   }
 
-  // ✅ AGREGAR GRACEFUL SHUTDOWN
+  /**
+   * Inicializa el bus de eventos y los publishers de dominio.
+   */
+  private async initializeEventPublishers(): Promise<void> {
+    try {
+      const rabbitmqUrl = process.env.RABBITMQ_URL || "amqp://localhost:5672";
+
+      this.eventBus = EventBus.getInstance(rabbitmqUrl);
+      await this.eventBus.initialize();
+
+      this.orderPublisher = new OrderEventPublisher();
+      await this.orderPublisher.initialize();
+      this.publishers.push(this.orderPublisher);
+
+      this.logger.info("Event publishers initialized successfully", {
+        count: this.publishers.length,
+      });
+    } catch (error) {
+      this.logger.error(
+        "Event publishers initialization failed",
+        error as Error,
+        {
+          critical: true,
+        }
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Cierra todos los recursos de forma ordenada.
+   */
+  private async closeResources(): Promise<void> {
+    if (this.isShuttingDown) return;
+    this.isShuttingDown = true;
+
+    this.logger.warn("Closing resources...");
+
+    try {
+      await Promise.all(this.publishers.map((pub) => pub.close()));
+      await this.eventBus.close();
+      await prisma.$disconnect();
+      this.logger.info("Resources closed successfully");
+    } catch (error) {
+      this.logger.error("Error closing resources", error as Error, {
+        critical: true,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Configura manejadores para cierre limpio de la aplicación.
+   */
   private setupGracefulShutdown(): void {
     process.on("uncaughtException", (error) => {
       this.logger.error("Uncaught exception", error, { critical: true });
@@ -86,20 +149,33 @@ class Server {
       process.exit(1);
     });
 
-    process.on("SIGTERM", () => {
-      this.logger.warn("SIGTERM received, shutting down gracefully");
-      process.exit(0);
-    });
+    const shutdown = async (signal: string) => {
+      this.logger.warn(`${signal} received, shutting down gracefully`);
+      try {
+        await this.closeResources();
+        process.exit(0);
+      } catch (error) {
+        this.logger.error("Error during shutdown", error as Error, {
+          critical: true,
+        });
+        process.exit(1);
+      }
+    };
 
-    process.on("SIGINT", () => {
-      this.logger.warn("SIGINT received, shutting down gracefully");
-      process.exit(0);
-    });
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
+    process.on("SIGINT", () => shutdown("SIGINT"));
   }
 
+  /**
+   * Inicia el servidor y todas sus dependencias.
+   */
   public async listen(): Promise<void> {
     try {
       await this.initializeDatabase();
+      await this.initializeEventPublishers();
+
+      this.routes();
+      this.errorHandling();
 
       const server = this.app.listen(this.port, () => {
         this.logger.info("Server started successfully", {
@@ -109,12 +185,12 @@ class Server {
       });
 
       server.on("close", async () => {
-        await prisma.$disconnect();
-        this.logger.info("Server closed successfully");
+        await this.closeResources();
       });
 
       server.on("error", (error) => {
         this.logger.error("Server error", error, { critical: true });
+        process.exit(1);
       });
     } catch (error) {
       this.logger.error("Failed to start server", error as Error, {

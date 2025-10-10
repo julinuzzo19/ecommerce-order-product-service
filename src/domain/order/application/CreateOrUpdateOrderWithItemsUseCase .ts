@@ -9,11 +9,13 @@ import { ProductDomainException } from "../../../shared/domain/exceptions/Produc
 import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 import { OrderDomainException } from "../exceptions/OrderDomainException.js";
 import { OrderApplicationException } from "./exceptions/OrderApplicationException.js";
+import { OrderEventPublisher } from "./events/OrderEventPublisher.js";
 
 export class CreateOrUpdateOrderWithItemsUseCase {
   constructor(
     private readonly orderRepository: IOrderRepository,
-    private readonly productRepository: IProductRepository
+    private readonly productRepository: IProductRepository,
+    private readonly orderPublisher: OrderEventPublisher
   ) {}
 
   public async execute(data: CreateOrUpdateOrderWithItemsDTO): Promise<string> {
@@ -31,6 +33,16 @@ export class CreateOrUpdateOrderWithItemsUseCase {
 
       // 4. Persistir
       await this.orderRepository.save(order);
+
+      // 5. Publicar evento
+      await this.orderPublisher.publishOrderCreated({
+        orderId: order.getId().value,
+        createdAt: order.getCreatedAt().toISOString(),
+        products: order.getItems().map((item) => ({
+          sku: item.getProductId(),
+          quantity: item.getQuantity(),
+        })),
+      });
 
       return "Order saved successfully";
     } catch (error) {
