@@ -39,7 +39,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
         orderId: order.getId().value,
         createdAt: order.getCreatedAt().toISOString(),
         products: order.getItems().map((item) => ({
-          sku: item.getProductId(),
+          sku: item.getSku(),
           quantity: item.getQuantity(),
         })),
       });
@@ -76,28 +76,26 @@ export class CreateOrUpdateOrderWithItemsUseCase {
   }
 
   private async validateAndGetProducts(
-    items: { productId: string; quantity: number }[]
+    items: { sku: string; quantity: number }[]
   ): Promise<Map<string, Product>> {
     // Obtener IDs únicos para evitar consultas duplicadas
-    const uniqueProductIds = [...new Set(items.map((item) => item.productId))];
+    const uniqueSkus = [...new Set(items.map((item) => item.sku))];
 
     // Consultar productos en paralelo para mejor rendimiento
-    const productPromises = uniqueProductIds.map(async (productId) => {
-      const product = await this.productRepository.findById(
-        new CustomId(productId)
-      );
+    const productPromises = uniqueSkus.map(async (sku) => {
+      const product = await this.productRepository.findBySku(sku);
       if (!product) {
-        throw ProductDomainException.notFound(productId);
+        throw ProductDomainException.notFound(sku);
       }
-      return { productId, product };
+      return { sku, product };
     });
 
     const productResults = await Promise.all(productPromises);
     const productsMap = new Map<string, Product>();
 
     // Crear mapa de productos y validar stock
-    productResults.forEach(({ productId, product }) => {
-      productsMap.set(productId, product);
+    productResults.forEach(({ sku, product }) => {
+      productsMap.set(sku, product);
     });
 
     // TODO
@@ -108,15 +106,15 @@ export class CreateOrUpdateOrderWithItemsUseCase {
   }
 
   private validateStock(
-    items: Array<{ productId: string; quantity: number }>,
+    items: Array<{ sku: string; quantity: number }>,
     productsMap: Map<string, Product>
   ): void {
     for (const item of items) {
-      const product = productsMap.get(item.productId)!;
+      const product = productsMap.get(item.sku)!;
 
       // if (!product.isInStock(item.quantity)) {
       //   throw ProductDomainException.validationError(
-      //     `Insufficient stock for product ${item.productId}. ` +
+      //     `Insufficient stock for product ${item.sku}. ` +
       //       `Available: ${product.getStockQuantity()}, Given: ${item.quantity}`
       //   );
       // }
@@ -143,11 +141,11 @@ export class CreateOrUpdateOrderWithItemsUseCase {
     productsMap: Map<string, Product>
   ): OrderItem[] {
     return orderData.items.map((item) => {
-      const product = productsMap.get(item.productId)!;
+      const product = productsMap.get(item.sku)!;
 
       return new OrderItem({
         orderNumber: orderData.orderNumber,
-        productId: item.productId,
+        sku: item.sku,
         quantity: item.quantity,
         price: product.getPrice(),
       });

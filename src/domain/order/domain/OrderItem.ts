@@ -9,7 +9,7 @@ import { IOrderItem } from "./types/IOrderItem.js";
 
 interface OrderItemProps {
   id?: string;
-  productId: string;
+  sku: string;
   quantity: number;
   price: number;
   orderNumber: string;
@@ -17,14 +17,14 @@ interface OrderItemProps {
 
 export class OrderItem implements IOrderItem {
   private id: string;
-  private productId: string;
+  private sku: string;
   private quantity: number;
   private price: number;
   private orderNumber: string;
 
   constructor(props: OrderItemProps) {
     this.id = props.id || generateUuidV4();
-    this.productId = props.productId;
+    this.sku = props.sku;
     this.quantity = props.quantity;
     this.price = props.price;
     this.orderNumber = props.orderNumber;
@@ -42,8 +42,8 @@ export class OrderItem implements IOrderItem {
     return this.quantity * this.price;
   }
 
-  public getProductId(): string {
-    return this.productId;
+  public getSku(): string {
+    return this.sku;
   }
 
   public getQuantity(): number {

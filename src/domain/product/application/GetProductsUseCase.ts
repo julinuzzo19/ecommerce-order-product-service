@@ -13,6 +13,8 @@ export class GetProductsUseCase {
     try {
       const products = await this.productRepository.findAll();
 
+      console.log({products})
+
       // Products retrieved event
       NewRelicMonitoring.recordEvent("ProductsRetrieved", {
         length: products.length,

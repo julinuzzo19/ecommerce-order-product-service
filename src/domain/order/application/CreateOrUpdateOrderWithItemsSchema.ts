@@ -7,7 +7,7 @@ export const CreateOrUpdateOrderWithItemsSchema = z.object({
   status: z.enum(["PENDING", "PAID", "SHIPPED", "CANCELLED"]),
   items: z.array(
     z.object({
-      productId: z.uuid({ version: "v4" }),
+      sku: z.string().min(1).max(100),
       quantity: z.number().min(1),
     })
   ),

@@ -50,4 +50,17 @@ export class ProductPrismaRepository implements IProductRepository {
       this.errorHandler.handleError(error, "find product by ID");
     }
   }
+  async findBySku(sku: string): Promise<Product | null> {
+    try {
+      const product = await this.prisma.product.findUnique({
+        where: { sku },
+      });
+
+      if (!product) return null;
+
+      return product ? ProductMapper.fromPrisma(product) : null;
+    } catch (error) {
+      this.errorHandler.handleError(error, "find product by SKU");
+    }
+  }
 }

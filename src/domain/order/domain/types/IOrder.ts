@@ -7,7 +7,7 @@ export interface IOrder {
   getStatus(): string;
   getItems(): OrderItem[];
   getTotalAmount(): number;
-  addItem(productId: string, quantity: number, price: number): void;
+  addItem(sku: string, quantity: number, price: number): void;
   markAsPaid(): void;
   markAsShipped(): void;
   markAsCancelled(): void;

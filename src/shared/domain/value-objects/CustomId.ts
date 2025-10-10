@@ -11,7 +11,7 @@ export class CustomId {
   constructor(value: string) {
     if (!uuidValidate(value) || uuidVersion(value) !== 4) {
       throw ValueObjectException.validationError(
-        "The customer ID format is not valid (UUIDv4)."
+        "The custom ID format is not valid (UUIDv4)."
       );
     }
     this.value = value;

@@ -93,15 +93,15 @@ model OrderItem {
 
   // Foreign keys
   orderNumber String
-  productId   String
+  sku         String
 
   // Relations
   order   Order   @relation(fields: [orderNumber], references: [orderNumber], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  product Product @relation(fields: [sku], references: [sku], onDelete: Restrict)
 
-  @@unique([orderNumber, productId])
+  @@unique([orderNumber, sku])
   @@index([orderNumber])
-  @@index([productId])
-  @@index([orderNumber, productId]) // Índice compuesto para consultas específicas
+  @@index([sku])
+  @@index([orderNumber, sku]) // Índice compuesto para consultas específicas
   @@map("order_items")
 }

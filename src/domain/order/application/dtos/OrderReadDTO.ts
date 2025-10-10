@@ -7,7 +7,7 @@ export interface OrderReadDTO {
   customerId: string;
   items: Array<{
     id: string;
-    productId: string;
+    sku: string;
     productName: string;
     quantity: number;
     price: number;

@@ -6,7 +6,7 @@ export interface OrderResponseDTO {
   orderNumber: string;
   status: OrderStatus;
   items: Array<{
-    productId: string;
+    sku: string;
     productName: string;
     quantity: number;
     price: number;

@@ -6,7 +6,7 @@ export interface CreateOrUpdateOrderWithItemsDTO {
   orderNumber: string;
   status: OrderStatus;
   items: {
-    productId: string;
+    sku: string;
     quantity: number;
   }[];
 }

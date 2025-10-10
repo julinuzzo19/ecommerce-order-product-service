@@ -15,10 +15,12 @@ export class CreateProductUseCase {
   // Implement the logic to create a product
   public execute = async (data: CreateProductDTO) => {
     try {
+      console.log({ data });
       // Validate and transform the incoming data
       const validation = createProductSchema.safeParse(data);
 
       if (!validation.success) {
+        console.log({validation})
         const errorDetails = validation.error.issues
           .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
           .join(", ");

@@ -3,7 +3,7 @@ import { OrderDomainException } from "../exceptions/OrderDomainException.js";
 import { OrderItem } from "./OrderItem.js";
 import { IOrder } from "./types/IOrder.js";
 import { OrderStatus } from "./types/OrderStatus.js";
- import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 interface OrderProps {
   id?: CustomId;
@@ -59,16 +59,14 @@ export class Order implements IOrder {
    * Agrega un item a la orden.
    * La lógica de negocio para añadir un producto está aquí.
    */
-  public addItem(productId: string, quantity: number, price: number): void {
-    const existingItem = this.items.find(
-      (item) => item.getProductId() === productId
-    );
+  public addItem(sku: string, quantity: number, price: number): void {
+    const existingItem = this.items.find((item) => item.getSku() === sku);
     if (existingItem) {
       existingItem.updateQuantity(quantity);
     } else {
       const newItem = new OrderItem({
         id: uuidv4(),
-        productId,
+        sku: sku,
         quantity,
         price,
         orderNumber: this.orderNumber,

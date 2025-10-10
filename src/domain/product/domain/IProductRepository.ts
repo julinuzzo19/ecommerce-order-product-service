@@ -12,6 +12,12 @@ export interface IProductRepository {
    * @returns The found product, or null if not found.
    */
   findById(id: CustomId): Promise<Product | null>;
+  /**
+   * Find a product by its sku.
+   * @param sku The sku of the product to find.
+   * @returns The found product, or null if not found.
+   */
+  findBySku(sku: string): Promise<Product | null>;
 
   /**
    * Save or update a product to the database.

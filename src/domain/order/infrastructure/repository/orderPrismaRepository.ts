@@ -106,22 +106,22 @@ export class OrderPrismaRepository
         const currentItems = OrderMapper.toPrismaOrderItems(order);
 
         // 4. Calcular diffs
-        const existingIds = new Set(existingItems.map((i) => i.productId));
-        const currentIds = new Set(currentItems.map((i) => i.productId));
+        const existingIds = new Set(existingItems.map((i) => i.sku));
+        const currentIds = new Set(currentItems.map((i) => i.sku));
 
         const toCreate = currentItems.filter(
-          (i) => i.productId && !existingIds.has(i.productId)
+          (i) => i.sku && !existingIds.has(i.sku)
         );
         const toUpdate = currentItems.filter(
           (i) =>
-            i.productId &&
-            existingIds.has(i.productId) &&
+            i.sku &&
+            existingIds.has(i.sku) &&
             existingItems.find(
-              (e) => e.productId === i.productId && e.quantity !== i.quantity
+              (e) => e.sku === i.sku && e.quantity !== i.quantity
             )
         );
         const toDelete = existingItems.filter(
-          (i) => !currentIds.has(i.productId)
+          (i) => !currentIds.has(i.sku)
         );
 
         // return;
@@ -132,9 +132,9 @@ export class OrderPrismaRepository
         for (const item of toUpdate) {
           await tx.orderItem.update({
             where: {
-              orderNumber_productId: {
+              orderNumber_sku: {
                 orderNumber: item.orderNumber,
-                productId: item.productId,
+                sku: item.sku,
               },
             },
             data: { quantity: item.quantity, price: item.price },

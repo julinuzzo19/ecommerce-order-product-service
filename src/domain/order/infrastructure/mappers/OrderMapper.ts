@@ -37,7 +37,7 @@ export class OrderMapper {
         return new OrderItem({
           id: item.id,
           orderNumber: item.orderNumber,
-          productId: item.productId,
+          sku: item.sku,
           quantity: item.quantity,
           price: item.price.toNumber(),
         });
@@ -62,7 +62,7 @@ export class OrderMapper {
       orderNumber: data.orderNumber,
       status: data.status,
       items: data.orderItems.map((item) => ({
-        productId: item.productId,
+        sku: item.sku,
         productName: item.product.name,
         quantity: item.quantity,
         price: item.price.toNumber(),
@@ -74,7 +74,7 @@ export class OrderMapper {
     return order.getItems().map((item) => ({
       id: item.getId(),
       orderNumber: item.getOrderNumber(),
-      productId: item.getProductId(),
+      sku: item.getSku(),
       quantity: item.getQuantity(),
       price: item.getPrice(),
     }));
@@ -98,7 +98,7 @@ export class OrderMapper {
       status: data.status,
       items: data.orderItems.map((item) => ({
         id: item.id,
-        productId: item.productId,
+        sku: item.sku,
         productName: item.product.name,
         quantity: item.quantity,
         price: item.price.toNumber(),
