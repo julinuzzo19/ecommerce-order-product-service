@@ -11,8 +11,7 @@ import { loggingMiddleware } from "../shared/infrastructure/middlewares/loggingM
 import { createLogger } from "../shared/infrastructure/logger/logger.js";
 import { prisma } from "../shared/infrastructure/db/prisma/prisma.client.js";
 import { OrderEventPublisher } from "../domain/order/application/events/OrderEventPublisher.js";
-import { IEventPublisher } from "../shared/domain/IEventPublisher.js";
-import { EventBus } from "../shared/infrastructure/events/EventBus.js";
+import { PublisherBootstrap } from "../domain/order/infrastructure/bootstrap/PublisherBootstrap.js";
 
 /**
  * Servidor principal de la aplicación.
@@ -24,8 +23,7 @@ class Server {
   private readonly logger: ILogger;
   private readonly httpLogger: ILogger;
   private readonly errorLogger: ILogger;
-  private publishers: IEventPublisher[] = [];
-  private eventBus!: EventBus;
+  private publisherBootstrap!: PublisherBootstrap;
   private orderPublisher!: OrderEventPublisher;
   private isShuttingDown = false;
 
@@ -82,22 +80,14 @@ class Server {
   }
 
   /**
-   * Inicializa el bus de eventos y los publishers de dominio.
+   * Inicializa el bus de eventos y los publishers de dominio mediante el bootstrap.
    */
   private async initializeEventPublishers(): Promise<void> {
     try {
-      const rabbitmqUrl = process.env.RABBITMQ_URL || "amqp://localhost:5672";
+      this.publisherBootstrap = new PublisherBootstrap(this.logger);
+      this.orderPublisher = await this.publisherBootstrap.initialize();
 
-      this.eventBus = EventBus.getInstance(rabbitmqUrl);
-      await this.eventBus.initialize();
-
-      this.orderPublisher = new OrderEventPublisher();
-      await this.orderPublisher.initialize();
-      this.publishers.push(this.orderPublisher);
-
-      this.logger.info("Event publishers initialized successfully", {
-        count: this.publishers.length,
-      });
+      this.logger.info("Event publishers initialized successfully");
     } catch (error) {
       this.logger.error(
         "Event publishers initialization failed",
@@ -120,8 +110,9 @@ class Server {
     this.logger.warn("Closing resources...");
 
     try {
-      await Promise.all(this.publishers.map((pub) => pub.close()));
-      await this.eventBus.close();
+      if (this.publisherBootstrap) {
+        await this.publisherBootstrap.close();
+      }
       await prisma.$disconnect();
       this.logger.info("Resources closed successfully");
     } catch (error) {
