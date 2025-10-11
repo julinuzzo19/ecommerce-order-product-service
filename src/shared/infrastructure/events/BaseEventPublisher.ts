@@ -14,7 +14,8 @@ export abstract class BaseEventPublisher implements IEventPublisher {
    * Inicializa el canal y declara el exchange del dominio.
    */
   async initialize(): Promise<void> {
-    const eventBus = EventBus.getInstance();
+    const rabbitmqUrl = process.env.RABBITMQ_URL as string;
+    const eventBus = EventBus.getInstance(rabbitmqUrl);
     const connection = eventBus.getConnection();
     this.channel = connection.getChannel();
 

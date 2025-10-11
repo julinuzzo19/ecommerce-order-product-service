@@ -16,7 +16,7 @@ export class EventBus {
   /**
    * Obtiene la instancia única del EventBus.
    */
-  static getInstance(url: string = "amqp://localhost:5672"): EventBus {
+  static getInstance(url: string): EventBus {
     if (!EventBus.instance) {
       EventBus.instance = new EventBus(url);
     }

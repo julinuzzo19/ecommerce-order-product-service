@@ -38,7 +38,7 @@ export class PublisherBootstrap {
    * Inicializa el EventBus con la conexión a RabbitMQ.
    */
   private async initializeEventBus(): Promise<void> {
-    const rabbitmqUrl = process.env.RABBITMQ_URL || "amqp://localhost:5672";
+    const rabbitmqUrl = process.env.RABBITMQ_URL as string;
     this.eventBus = EventBus.getInstance(rabbitmqUrl);
     await this.eventBus.initialize();
     this.logger.info("EventBus initialized", { url: rabbitmqUrl });
