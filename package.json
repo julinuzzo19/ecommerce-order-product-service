@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node --env-file=.env dist/app/server.js",
-    "build": "tsc",
-    "dev": "tsx watch --env-file=.env --clear-screen=false src/app/server.ts",
+    "build": "npx tsc",
+    "dev": "npx tsx watch --env-file=.env --clear-screen=false src/app/server.ts",
     "prisma:generate": "npx prisma generate --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:migrate:dev": "npx prisma migrate dev --name init --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:db:push": "npx prisma db push --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
