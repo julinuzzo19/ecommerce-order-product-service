@@ -4,6 +4,7 @@ import type { Application } from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { router } from "./routes.js";
+import healthRouter  from "../shared/infrastructure/health.routes.js";
 import { errorHandler } from "../shared/infrastructure/middlewares/errorHandler.js";
 import { requestIdMiddleware } from "../shared/infrastructure/middlewares/requestIdMiddleware.js";
 import { ILogger } from "../shared/domain/ILogger.js";
@@ -54,6 +55,7 @@ class Server {
    * Configura las rutas de la aplicación.
    */
   private routes(): void {
+    this.app.use("/", healthRouter);
     this.app.use("/api/v1", router(this.orderPublisher));
   }
 
