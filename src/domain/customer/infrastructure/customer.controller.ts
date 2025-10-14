@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
-import { CreateCustomerUseCase } from "../application/CreateCustomerUseCase.js";
-import { GetCustomersUseCase } from "../application/GetCustomersUseCase.js";
+import { Request, Response } from 'express';
+import { CreateCustomerUseCase } from '../application/CreateCustomerUseCase.js';
+import { GetCustomersUseCase } from '../application/GetCustomersUseCase.js';
 
 export class CustomerController {
   constructor(
     private readonly createCustomerUseCase: CreateCustomerUseCase,
-    private readonly getCustomersUseCase: GetCustomersUseCase
+    private readonly getCustomersUseCase: GetCustomersUseCase,
   ) {}
 
   public createCustomer = async (req: Request, res: Response) => {

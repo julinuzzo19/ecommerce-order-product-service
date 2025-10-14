@@ -6,9 +6,11 @@
   "scripts": {
     "start": "node --env-file=.env dist/app/server.js",
     "build": "npx tsc",
-    "dev": "npx tsx watch --env-file=.env --clear-screen=false src/app/server.ts",
+    "dev": "npx tsx watch --env-file=.env.local --clear-screen=false src/app/server.ts",
+    "dev:docker": "npx tsx watch --env-file=.env.docker --clear-screen=false src/app/server.ts",
     "prisma:generate": "npx prisma generate --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:migrate:dev": "npx prisma migrate dev --name init --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
+    "prisma:migrate:prod": "npx prisma migrate deploy --name init --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:db:push": "npx prisma db push --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:migrate:reset": "npx prisma migrate reset --force --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "test": "jest --config=tests/setup/jest.config.cjs",
@@ -16,10 +18,13 @@
     "test:coverage": "jest --verbose  --config=tests/setup/jest.config.cjs --coverage",
     "test:unit": "jest --verbose --config=tests/setup/jest.config.cjs --selectProjects unit",
     "test:integration": "jest --config=tests/setup/jest.config.cjs --selectProjects integration",
-    "test:e2e": "cross-env NODE_ENV=test jest --verbose --config=tests/setup/jest.config.cjs --selectProjects e2e --runInBand",
+    "test:e2e:prepare": "node scripts/prepare-test-db.js",
+    "test:e2e": "npm run test:e2e:prepare && cross-env NODE_ENV=test jest --verbose --config=tests/setup/jest.config.cjs --selectProjects e2e --runInBand",
+    "test:e2e:run": "cross-env NODE_ENV=test jest --verbose --config=tests/setup/jest.config.cjs --selectProjects e2e --runInBand",
     "test:e2e:docker": "node scripts/test-e2e.cjs",
     "test:e2e:fresh": "npm run test:e2e:stop && npm run test:e2e:docker",
     "test:e2e:stop": "docker stop postgres-test && docker rm postgres-test"
+
   },
   "dependencies": {
     "@prisma/client": "^6.16.1",

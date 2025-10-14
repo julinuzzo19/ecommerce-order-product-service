@@ -1,9 +1,37 @@
 // tests/setup/testDatabase.ts
-import { PrismaClient } from "@prisma/client";
-import { execSync } from "child_process";
+import { PrismaClient } from '@prisma/client';
 
 export let prismaTestClient: PrismaClient;
 let isInitialized = false;
+
+/**
+ * Espera a que la base de datos esté accesible.
+ * Asume que el esquema ya fue aplicado por el script de preparación.
+ */
+async function waitForDatabase(
+  databaseUrl: string,
+  retries = 30,
+  interval = 500,
+): Promise<void> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const temp = new PrismaClient({
+        datasources: { db: { url: databaseUrl } },
+      });
+      await temp.$connect();
+      await temp.$disconnect();
+      return;
+    } catch (error) {
+      if (attempt === retries) {
+        throw new Error(
+          `Database not reachable after ${retries} attempts. ` +
+            'Make sure to run the prepare-test-db script before tests.',
+        );
+      }
+      await new Promise((resolve) => setTimeout(resolve, interval));
+    }
+  }
+}
 
 export async function initializeTestDatabase(): Promise<void> {
   if (isInitialized) {
@@ -14,21 +42,22 @@ export async function initializeTestDatabase(): Promise<void> {
 
   const testDatabaseUrl = process.env.DATABASE_URL_TEST as string;
 
-  console.log("🚀 Initializing test database...");
+  console.log('🚀 Initializing test database...');
 
   try {
-    // 1. Verificar si la base de datos ya existe y está lista
-    const dbReady = await verifyDatabaseConnection(testDatabaseUrl);
+    // 1. Esperar a que la base de datos esté accesible
+    await waitForDatabase(testDatabaseUrl);
 
+    // 2. Verificar que las tablas existan (el esquema debe haber sido aplicado previamente)
+    const dbReady = await verifyDatabaseConnection(testDatabaseUrl);
     if (!dbReady) {
-      // Solo crear si no existe
-      await createTestDatabaseIfNotExists();
-      await pushSchema(testDatabaseUrl);
-    } else {
-      console.log("📦 Database already exists and is ready");
+      throw new Error(
+        'Database is reachable but schema not found. ' +
+          'Run "npm run test:e2e:prepare" before running tests.',
+      );
     }
 
-    // 2. Crear cliente Prisma si no existe
+    // 3. Crear cliente Prisma si no existe
     if (!prismaTestClient) {
       prismaTestClient = new PrismaClient({
         datasources: {
@@ -41,9 +70,9 @@ export async function initializeTestDatabase(): Promise<void> {
     }
 
     isInitialized = true;
-    console.log("✅ Test database ready");
+    console.log('✅ Test database ready');
   } catch (error) {
-    console.error("❌ Test database initialization failed:", error);
+    console.error('❌ Test database initialization failed:', error);
     throw error;
   }
 }
@@ -54,6 +83,7 @@ async function verifyDatabaseConnection(databaseUrl: string): Promise<boolean> {
       datasources: { db: { url: databaseUrl } },
     });
 
+    console.log({ databaseUrl });
     await tempClient.$connect();
 
     // Verificar si las tablas existen
@@ -71,37 +101,6 @@ async function verifyDatabaseConnection(databaseUrl: string): Promise<boolean> {
   }
 }
 
-async function createTestDatabaseIfNotExists(): Promise<void> {
-  try {
-    console.log("🏗️ Setting up database structure...");
-    // La base de datos ya fue creada/limpiada por el script Docker
-    // Solo necesitamos aplicar el esquema
-  } catch (error) {
-    console.warn("⚠️ Database setup warning:", (error as Error).message);
-  }
-}
-
-async function pushSchema(databaseUrl: string): Promise<void> {
-  try {
-    console.log("📦 Applying database schema...");
-
-    execSync(
-      `npx prisma db push --schema=./src/shared/infrastructure/db/prisma/schema.prisma`,
-      {
-        env: {
-          ...process.env,
-          DATABASE_URL: databaseUrl,
-        },
-        stdio: "pipe",
-      }
-    );
-
-    console.log("✅ Schema applied successfully");
-  } catch (error) {
-    throw new Error(`Schema application failed: ${error}`);
-  }
-}
-
 export async function cleanTestDatabase(): Promise<void> {
   if (!prismaTestClient) return;
 
@@ -114,7 +113,7 @@ export async function cleanTestDatabase(): Promise<void> {
       prismaTestClient.product.deleteMany(),
     ]);
   } catch (error) {
-    console.warn("⚠️ Error cleaning database:", error);
+    console.warn('⚠️ Error cleaning database:', error);
   }
 }
 

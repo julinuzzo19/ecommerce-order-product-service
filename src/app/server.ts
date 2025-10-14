@@ -1,18 +1,18 @@
-import "newrelic";
-import express from "express";
-import type { Application } from "express";
-import helmet from "helmet";
-import cors from "cors";
-import { router } from "./routes.js";
-import healthRouter  from "../shared/infrastructure/health.routes.js";
-import { errorHandler } from "../shared/infrastructure/middlewares/errorHandler.js";
-import { requestIdMiddleware } from "../shared/infrastructure/middlewares/requestIdMiddleware.js";
-import { ILogger } from "../shared/domain/ILogger.js";
-import { loggingMiddleware } from "../shared/infrastructure/middlewares/loggingMiddleware.js";
-import { createLogger } from "../shared/infrastructure/logger/logger.js";
-import { prisma } from "../shared/infrastructure/db/prisma/prisma.client.js";
-import { OrderEventPublisher } from "../domain/order/application/events/OrderEventPublisher.js";
-import { PublisherBootstrap } from "../domain/order/infrastructure/bootstrap/PublisherBootstrap.js";
+import 'newrelic';
+import express from 'express';
+import type { Application } from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import { router } from './routes.js';
+import healthRouter from '../shared/infrastructure/health.routes.js';
+import { errorHandler } from '../shared/infrastructure/middlewares/errorHandler.js';
+import { requestIdMiddleware } from '../shared/infrastructure/middlewares/requestIdMiddleware.js';
+import { ILogger } from '../shared/domain/ILogger.js';
+import { loggingMiddleware } from '../shared/infrastructure/middlewares/loggingMiddleware.js';
+import { createLogger } from '../shared/infrastructure/logger/logger.js';
+import { prisma } from '../shared/infrastructure/db/prisma/prisma.client.js';
+import { OrderEventPublisher } from '../domain/order/application/events/OrderEventPublisher.js';
+import { PublisherBootstrap } from '../domain/order/infrastructure/bootstrap/PublisherBootstrap.js';
 
 /**
  * Servidor principal de la aplicación.
@@ -32,9 +32,9 @@ class Server {
     this.app = express();
     this.port = process.env.PORT || 3000;
 
-    this.logger = createLogger("SERVER");
-    this.httpLogger = createLogger("HTTP");
-    this.errorLogger = createLogger("ERROR");
+    this.logger = createLogger('SERVER');
+    this.httpLogger = createLogger('HTTP');
+    this.errorLogger = createLogger('ERROR');
 
     this.middlewares();
     this.setupGracefulShutdown();
@@ -55,8 +55,8 @@ class Server {
    * Configura las rutas de la aplicación.
    */
   private routes(): void {
-    this.app.use("/", healthRouter);
-    this.app.use("/api/v1", router(this.orderPublisher));
+    this.app.use('/', healthRouter);
+    this.app.use('/api/v1', router(this.orderPublisher));
   }
 
   /**
@@ -72,9 +72,9 @@ class Server {
   private async initializeDatabase(): Promise<void> {
     try {
       await prisma.$connect();
-      this.logger.info("Database connected successfully");
+      this.logger.info('Database connected successfully');
     } catch (error) {
-      this.logger.error("Database connection failed", error as Error, {
+      this.logger.error('Database connection failed', error as Error, {
         critical: true,
       });
       throw error;
@@ -89,14 +89,14 @@ class Server {
       this.publisherBootstrap = new PublisherBootstrap(this.logger);
       this.orderPublisher = await this.publisherBootstrap.initialize();
 
-      this.logger.info("Event publishers initialized successfully");
+      this.logger.info('Event publishers initialized successfully');
     } catch (error) {
       this.logger.error(
-        "Event publishers initialization failed",
+        'Event publishers initialization failed',
         error as Error,
         {
           critical: true,
-        }
+        },
       );
       throw error;
     }
@@ -109,16 +109,16 @@ class Server {
     if (this.isShuttingDown) return;
     this.isShuttingDown = true;
 
-    this.logger.warn("Closing resources...");
+    this.logger.warn('Closing resources...');
 
     try {
       if (this.publisherBootstrap) {
         await this.publisherBootstrap.close();
       }
       await prisma.$disconnect();
-      this.logger.info("Resources closed successfully");
+      this.logger.info('Resources closed successfully');
     } catch (error) {
-      this.logger.error("Error closing resources", error as Error, {
+      this.logger.error('Error closing resources', error as Error, {
         critical: true,
       });
       throw error;
@@ -129,13 +129,13 @@ class Server {
    * Configura manejadores para cierre limpio de la aplicación.
    */
   private setupGracefulShutdown(): void {
-    process.on("uncaughtException", (error) => {
-      this.logger.error("Uncaught exception", error, { critical: true });
+    process.on('uncaughtException', (error) => {
+      this.logger.error('Uncaught exception', error, { critical: true });
       process.exit(1);
     });
 
-    process.on("unhandledRejection", (reason, promise) => {
-      this.logger.error("Unhandled rejection", reason as Error, {
+    process.on('unhandledRejection', (reason, promise) => {
+      this.logger.error('Unhandled rejection', reason as Error, {
         promise: promise.toString(),
         critical: true,
       });
@@ -148,15 +148,15 @@ class Server {
         await this.closeResources();
         process.exit(0);
       } catch (error) {
-        this.logger.error("Error during shutdown", error as Error, {
+        this.logger.error('Error during shutdown', error as Error, {
           critical: true,
         });
         process.exit(1);
       }
     };
 
-    process.on("SIGTERM", () => shutdown("SIGTERM"));
-    process.on("SIGINT", () => shutdown("SIGINT"));
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
   }
 
   /**
@@ -171,22 +171,22 @@ class Server {
       this.errorHandling();
 
       const server = this.app.listen(this.port, () => {
-        this.logger.info("Server started successfully", {
+        this.logger.info('Server started successfully', {
           port: this.port,
-          environment: process.env.NODE_ENV || "development",
+          environment: process.env.NODE_ENV || 'development',
         });
       });
 
-      server.on("close", async () => {
+      server.on('close', async () => {
         await this.closeResources();
       });
 
-      server.on("error", (error) => {
-        this.logger.error("Server error", error, { critical: true });
+      server.on('error', (error) => {
+        this.logger.error('Server error', error, { critical: true });
         process.exit(1);
       });
     } catch (error) {
-      this.logger.error("Failed to start server", error as Error, {
+      this.logger.error('Failed to start server', error as Error, {
         critical: true,
       });
       process.exit(1);

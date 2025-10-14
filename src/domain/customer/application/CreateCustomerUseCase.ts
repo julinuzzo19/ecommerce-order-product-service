@@ -1,14 +1,14 @@
-import { ICustomerRepository } from "../domain/ICustomerRepository.js";
-import { createCustomerSchema } from "./createCustomerSchema.js";
-import { CreateCustomerDTO } from "./dtos/CreateCustomerDTO.js";
-import { Customer } from "../domain/Customer.js";
-import { CustomerResponseDTO } from "./dtos/CustomerResponseDTO.js";
-import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
-import { Email } from "../../../shared/domain/value-objects/Email.js";
-import { Address } from "../../../shared/domain/value-objects/Address.js";
-import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
-import { CustomerDomainException } from "../domain/exceptions/CustomerDomainException.js";
-import { CustomerApplicationExceptions } from "./exceptions/CustomerApplicationExceptions.js";
+import { ICustomerRepository } from '../domain/ICustomerRepository.js';
+import { createCustomerSchema } from './createCustomerSchema.js';
+import { CreateCustomerDTO } from './dtos/CreateCustomerDTO.js';
+import { Customer } from '../domain/Customer.js';
+import { CustomerResponseDTO } from './dtos/CustomerResponseDTO.js';
+import { genericMapToDTO } from '../../../shared/utils/genericMapper.js';
+import { Email } from '../../../shared/domain/value-objects/Email.js';
+import { Address } from '../../../shared/domain/value-objects/Address.js';
+import { CustomId } from '../../../shared/domain/value-objects/CustomId.js';
+import { CustomerDomainException } from '../domain/exceptions/CustomerDomainException.js';
+import { CustomerApplicationExceptions } from './exceptions/CustomerApplicationExceptions.js';
 
 export class CreateCustomerUseCase {
   constructor(private readonly customerRepository: ICustomerRepository) {}
@@ -16,14 +16,15 @@ export class CreateCustomerUseCase {
   // Implement the logic to create a customer
   public execute = async (data: CreateCustomerDTO) => {
     try {
+      console.log('VALDIATION');
       // Validate and transform the incoming data
       const validation = createCustomerSchema.safeParse(data);
 
       console.log(validation, data);
       if (!validation.success) {
         const errorDetails = validation.error.issues
-          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-          .join(", ");
+          .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+          .join(', ');
         throw CustomerApplicationExceptions.validationError(errorDetails);
       }
 
@@ -40,8 +41,8 @@ export class CreateCustomerUseCase {
         throw error;
       }
       throw CustomerApplicationExceptions.useCaseError(
-        "creating customer",
-        error instanceof Error ? error.message : String(error)
+        'creating customer',
+        error instanceof Error ? error.message : String(error),
       );
     }
   };
@@ -63,7 +64,7 @@ export class CreateCustomerUseCase {
       id: (entity) => entity.getId().value,
       email: (entity) => entity.getEmail().getValue(),
       name: (entity) => entity.getName(),
-      phoneNumber: (entity) => entity.getPhoneNumber() || "",
+      phoneNumber: (entity) => entity.getPhoneNumber() || '',
       address: (entity) => {
         const addressData = entity.getAddress();
         return {
