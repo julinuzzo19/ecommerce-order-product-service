@@ -137,12 +137,14 @@ jobs:
       # Preparar la base de datos (aplicar esquema)
       - name: Prepare test database
         env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5433/postgres
           DATABASE_URL_TEST: postgresql://postgres:test@localhost:5433/postgres
         run: npm run test:e2e:prepare
 
       # Ejecutar tests e2e
       - name: Run E2E tests
         env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5433/postgres
           DATABASE_URL_TEST: postgresql://postgres:test@localhost:5433/postgres
           NODE_ENV: test
         run: npm run test:e2e:run
