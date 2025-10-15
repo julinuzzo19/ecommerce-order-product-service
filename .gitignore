@@ -1,7 +1,7 @@
 node_modules
 build
 dist
-.github
+.github/instructions
 .vscode
 
 # Environment files
