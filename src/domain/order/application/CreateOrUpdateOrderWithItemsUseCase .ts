@@ -1,21 +1,23 @@
-import { IOrderRepository } from "../domain/IOrderRepository.js";
-import { IProductRepository } from "../../product/domain/IProductRepository.js";
-import { CreateOrUpdateOrderWithItemsSchema } from "./CreateOrUpdateOrderWithItemsSchema.js";
-import { CreateOrUpdateOrderWithItemsDTO } from "./dtos/CreateOrUpdateOrderWithItemsDTO.js";
-import { Order } from "../domain/Order.js";
-import { OrderItem } from "../domain/OrderItem.js";
-import { Product } from "../../product/domain/Product.js";
-import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
-import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
-import { OrderDomainException } from "../exceptions/OrderDomainException.js";
-import { OrderApplicationException } from "./exceptions/OrderApplicationException.js";
-import { OrderEventPublisher } from "./events/OrderEventPublisher.js";
+import { IOrderRepository } from '../domain/IOrderRepository.js';
+import { IProductRepository } from '../../product/domain/IProductRepository.js';
+import { CreateOrUpdateOrderWithItemsSchema } from './CreateOrUpdateOrderWithItemsSchema.js';
+import { CreateOrUpdateOrderWithItemsDTO } from './dtos/CreateOrUpdateOrderWithItemsDTO.js';
+import { Order } from '../domain/Order.js';
+import { OrderItem } from '../domain/OrderItem.js';
+import { Product } from '../../product/domain/Product.js';
+import { ProductDomainException } from '../../../shared/domain/exceptions/ProductDomainException.js';
+import { CustomId } from '../../../shared/domain/value-objects/CustomId.js';
+import { OrderDomainException } from '../exceptions/OrderDomainException.js';
+import { OrderApplicationException } from './exceptions/OrderApplicationException.js';
+import { OrderEventPublisher } from './events/OrderEventPublisher.js';
+import { InventoryHttpService } from '../../../shared/infrastructure/external-services/inventory/inventory.http.service.js';
 
 export class CreateOrUpdateOrderWithItemsUseCase {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly productRepository: IProductRepository,
-    private readonly orderPublisher: OrderEventPublisher
+    private readonly orderPublisher: OrderEventPublisher,
+    private readonly inventoryService: InventoryHttpService,
   ) {}
 
   public async execute(data: CreateOrUpdateOrderWithItemsDTO): Promise<string> {
@@ -25,7 +27,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
 
       // 2. Obtener y validar productos
       const productsData = await this.validateAndGetProducts(
-        validatedData.items
+        validatedData.items,
       );
 
       // 3. Crear entidad Order
@@ -44,7 +46,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
         })),
       });
 
-      return "Order saved successfully";
+      return 'Order saved successfully';
     } catch (error) {
       if (
         error instanceof OrderDomainException ||
@@ -54,21 +56,21 @@ export class CreateOrUpdateOrderWithItemsUseCase {
         throw error;
       }
       throw OrderApplicationException.useCaseError(
-        "creating or updating order with items",
-        error instanceof Error ? error.message : String(error)
+        'creating or updating order with items',
+        error instanceof Error ? error.message : String(error),
       );
     }
   }
 
   private validateInput(
-    data: CreateOrUpdateOrderWithItemsDTO
+    data: CreateOrUpdateOrderWithItemsDTO,
   ): CreateOrUpdateOrderWithItemsDTO {
     const validation = CreateOrUpdateOrderWithItemsSchema.safeParse(data);
 
     if (!validation.success) {
       const errorDetails = validation.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join(", ");
+        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+        .join(', ');
       throw OrderApplicationException.validationError(errorDetails);
     }
 
@@ -76,7 +78,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
   }
 
   private async validateAndGetProducts(
-    items: { sku: string; quantity: number }[]
+    items: { sku: string; quantity: number }[],
   ): Promise<Map<string, Product>> {
     // Obtener IDs únicos para evitar consultas duplicadas
     const uniqueSkus = [...new Set(items.map((item) => item.sku))];
@@ -98,32 +100,25 @@ export class CreateOrUpdateOrderWithItemsUseCase {
       productsMap.set(sku, product);
     });
 
-    // TODO
-    // Validar stock para cada item
-    this.validateStock(items, productsMap);
+    // Validar stock
+    await this.validateStock(items);
 
     return productsMap;
   }
 
-  private validateStock(
+  private async validateStock(
     items: Array<{ sku: string; quantity: number }>,
-    productsMap: Map<string, Product>
-  ): void {
-    for (const item of items) {
-      const product = productsMap.get(item.sku)!;
+  ): Promise<void> {
+    const stockResult = await this.inventoryService.checkAvailability(items);
 
-      // if (!product.isInStock(item.quantity)) {
-      //   throw ProductDomainException.validationError(
-      //     `Insufficient stock for product ${item.sku}. ` +
-      //       `Available: ${product.getStockQuantity()}, Given: ${item.quantity}`
-      //   );
-      // }
+    if (!stockResult?.available) {
+      throw ProductDomainException.validationError(stockResult.message);
     }
   }
 
   private createOrderEntity(
     orderData: CreateOrUpdateOrderWithItemsDTO,
-    productsMap: Map<string, Product>
+    productsMap: Map<string, Product>,
   ): Order {
     const orderItems = this.createOrderItems(orderData, productsMap);
 
@@ -138,7 +133,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
 
   private createOrderItems(
     orderData: CreateOrUpdateOrderWithItemsDTO,
-    productsMap: Map<string, Product>
+    productsMap: Map<string, Product>,
   ): OrderItem[] {
     return orderData.items.map((item) => {
       const product = productsMap.get(item.sku)!;
