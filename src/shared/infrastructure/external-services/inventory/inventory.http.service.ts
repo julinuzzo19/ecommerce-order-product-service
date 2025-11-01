@@ -27,7 +27,6 @@ export class InventoryHttpService implements IInventoryService {
   ): Promise<InventoryCheckResult> {
     try {
       const response = await this.client.post('/check-stock', items);
-      console.log({ response });
       return response.data as InventoryCheckResult;
     } catch (error) {
       throw new Error(
