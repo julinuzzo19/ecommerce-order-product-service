@@ -6,9 +6,10 @@ module.exports = {
       testEnvironment: 'node',
       rootDir: process.cwd(),
       testMatch: [
-        '<rootDir>/src/**/domain/__tests__/**/*.test.ts',
-        '<rootDir>/src/**/application/__tests__/**/*.test.ts',
-        '<rootDir>/src/shared/**/__tests__/**/*.test.ts',
+        '<rootDir>/src/**/domain/__tests__/unit/**/*.test.ts',
+        '<rootDir>/src/**/application/__tests__/unit/**/*.test.ts',
+        '<rootDir>/src/**/infrastructure/__tests__/unit/**/*.test.ts',
+        '<rootDir>/src/shared/**/__tests__/unit/**/*.test.ts',
       ],
       moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
@@ -39,7 +40,8 @@ module.exports = {
       testEnvironment: 'node',
       rootDir: process.cwd(),
       testMatch: [
-        '<rootDir>/src/**/infrastructure/__tests__/**/*.integration.test.ts',
+        '<rootDir>/src/**/application/__tests__/integration/**/*.test.ts',
+        '<rootDir>/src/**/infrastructure/__tests__/integration/**/*.test.ts',
       ],
       setupFilesAfterEnv: ['<rootDir>/tests/setup/testDatabase.ts'],
       moduleNameMapper: {
@@ -70,10 +72,7 @@ module.exports = {
       preset: 'ts-jest/presets/default-esm',
       testEnvironment: 'node',
       rootDir: process.cwd(),
-      testMatch: [
-        '<rootDir>/src/**/infrastructure/__tests__/**/*.e2e.test.ts',
-        '<rootDir>/tests/e2e/**/*.test.ts',
-      ],
+      testMatch: ['<rootDir>/src/**/infrastructure/__tests__/e2e/**/*.test.ts'],
       setupFilesAfterEnv: ['<rootDir>/tests/setup/testDatabase.ts'],
       moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
