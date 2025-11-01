@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CreateOrUpdateOrderWithItemsSchema = z.object({
+export const CreateOrUpdateOrderSchema = z.object({
   id: z.uuid({ version: "v4" }),
   customerId: z.uuid({ version: "v4" }),
   orderNumber: z.string().min(2).max(100),

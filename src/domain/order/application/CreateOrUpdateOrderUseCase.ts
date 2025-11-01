@@ -1,7 +1,7 @@
 import { IOrderRepository } from '../domain/IOrderRepository.js';
 import { IProductRepository } from '../../product/domain/IProductRepository.js';
-import { CreateOrUpdateOrderWithItemsSchema } from './CreateOrUpdateOrderWithItemsSchema.js';
-import { CreateOrUpdateOrderWithItemsDTO } from './dtos/CreateOrUpdateOrderWithItemsDTO.js';
+import { CreateOrUpdateOrderSchema } from './CreateOrUpdateOrderSchema.js';
+import { CreateOrUpdateOrderDTO } from './dtos/CreateOrUpdateOrderDTO.js';
 import { Order } from '../domain/Order.js';
 import { OrderItem } from '../domain/OrderItem.js';
 import { Product } from '../../product/domain/Product.js';
@@ -12,7 +12,7 @@ import { OrderApplicationException } from './exceptions/OrderApplicationExceptio
 import { OrderEventPublisher } from './events/OrderEventPublisher.js';
 import { InventoryHttpService } from '../../../shared/infrastructure/external-services/inventory/inventory.http.service.js';
 
-export class CreateOrUpdateOrderWithItemsUseCase {
+export class CreateOrUpdateOrderUseCase {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly productRepository: IProductRepository,
@@ -20,7 +20,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
     private readonly inventoryService: InventoryHttpService,
   ) {}
 
-  public async execute(data: CreateOrUpdateOrderWithItemsDTO): Promise<string> {
+  public async execute(data: CreateOrUpdateOrderDTO): Promise<string> {
     try {
       // 1. Validar entrada
       const validatedData = this.validateInput(data);
@@ -63,9 +63,9 @@ export class CreateOrUpdateOrderWithItemsUseCase {
   }
 
   private validateInput(
-    data: CreateOrUpdateOrderWithItemsDTO,
-  ): CreateOrUpdateOrderWithItemsDTO {
-    const validation = CreateOrUpdateOrderWithItemsSchema.safeParse(data);
+    data: CreateOrUpdateOrderDTO,
+  ): CreateOrUpdateOrderDTO {
+    const validation = CreateOrUpdateOrderSchema.safeParse(data);
 
     if (!validation.success) {
       const errorDetails = validation.error.issues
@@ -117,7 +117,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
   }
 
   private createOrderEntity(
-    orderData: CreateOrUpdateOrderWithItemsDTO,
+    orderData: CreateOrUpdateOrderDTO,
     productsMap: Map<string, Product>,
   ): Order {
     const orderItems = this.createOrderItems(orderData, productsMap);
@@ -132,7 +132,7 @@ export class CreateOrUpdateOrderWithItemsUseCase {
   }
 
   private createOrderItems(
-    orderData: CreateOrUpdateOrderWithItemsDTO,
+    orderData: CreateOrUpdateOrderDTO,
     productsMap: Map<string, Product>,
   ): OrderItem[] {
     return orderData.items.map((item) => {

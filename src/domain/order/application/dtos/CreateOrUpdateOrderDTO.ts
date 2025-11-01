@@ -1,6 +1,6 @@
 import { OrderStatus } from "../../domain/types/OrderStatus.js";
 
-export interface CreateOrUpdateOrderWithItemsDTO {
+export interface CreateOrUpdateOrderDTO {
   id: string;
   customerId: string;
   orderNumber: string;

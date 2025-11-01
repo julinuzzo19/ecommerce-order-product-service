@@ -2,7 +2,7 @@ import { Router } from "express";
 import { OrderController } from "./order.controller.js";
 import { OrderPrismaRepository } from "./repository/orderPrismaRepository.js";
 import { prisma } from "../../../shared/infrastructure/db/prisma/prisma.client.js";
-import { CreateOrUpdateOrderWithItemsUseCase } from "../application/CreateOrUpdateOrderWithItemsUseCase .js";
+import { CreateOrUpdateOrderUseCase } from "../application/CreateOrUpdateOrderUseCase.js";
 import { ProductPrismaRepository } from "../../product/infrastructure/repository/productPrismaRepository.js";
 import { GetAllOrdersUseCase } from "../application/GetAllOrdersUseCase.js";
 import { GetOrderByIdUseCase } from "../application/GetOrderByIdUseCase.js";
@@ -23,7 +23,7 @@ export default (orderPublisher: OrderEventPublisher) => {
   const inventoryService = new InventoryHttpService();
 
   const createOrUpdateOrderWithItemsUseCase =
-    new CreateOrUpdateOrderWithItemsUseCase(
+    new CreateOrUpdateOrderUseCase(
       orderRepository,
       productRepository,
       orderPublisher,

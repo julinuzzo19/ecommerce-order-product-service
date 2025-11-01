@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { CreateOrUpdateOrderWithItemsUseCase } from "../application/CreateOrUpdateOrderWithItemsUseCase .js";
+import { CreateOrUpdateOrderUseCase } from "../application/CreateOrUpdateOrderUseCase.js";
 import { GetAllOrdersUseCase } from "../application/GetAllOrdersUseCase.js";
 import { GetOrderByIdUseCase } from "../application/GetOrderByIdUseCase.js";
 import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
 
 export class OrderController {
   constructor(
-    private readonly createOrUpdateOrderWithItemsUseCase: CreateOrUpdateOrderWithItemsUseCase,
+    private readonly createOrUpdateOrderWithItemsUseCase: CreateOrUpdateOrderUseCase,
     private readonly getAllOrdersUseCase: GetAllOrdersUseCase,
     private readonly getOrderByIdUseCase: GetOrderByIdUseCase
   ) {}
