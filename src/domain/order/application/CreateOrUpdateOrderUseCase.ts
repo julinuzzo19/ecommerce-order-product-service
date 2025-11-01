@@ -10,14 +10,14 @@ import { CustomId } from '../../../shared/domain/value-objects/CustomId.js';
 import { OrderDomainException } from '../exceptions/OrderDomainException.js';
 import { OrderApplicationException } from './exceptions/OrderApplicationException.js';
 import { OrderEventPublisher } from './events/OrderEventPublisher.js';
-import { InventoryHttpService } from '../../../shared/infrastructure/external-services/inventory/inventory.http.service.js';
+import { IInventoryService } from '../../../shared/services/inventory.service.interface.js';
 
 export class CreateOrUpdateOrderUseCase {
   constructor(
     private readonly orderRepository: IOrderRepository,
     private readonly productRepository: IProductRepository,
     private readonly orderPublisher: OrderEventPublisher,
-    private readonly inventoryService: InventoryHttpService,
+    private readonly inventoryService: IInventoryService,
   ) {}
 
   public async execute(data: CreateOrUpdateOrderDTO): Promise<string> {
@@ -62,9 +62,7 @@ export class CreateOrUpdateOrderUseCase {
     }
   }
 
-  private validateInput(
-    data: CreateOrUpdateOrderDTO,
-  ): CreateOrUpdateOrderDTO {
+  private validateInput(data: CreateOrUpdateOrderDTO): CreateOrUpdateOrderDTO {
     const validation = CreateOrUpdateOrderSchema.safeParse(data);
 
     if (!validation.success) {

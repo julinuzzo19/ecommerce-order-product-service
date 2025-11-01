@@ -1,5 +1,5 @@
-import { CustomerFactory } from "./factories/CustomerFactory.js";
-import { validCustomerData } from "./fixtures/customerFixtures.js";
+import { CustomerFactory } from "../factories/CustomerFactory.js";
+import { validCustomerData } from "../fixtures/customerFixtures.js";
 
 describe.skip("Customer Domain Entity", () => {
   it("should create a customer with valid properties", () => {

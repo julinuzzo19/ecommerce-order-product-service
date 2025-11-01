@@ -15,7 +15,7 @@
     "prisma:db:push": "npx prisma db push --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:migrate:reset": "npx prisma migrate reset --force --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "test": "jest --config=tests/setup/jest.config.cjs",
-    "test:watch": "jest --config=tests/setup/jest.config.cjs --watch",
+    "test:watch": "jest --config=tests/setup/jest.config.cjs --watch --verbose --runInBand",
     "test:coverage": "jest --verbose  --config=tests/setup/jest.config.cjs --coverage",
     "test:unit": "jest --verbose --config=tests/setup/jest.config.cjs --selectProjects unit",
     "test:integration": "jest --config=tests/setup/jest.config.cjs --selectProjects integration",
