@@ -9,14 +9,15 @@ export class InventoryHttpService implements IInventoryService {
   private client: AxiosInstance;
 
   constructor() {
+    console.log({ gateway: process.env.GATEWAY_SECRET });
     // Configuración del cliente HTTP
     this.client = axios.create({
       //   baseURL: process.env.INVENTORY_SERVICE_URL,
-      baseURL: 'http://ecommerce-inventory-service:3011/api/v1/inventory',
+      baseURL: process.env.GATEWAY_SERVICE + '/inventory',
       timeout: 5000,
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${process.env.INVENTORY_SERVICE_TOKEN}`
+        'x-gateway-secret': process.env.GATEWAY_SECRET,
       },
     });
   }
@@ -26,6 +27,7 @@ export class InventoryHttpService implements IInventoryService {
   ): Promise<InventoryCheckResult> {
     try {
       const response = await this.client.post('/check-stock', items);
+      console.log({ response });
       return response.data as InventoryCheckResult;
     } catch (error) {
       throw new Error(
