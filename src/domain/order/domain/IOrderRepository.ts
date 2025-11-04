@@ -14,8 +14,8 @@ export interface IOrderRepository {
   findById(id: CustomId): Promise<Order | null>;
 
   /**
-   * Find an order by its ID.
-   * @param id The ID of the order to find.
+   * Find an order by its order number.
+   * @param orderNumber The order number to find.
    * @returns The found order, or null if not found.
    */
   findByOrderNumber(orderNumber: Order["orderNumber"]): Promise<Order | null>;
@@ -23,14 +23,16 @@ export interface IOrderRepository {
   /**
    * Save or update an order to the database.
    * @param order The order to save or update.
+   * @param tx Optional transaction context for write operations.
    */
-  save(order: Order): Promise<void>;
+  save(order: Order, tx?: unknown): Promise<void>;
 
   /**
    * Delete an order from the database by its ID.
    * @param id The ID of the order to delete.
+   * @param tx Optional transaction context for write operations.
    */
-  delete(id: CustomId): Promise<void>;
+  delete(id: CustomId, tx?: unknown): Promise<void>;
 
   /**
    * List all orders.

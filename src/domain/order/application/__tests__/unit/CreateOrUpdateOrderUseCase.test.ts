@@ -11,6 +11,7 @@ import { CreateOrUpdateOrderDTO } from '../../dtos/CreateOrUpdateOrderDTO.js';
 import { OrderEventPublisher } from '../../events/OrderEventPublisher.js';
 import { Order } from '../../../domain/Order.js';
 import { ProductDomainException } from '../../../../../shared/domain/exceptions/ProductDomainException.js';
+import { IUnitOfWork } from '../../../../../shared/domain/IUnitOfWork.js';
 
 describe('create order', () => {
   let createOrderUseCase: CreateOrUpdateOrderUseCase;
@@ -18,6 +19,7 @@ describe('create order', () => {
   let mockProductRepository: jest.Mocked<IProductRepository>;
   let mockOrderPublisher: jest.Mocked<OrderEventPublisher>;
   let mockInventoryService: jest.Mocked<IInventoryService>;
+  let mockUnitOfWork: jest.Mocked<IUnitOfWork>;
 
   beforeEach(() => {
     mockOrderRepository = {
@@ -46,11 +48,16 @@ describe('create order', () => {
       checkAvailability: jest.fn(),
     };
 
+    mockUnitOfWork = {
+      execute: jest.fn().mockImplementation(async (work) => await work(null)),
+    };
+
     createOrderUseCase = new CreateOrUpdateOrderUseCase(
       mockOrderRepository,
       mockProductRepository,
       mockOrderPublisher,
       mockInventoryService,
+      mockUnitOfWork,
     );
 
     mockOrderPublisher.publishOrderCreated.mockResolvedValue(undefined);

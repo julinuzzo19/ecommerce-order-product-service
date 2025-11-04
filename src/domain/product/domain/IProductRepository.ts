@@ -12,6 +12,7 @@ export interface IProductRepository {
    * @returns The found product, or null if not found.
    */
   findById(id: CustomId): Promise<Product | null>;
+
   /**
    * Find a product by its sku.
    * @param sku The sku of the product to find.
@@ -22,14 +23,16 @@ export interface IProductRepository {
   /**
    * Save or update a product to the database.
    * @param product The product to save or update.
+   * @param tx Optional transaction context for write operations.
    */
-  save(product: Product): Promise<void>;
+  save(product: Product, tx?: unknown): Promise<void>;
 
   /**
    * Delete a product from the database by its ID.
    * @param id The ID of the product to delete.
+   * @param tx Optional transaction context for write operations.
    */
-  delete(id: CustomId): Promise<void>;
+  delete(id: CustomId, tx?: unknown): Promise<void>;
 
   /**
    * List all products.

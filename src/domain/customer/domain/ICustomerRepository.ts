@@ -16,14 +16,16 @@ export interface ICustomerRepository {
   /**
    * Save or update a customer to the database.
    * @param customer The customer to save or update.
+   * @param tx Optional transaction context for write operations.
    */
-  save(customer: Customer): Promise<void>;
+  save(customer: Customer, tx?: unknown): Promise<void>;
 
   /**
    * Delete a customer from the database by their ID.
    * @param id The ID of the customer to delete.
+   * @param tx Optional transaction context for write operations.
    */
-  delete(id: CustomId): Promise<void>;
+  delete(id: CustomId, tx?: unknown): Promise<void>;
 
   /**
    * List all customers.

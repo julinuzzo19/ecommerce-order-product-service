@@ -5,15 +5,28 @@ import { CustomerMapper } from '../mappers/CustomerMapper.js';
 import { CustomId } from '../../../../shared/domain/value-objects/CustomId.js';
 import { PrismaErrorHandler } from '../../../../shared/infrastructure/database/PrismaErrorHandler.js';
 
+type PrismaTransactionClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
+
 export class CustomerPrismaRepository implements ICustomerRepository {
   constructor(
     private readonly prisma: PrismaClient,
     private readonly errorHandler: PrismaErrorHandler = new PrismaErrorHandler(),
   ) {}
 
-  async save(customer: Customer): Promise<void> {
+  /**
+   * Obtiene el cliente a usar (transaccional o normal) para operaciones de escritura
+   */
+  private getClient(tx?: PrismaTransactionClient): PrismaTransactionClient {
+    return tx || this.prisma;
+  }
+
+  async save(customer: Customer, tx?: PrismaTransactionClient): Promise<void> {
     try {
-      await this.prisma.customer.create({
+      const client = this.getClient(tx);
+      await client.customer.create({
         data: CustomerMapper.toPrisma(customer),
       });
     } catch (error) {
@@ -32,9 +45,10 @@ export class CustomerPrismaRepository implements ICustomerRepository {
     }
   }
 
-  async delete(id: CustomId): Promise<void> {
+  async delete(id: CustomId, tx?: PrismaTransactionClient): Promise<void> {
     try {
-      await this.prisma.customer.delete({
+      const client = this.getClient(tx);
+      await client.customer.delete({
         where: { id: id.value },
       });
     } catch (error) {

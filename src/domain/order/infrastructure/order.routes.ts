@@ -8,6 +8,7 @@ import { GetAllOrdersUseCase } from "../application/GetAllOrdersUseCase.js";
 import { GetOrderByIdUseCase } from "../application/GetOrderByIdUseCase.js";
 import { OrderEventPublisher } from "../application/events/OrderEventPublisher.js";
 import { InventoryHttpService } from "../../../shared/infrastructure/external-services/inventory/inventory.http.service.js";
+import { PrismaUnitOfWork } from "../../../shared/infrastructure/database/PrismaUnitOfWork.js";
 
 /**
  * Configura las rutas del dominio Order.
@@ -22,12 +23,16 @@ export default (orderPublisher: OrderEventPublisher) => {
   // external services
   const inventoryService = new InventoryHttpService();
 
+  // Unit of Work
+  const unitOfWork = new PrismaUnitOfWork(prisma);
+
   const createOrUpdateOrderWithItemsUseCase =
     new CreateOrUpdateOrderUseCase(
       orderRepository,
       productRepository,
       orderPublisher,
-      inventoryService
+      inventoryService,
+      unitOfWork
     );
 
   const getAllOrdersUseCase = new GetAllOrdersUseCase(orderRepository);

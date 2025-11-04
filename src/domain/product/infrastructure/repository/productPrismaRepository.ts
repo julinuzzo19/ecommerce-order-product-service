@@ -5,22 +5,37 @@ import { ProductMapper } from "../mappers/ProductMapper.js";
 import { PrismaErrorHandler } from "../../../../shared/infrastructure/database/PrismaErrorHandler.js";
 import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 
+type PrismaTransactionClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
+
 export class ProductPrismaRepository implements IProductRepository {
   constructor(
     private readonly prisma: PrismaClient,
     private readonly errorHandler: PrismaErrorHandler = new PrismaErrorHandler()
   ) {}
 
-  async delete(id: CustomId): Promise<void> {
+  /**
+   * Obtiene el cliente a usar (transaccional o normal) para operaciones de escritura
+   */
+  private getClient(tx?: PrismaTransactionClient): PrismaTransactionClient {
+    return tx || this.prisma;
+  }
+
+  async delete(id: CustomId, tx?: PrismaTransactionClient): Promise<void> {
     try {
-      await this.prisma.product.delete({ where: { id: id.value } });
+      const client = this.getClient(tx);
+      await client.product.delete({ where: { id: id.value } });
     } catch (error) {
       this.errorHandler.handleError(error, "delete product");
     }
   }
-  async save(product: Product): Promise<void> {
+
+  async save(product: Product, tx?: PrismaTransactionClient): Promise<void> {
     try {
-      await this.prisma.product.create({
+      const client = this.getClient(tx);
+      await client.product.create({
         data: ProductMapper.toPrisma(product),
       });
     } catch (error) {
@@ -50,6 +65,7 @@ export class ProductPrismaRepository implements IProductRepository {
       this.errorHandler.handleError(error, "find product by ID");
     }
   }
+
   async findBySku(sku: string): Promise<Product | null> {
     try {
       const product = await this.prisma.product.findUnique({

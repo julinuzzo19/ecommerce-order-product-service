@@ -11,6 +11,7 @@ import { OrderDomainException } from '../exceptions/OrderDomainException.js';
 import { OrderApplicationException } from './exceptions/OrderApplicationException.js';
 import { OrderEventPublisher } from './events/OrderEventPublisher.js';
 import { IInventoryService } from '../../../shared/services/inventory.service.interface.js';
+import { IUnitOfWork } from '../../../shared/domain/IUnitOfWork.js';
 
 export class CreateOrUpdateOrderUseCase {
   constructor(
@@ -18,6 +19,7 @@ export class CreateOrUpdateOrderUseCase {
     private readonly productRepository: IProductRepository,
     private readonly orderPublisher: OrderEventPublisher,
     private readonly inventoryService: IInventoryService,
+    private readonly unitOfWork: IUnitOfWork,
   ) {}
 
   public async execute(data: CreateOrUpdateOrderDTO): Promise<string> {
@@ -25,25 +27,31 @@ export class CreateOrUpdateOrderUseCase {
       // 1. Validar entrada
       const validatedData = this.validateInput(data);
 
-      // 2. Obtener y validar productos
+      // 2. Validar stock antes de iniciar transacción (servicio externo)
+      await this.validateStock(validatedData.items);
+
+      // 3. Obtener y validar productos ANTES de la transacción (solo lectura)
       const productsData = await this.validateAndGetProducts(
         validatedData.items,
       );
 
-      // 3. Crear entidad Order
+      // Crear entidad Order
       const order = this.createOrderEntity(validatedData, productsData);
 
-      // 4. Persistir
-      await this.orderRepository.save(order);
+      // 4. Ejecutar operaciones de escritura dentro de transacción
+      await this.unitOfWork.execute(async (tx) => {
+        // Persistir dentro de la transacción
+        await this.orderRepository.save(order, tx);
 
-      // 5. Publicar evento
-      await this.orderPublisher.publishOrderCreated({
-        orderId: order.getId().value,
-        createdAt: order.getCreatedAt().toISOString(),
-        products: order.getItems().map((item) => ({
-          sku: item.getSku(),
-          quantity: item.getQuantity(),
-        })),
+        // 5. Publicar evento
+        await this.orderPublisher.publishOrderCreated({
+          orderId: validatedData.id,
+          createdAt: new Date().toISOString(),
+          products: validatedData.items.map((item) => ({
+            sku: item.sku,
+            quantity: item.quantity,
+          })),
+        });
       });
 
       return 'Order saved successfully';
@@ -93,13 +101,10 @@ export class CreateOrUpdateOrderUseCase {
     const productResults = await Promise.all(productPromises);
     const productsMap = new Map<string, Product>();
 
-    // Crear mapa de productos y validar stock
+    // Crear mapa de productos
     productResults.forEach(({ sku, product }) => {
       productsMap.set(sku, product);
     });
-
-    // Validar stock
-    await this.validateStock(items);
 
     return productsMap;
   }
@@ -112,8 +117,6 @@ export class CreateOrUpdateOrderUseCase {
     if (!stockResult?.available) {
       throw ProductDomainException.validationError(stockResult.message);
     }
-
-    
   }
 
   private createOrderEntity(
