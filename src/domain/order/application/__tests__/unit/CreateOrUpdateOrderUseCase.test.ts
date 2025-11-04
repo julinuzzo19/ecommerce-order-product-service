@@ -10,6 +10,7 @@ import { CreateOrUpdateOrderUseCase } from '../../CreateOrUpdateOrderUseCase.js'
 import { CreateOrUpdateOrderDTO } from '../../dtos/CreateOrUpdateOrderDTO.js';
 import { OrderEventPublisher } from '../../events/OrderEventPublisher.js';
 import { Order } from '../../../domain/Order.js';
+import { ProductDomainException } from '../../../../../shared/domain/exceptions/ProductDomainException.js';
 
 describe('create order', () => {
   let createOrderUseCase: CreateOrUpdateOrderUseCase;
@@ -51,6 +52,8 @@ describe('create order', () => {
       mockOrderPublisher,
       mockInventoryService,
     );
+
+    mockOrderPublisher.publishOrderCreated.mockResolvedValue(undefined);
   });
 
   it('should create an order successfully', async () => {
@@ -102,8 +105,6 @@ describe('create order', () => {
       message: 'Stock available',
     });
 
-    mockOrderPublisher.publishOrderCreated.mockResolvedValue(undefined);
-
     // act
     const result = await createOrderUseCase.execute(orderData);
 
@@ -130,14 +131,75 @@ describe('create order', () => {
     expect(savedOrder.getId().value).toBe(orderData.id);
     //
 
-    const eventCreatedArg =
-      mockOrderPublisher.publishOrderCreated.mock.calls[0][0];
-    expect(eventCreatedArg.orderId).toBe(orderData.id);
+    // const eventCreatedArg =
+    //   mockOrderPublisher.publishOrderCreated.mock.calls[0][0];
+    // expect(eventCreatedArg.orderId).toBe(orderData.id);
+
+    expect(mockOrderPublisher.publishOrderCreated).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderId: orderData.id,
+        products: orderData.items,
+      }),
+    );
 
     expect(mockProductRepository.findBySku).toHaveBeenCalledTimes(2);
 
     expect(mockInventoryService.checkAvailability).toHaveBeenCalledWith(
       orderData.items,
+    );
+  });
+
+  it('should throw validation error for insufficient stock', async () => {
+    // arrange
+    const prod1 = new Product({
+      id: new CustomId(generateUuidV4()),
+      sku: 'prod-001',
+      name: 'Product 1',
+      description: 'Description 1',
+      price: 100,
+      category: new ProductCategory('ELECTRONICS'),
+    });
+
+    const prod2 = new Product({
+      id: new CustomId(generateUuidV4()),
+      sku: 'prod-002',
+      name: 'Product 2',
+      description: 'Description 2',
+      price: 200,
+      category: new ProductCategory('BOOKS'),
+    });
+
+    const item1 = { sku: prod1.getSku(), quantity: 2 };
+    const item2 = { sku: prod2.getSku(), quantity: 4 };
+
+    const orderData: CreateOrUpdateOrderDTO = {
+      id: generateUuidV4(),
+      customerId: generateUuidV4(),
+      items: [item1, item2],
+      orderNumber: 'ORD-0001',
+      status: 'PENDING',
+    };
+
+    mockOrderRepository.save.mockResolvedValue(undefined);
+
+    mockProductRepository.findBySku.mockImplementation(async (sku: string) => {
+      if (sku === 'prod-001') {
+        return prod1;
+      }
+      if (sku === 'prod-002') {
+        return prod2;
+      }
+      return null;
+    });
+
+    mockInventoryService.checkAvailability.mockResolvedValue({
+      available: false,
+      message: '',
+    });
+
+    // assert
+    await expect(createOrderUseCase.execute(orderData)).rejects.toThrow(
+      ProductDomainException,
     );
   });
 });

@@ -112,6 +112,8 @@ export class CreateOrUpdateOrderUseCase {
     if (!stockResult?.available) {
       throw ProductDomainException.validationError(stockResult.message);
     }
+
+    
   }
 
   private createOrderEntity(
