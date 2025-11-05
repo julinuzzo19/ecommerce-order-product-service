@@ -27,13 +27,13 @@ export class CreateOrUpdateOrderUseCase {
       // 1. Validar entrada
       const validatedData = this.validateInput(data);
 
-      // 2. Validar stock antes de iniciar transacción (servicio externo)
-      await this.validateStock(validatedData.items);
-
-      // 3. Obtener y validar productos ANTES de la transacción (solo lectura)
+      // 2. Obtener y validar productos ANTES de la transacción (solo lectura)
       const productsData = await this.validateAndGetProducts(
         validatedData.items,
       );
+
+      // 3. Validar stock antes de iniciar transacción (servicio externo)
+      await this.validateStock(validatedData.items);
 
       // Crear entidad Order
       const order = this.createOrderEntity(validatedData, productsData);

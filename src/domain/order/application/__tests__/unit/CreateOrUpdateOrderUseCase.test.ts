@@ -1,4 +1,3 @@
-import { mock } from 'node:test';
 import { CustomId } from '../../../../../shared/domain/value-objects/CustomId.js';
 import { IInventoryService } from '../../../../../shared/services/inventory.service.interface.js';
 import { generateUuidV4 } from '../../../../../shared/utils/uuidGenerator.js';
@@ -12,6 +11,7 @@ import { OrderEventPublisher } from '../../events/OrderEventPublisher.js';
 import { Order } from '../../../domain/Order.js';
 import { ProductDomainException } from '../../../../../shared/domain/exceptions/ProductDomainException.js';
 import { IUnitOfWork } from '../../../../../shared/domain/IUnitOfWork.js';
+import { OrderApplicationException } from '../../exceptions/OrderApplicationException.js';
 
 describe('create order', () => {
   let createOrderUseCase: CreateOrUpdateOrderUseCase;
@@ -63,7 +63,7 @@ describe('create order', () => {
     mockOrderPublisher.publishOrderCreated.mockResolvedValue(undefined);
   });
 
-  it('should create an order successfully', async () => {
+  it('should create an order successfully with valid data', async () => {
     // arrange
 
     const prod1 = new Product({
@@ -208,5 +208,63 @@ describe('create order', () => {
     await expect(createOrderUseCase.execute(orderData)).rejects.toThrow(
       ProductDomainException,
     );
+  });
+
+  it('should throw validation error for invalid order', async () => {
+    const orderData: CreateOrUpdateOrderDTO = {
+      id: '',
+      customerId: '',
+      items: [],
+      orderNumber: '',
+      status: 'PAID',
+    };
+
+    mockOrderRepository.save.mockResolvedValue(undefined);
+    mockProductRepository.findBySku.mockImplementation(undefined);
+    mockOrderPublisher.publishOrderCreated.mockResolvedValue(undefined);
+    mockInventoryService.checkAvailability.mockResolvedValue({
+      available: true,
+      message: 'Stock available',
+    });
+
+    const p = createOrderUseCase.execute(orderData);
+    const err = (await p.catch((e) => e)) as Error;
+
+    expect(err).toBeInstanceOf(OrderApplicationException);
+    expect(err.message).toMatch(/invalid/i);
+    expect(err.message).toMatch(/id:/i);
+    expect(err.message).toMatch(/customerId:/i);
+    expect(err.message).toMatch(/orderNumber:/i);
+    expect(err.message).toMatch(/items:/i);
+  });
+
+  it('should throw not found error for non existing product', async () => {
+    const prod1 = new Product({
+      id: new CustomId(generateUuidV4()),
+      sku: 'prod-001',
+      name: 'Product 1',
+      description: 'Description 1',
+      price: 100,
+      category: new ProductCategory('ELECTRONICS'),
+    });
+
+    const item1 = { sku: prod1.getSku(), quantity: 2 };
+
+    const orderData: CreateOrUpdateOrderDTO = {
+      id: generateUuidV4(),
+      customerId: generateUuidV4(),
+      items: [item1],
+      orderNumber: 'ORD-0001',
+      status: 'PENDING',
+    };
+
+    mockProductRepository.findBySku.mockResolvedValue(null);
+
+    const p = createOrderUseCase.execute(orderData);
+
+    const err = (await p.catch((e) => e)) as Error;
+
+    expect(err).toBeInstanceOf(ProductDomainException);
+    expect(err.message).toMatch(/not found/i);
   });
 });
