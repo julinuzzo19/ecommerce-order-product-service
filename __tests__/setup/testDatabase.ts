@@ -1,4 +1,3 @@
-// tests/setup/testDatabase.ts
 import { PrismaClient } from '@prisma/client';
 
 export let prismaTestClient: PrismaClient;

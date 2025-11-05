@@ -9,7 +9,6 @@ export class InventoryHttpService implements IInventoryService {
   private client: AxiosInstance;
 
   constructor() {
-    console.log({ gateway: process.env.GATEWAY_SECRET });
     // Configuración del cliente HTTP
     this.client = axios.create({
       //   baseURL: process.env.INVENTORY_SERVICE_URL,
