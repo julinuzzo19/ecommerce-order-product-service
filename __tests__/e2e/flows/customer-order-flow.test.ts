@@ -42,7 +42,7 @@ describe('Customer order flow E2E', () => {
     expect(customerResponse.status).toBe(201);
     const body = customerResponse.body;
 
-    const customers = await prismaTestClient.customer.findMany();
+    // const customers = await prismaTestClient.customer.findMany();
     expect(1).toBe(1);
   });
 });
