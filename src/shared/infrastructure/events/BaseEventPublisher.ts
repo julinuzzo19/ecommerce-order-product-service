@@ -1,6 +1,6 @@
-import { Channel } from "amqplib";
-import { IEventPublisher } from "../../domain/IEventPublisher.js";
-import { EventBus } from "./EventBus.js";
+import { Channel } from 'amqplib';
+import { IEventPublisher } from '../../domain/IEventPublisher.js';
+import { EventBus } from './EventBus.js';
 
 /**
  * Clase base abstracta para publishers de eventos.
@@ -9,6 +9,7 @@ import { EventBus } from "./EventBus.js";
 export abstract class BaseEventPublisher implements IEventPublisher {
   protected channel: Channel | null = null;
   protected abstract exchangeName: string;
+  protected exchangeType: 'fanout' | 'topic' | 'direct' = 'fanout'; // Default fanout por compatibilidad
 
   /**
    * Inicializa el canal y declara el exchange del dominio.
@@ -19,7 +20,7 @@ export abstract class BaseEventPublisher implements IEventPublisher {
     const connection = eventBus.getConnection();
     this.channel = connection.getChannel();
 
-    await this.channel.assertExchange(this.exchangeName, "fanout", {
+    await this.channel.assertExchange(this.exchangeName, this.exchangeType, {
       durable: true,
     });
 
@@ -29,17 +30,17 @@ export abstract class BaseEventPublisher implements IEventPublisher {
   /**
    * Publica un mensaje al exchange.
    */
-  protected async publish(message: unknown, routingKey = ""): Promise<void> {
+  protected async publish(message: unknown, routingKey = ''): Promise<void> {
     if (!this.channel) {
       throw new Error(
-        "Publisher no inicializado. Llama a initialize() primero."
+        'Publisher no inicializado. Llama a initialize() primero.',
       );
     }
 
     const buffer = Buffer.from(JSON.stringify(message));
     this.channel.publish(this.exchangeName, routingKey, buffer, {
       persistent: true,
-      contentType: "application/json",
+      contentType: 'application/json',
       timestamp: Date.now(),
     });
   }

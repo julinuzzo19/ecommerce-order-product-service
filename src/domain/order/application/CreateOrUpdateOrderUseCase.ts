@@ -12,6 +12,7 @@ import { OrderApplicationException } from './exceptions/OrderApplicationExceptio
 import { OrderEventPublisher } from './events/OrderEventPublisher.js';
 import { IInventoryService } from '../../../shared/services/inventory.service.interface.js';
 import { IUnitOfWork } from '../../../shared/domain/IUnitOfWork.js';
+import { ROUTING_KEYS } from '../../../shared/application/events/types/events.js';
 
 export class CreateOrUpdateOrderUseCase {
   constructor(
@@ -45,6 +46,7 @@ export class CreateOrUpdateOrderUseCase {
 
         // 5. Publicar evento
         await this.orderPublisher.publishOrderCreated({
+          type: ROUTING_KEYS.ORDER_CREATED,
           orderId: validatedData.id,
           createdAt: new Date().toISOString(),
           products: validatedData.items.map((item) => ({
