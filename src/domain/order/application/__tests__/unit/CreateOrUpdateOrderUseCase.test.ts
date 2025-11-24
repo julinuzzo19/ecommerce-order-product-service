@@ -28,6 +28,7 @@ describe('create order', () => {
       findById: jest.fn(),
       findByOrderNumber: jest.fn(),
       save: jest.fn(),
+      updateStatus: jest.fn(),
     };
     mockProductRepository = {
       delete: jest.fn(),

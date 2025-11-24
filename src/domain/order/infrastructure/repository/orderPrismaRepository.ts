@@ -118,6 +118,24 @@ export class OrderPrismaRepository
     }
   }
 
+  async updateStatus(
+    orderNumber: string,
+    status: Order['status'],
+  ): Promise<void> {
+    try {
+      const client = this.getClient();
+
+      await client.order.update({
+        where: { orderNumber },
+        data: {
+          status,
+        },
+      });
+    } catch (error) {
+      this.errorHandler.handleError(error, 'save order');
+    }
+  }
+
   /**
    * Lógica de guardado separada para reutilizar con o sin transacción
    */

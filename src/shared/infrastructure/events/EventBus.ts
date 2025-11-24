@@ -1,4 +1,5 @@
-import { RabbitMQConnection } from "../../application/events/rabbitmq.js";
+import { RabbitMQConnection } from "./RabbitMQConnection.js";
+import { EventPublisherException } from "../exceptions/EventPublisherException.js";
 
 /**
  * Bus de eventos centralizado que gestiona la conexión única a RabbitMQ.
@@ -28,8 +29,13 @@ export class EventBus {
    */
   async initialize(): Promise<void> {
     if (!this.initialized) {
-      await this.rabbitmq.connect();
-      this.initialized = true;
+      try {
+        await this.rabbitmq.connect();
+        this.initialized = true;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw EventPublisherException.connectionFailed(message);
+      }
     }
   }
 
@@ -38,9 +44,7 @@ export class EventBus {
    */
   getConnection(): RabbitMQConnection {
     if (!this.initialized) {
-      throw new Error(
-        "EventBus no inicializado. Llama a initialize() primero."
-      );
+      throw EventPublisherException.notInitialized();
     }
     return this.rabbitmq;
   }
@@ -49,7 +53,12 @@ export class EventBus {
    * Cierra la conexión de forma limpia.
    */
   async close(): Promise<void> {
-    await this.rabbitmq.close();
-    this.initialized = false;
+    try {
+      await this.rabbitmq.close();
+      this.initialized = false;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw EventPublisherException.closeFailed(message);
+    }
   }
 }

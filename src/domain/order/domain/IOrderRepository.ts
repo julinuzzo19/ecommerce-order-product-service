@@ -1,5 +1,5 @@
-import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
-import { Order } from "./Order.js";
+import { CustomId } from '../../../shared/domain/value-objects/CustomId.js';
+import { Order } from './Order.js';
 
 /**
  * Interfaz que define el contrato del Repositorio de Orden para la persistencia.
@@ -18,7 +18,7 @@ export interface IOrderRepository {
    * @param orderNumber The order number to find.
    * @returns The found order, or null if not found.
    */
-  findByOrderNumber(orderNumber: Order["orderNumber"]): Promise<Order | null>;
+  findByOrderNumber(orderNumber: Order['orderNumber']): Promise<Order | null>;
 
   /**
    * Save or update an order to the database.
@@ -39,4 +39,10 @@ export interface IOrderRepository {
    * @returns An array of all orders.
    */
   findAll(): Promise<Order[]>;
+
+  /**
+   * Update the status of an order.
+   * @returns void
+   */
+  updateStatus(orderNumber: string, status: Order['status']): Promise<void>;
 }

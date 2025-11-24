@@ -1,5 +1,6 @@
 // shared/rabbitmq/connection.ts
 import { connect, ChannelModel, Channel } from "amqplib";
+import { EventPublisherException } from "../exceptions/EventPublisherException.js";
 
 export class RabbitMQConnection {
   private connection: ChannelModel | null = null;
@@ -33,7 +34,8 @@ export class RabbitMQConnection {
       });
     } catch (error) {
       console.error("❌ Error conectando a RabbitMQ:", error);
-      throw error;
+      const message = error instanceof Error ? error.message : String(error);
+      throw EventPublisherException.connectionFailed(message);
     }
   }
 
@@ -43,7 +45,7 @@ export class RabbitMQConnection {
    */
   getChannel(): Channel {
     if (!this.channel) {
-      throw new Error("Canal no disponible. ¿Llamaste a connect()?");
+      throw EventPublisherException.channelUnavailable();
     }
     return this.channel;
   }
@@ -59,7 +61,8 @@ export class RabbitMQConnection {
       console.log("✅ Conexión RabbitMQ cerrada correctamente");
     } catch (error) {
       console.error("❌ Error cerrando conexión RabbitMQ:", error);
-      throw error;
+      const message = error instanceof Error ? error.message : String(error);
+      throw EventPublisherException.closeFailed(message);
     }
   }
 }

@@ -1,20 +1,21 @@
-import { Request, Response, NextFunction } from "express";
-import { CreateOrUpdateOrderUseCase } from "../application/CreateOrUpdateOrderUseCase.js";
-import { GetAllOrdersUseCase } from "../application/GetAllOrdersUseCase.js";
-import { GetOrderByIdUseCase } from "../application/GetOrderByIdUseCase.js";
-import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
+import { Request, Response, NextFunction } from 'express';
+import { CreateOrUpdateOrderUseCase } from '../application/CreateOrUpdateOrderUseCase.js';
+import { GetAllOrdersUseCase } from '../application/GetAllOrdersUseCase.js';
+import { GetOrderByIdUseCase } from '../application/GetOrderByIdUseCase.js';
+import { UpdateStatusOrderUseCase } from '../application/UpdateStatusOrderUseCase.js';
 
 export class OrderController {
   constructor(
     private readonly createOrUpdateOrderWithItemsUseCase: CreateOrUpdateOrderUseCase,
+    private readonly updateStatusOrderUseCase: UpdateStatusOrderUseCase,
     private readonly getAllOrdersUseCase: GetAllOrdersUseCase,
-    private readonly getOrderByIdUseCase: GetOrderByIdUseCase
+    private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
   ) {}
 
   public CreateOrUpdateOrderWithItem = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     const data = req.body;
     const result = await this.createOrUpdateOrderWithItemsUseCase.execute(data);
@@ -24,13 +25,13 @@ export class OrderController {
   public getAllOrders = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
-    const userRole = req.headers["x-user-role"];
-    const userEmail = req.headers["x-user-email"];
-    const userId = req.headers["x-user-id"];
-    const gatewaySignature = req.headers["x-gateway-secret"];
-    const requestId = req.headers["x-request-id"];
+    const userRole = req.headers['x-user-role'];
+    const userEmail = req.headers['x-user-email'];
+    const userId = req.headers['x-user-id'];
+    const gatewaySignature = req.headers['x-gateway-secret'];
+    const requestId = req.headers['x-request-id'];
 
     // console.log({
     //   userRole,
@@ -44,13 +45,18 @@ export class OrderController {
     return res.status(200).json(result);
   };
 
-  public getOrderById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  public getOrderById = async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await this.getOrderByIdUseCase.execute(id);
+    return res.status(200).json(result);
+  };
+  public updateStatusOrder = async (req: Request, res: Response) => {
+    const { orderNumber } = req.params;
+    const { status } = req.body;
+    const result = await this.updateStatusOrderUseCase.execute({
+      orderNumber,
+      status,
+    });
     return res.status(200).json(result);
   };
 }

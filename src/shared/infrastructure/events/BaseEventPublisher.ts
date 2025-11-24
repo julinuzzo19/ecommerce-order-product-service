@@ -1,6 +1,7 @@
 import { Channel } from 'amqplib';
 import { IEventPublisher } from '../../domain/IEventPublisher.js';
 import { EventBus } from './EventBus.js';
+import { EventPublisherException } from '../exceptions/EventPublisherException.js';
 
 /**
  * Clase base abstracta para publishers de eventos.
@@ -15,16 +16,24 @@ export abstract class BaseEventPublisher implements IEventPublisher {
    * Inicializa el canal y declara el exchange del dominio.
    */
   async initialize(): Promise<void> {
-    const rabbitmqUrl = process.env.RABBITMQ_URL as string;
-    const eventBus = EventBus.getInstance(rabbitmqUrl);
-    const connection = eventBus.getConnection();
-    this.channel = connection.getChannel();
+    try {
+      const rabbitmqUrl = process.env.RABBITMQ_URL as string;
+      const eventBus = EventBus.getInstance(rabbitmqUrl);
+      const connection = eventBus.getConnection();
+      this.channel = connection.getChannel();
 
-    await this.channel.assertExchange(this.exchangeName, this.exchangeType, {
-      durable: true,
-    });
+      await this.channel.assertExchange(this.exchangeName, this.exchangeType, {
+        durable: true,
+      });
 
-    console.log(`✅ Exchange '${this.exchangeName}' declarado correctamente`);
+      console.log(`✅ Exchange '${this.exchangeName}' declarado correctamente`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw EventPublisherException.exchangeDeclarationFailed(
+        this.exchangeName,
+        message
+      );
+    }
   }
 
   /**
@@ -32,23 +41,31 @@ export abstract class BaseEventPublisher implements IEventPublisher {
    */
   protected async publish(message: unknown, routingKey = ''): Promise<void> {
     if (!this.channel) {
-      throw new Error(
-        'Publisher no inicializado. Llama a initialize() primero.',
-      );
+      throw EventPublisherException.notInitialized();
     }
 
-    const buffer = Buffer.from(JSON.stringify(message));
-    this.channel.publish(this.exchangeName, routingKey, buffer, {
-      persistent: true,
-      contentType: 'application/json',
-      timestamp: Date.now(),
-    });
+    try {
+      const buffer = Buffer.from(JSON.stringify(message));
+      this.channel.publish(this.exchangeName, routingKey, buffer, {
+        persistent: true,
+        contentType: 'application/json',
+        timestamp: Date.now(),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw EventPublisherException.publishFailed(this.exchangeName, message);
+    }
   }
 
   /**
    * Cierra el canal.
    */
   async close(): Promise<void> {
-    await this.channel?.close();
+    try {
+      await this.channel?.close();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw EventPublisherException.closeFailed(message);
+    }
   }
 }
