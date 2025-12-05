@@ -3,6 +3,8 @@ build
 dist
 .github/instructions
 .vscode
+.env.prod
+.env.dev
 
 # Environment files
 .env
