@@ -20,7 +20,8 @@ import { PublisherBootstrap } from '../domain/order/infrastructure/bootstrap/Pub
  */
 class Server {
   private app: Application;
-  private readonly port: string | number;
+  private readonly port: number;
+  private readonly host: string;
   private readonly logger: ILogger;
   private readonly httpLogger: ILogger;
   private readonly errorLogger: ILogger;
@@ -30,7 +31,11 @@ class Server {
 
   constructor() {
     this.app = express();
-    this.port = process.env.PORT || 3000;
+    this.port = Number(process.env.PORT) || 3000;
+    this.host =
+      process.env.NODE_ENV === 'production'
+        ? process.env.HOST || '0.0.0.0'
+        : '0.0.0.0';
 
     this.logger = createLogger('SERVER');
     this.httpLogger = createLogger('HTTP');
@@ -170,7 +175,7 @@ class Server {
       this.routes();
       this.errorHandling();
 
-      const server = this.app.listen(this.port, () => {
+      const server = this.app.listen(this.port, this.host, () => {
         this.logger.info('Server started successfully', {
           port: this.port,
           environment: process.env.NODE_ENV || 'development',
