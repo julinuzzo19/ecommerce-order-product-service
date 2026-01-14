@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Product {
@@ -104,4 +103,21 @@ model OrderItem {
   @@index([sku])
   @@index([orderNumber, sku]) // Índice compuesto para consultas específicas
   @@map("order_items")
+}
+
+model Outbox {
+  id            Int       @id @default(autoincrement())
+  aggregateType String    @map("aggregate_type") @db.VarChar(50)
+  aggregateId   String    @map("aggregate_id") @db.VarChar(100)
+  eventType     String    @map("event_type") @db.VarChar(100)
+  payload       Json      @db.JsonB
+  metadata      Json?     @default("{}") @db.JsonB
+  createdAt     DateTime  @default(now()) @map("created_at")
+  publishedAt   DateTime? @map("published_at")
+  published     Boolean   @default(false)
+
+  // Índices básicos
+  @@index([published, createdAt])
+  @@index([aggregateType, aggregateId])
+  @@map("outbox")
 }

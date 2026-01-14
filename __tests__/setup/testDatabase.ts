@@ -1,7 +1,24 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 export let prismaTestClient: PrismaClient;
 let isInitialized = false;
+let prismaTestPool: Pool | null = null;
+
+/**
+ * Crea un PrismaClient para PostgreSQL usando Driver Adapter (Prisma v7).
+ */
+function createPrismaClient(databaseUrl: string): {
+  client: PrismaClient;
+  pool: Pool;
+} {
+  const pool = new Pool({ connectionString: databaseUrl });
+  const adapter = new PrismaPg(pool);
+  const client = new PrismaClient({ adapter, log: [] });
+
+  return { client, pool };
+}
 
 /**
  * Espera a que la base de datos esté accesible.
@@ -14,11 +31,10 @@ async function waitForDatabase(
 ): Promise<void> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const temp = new PrismaClient({
-        datasources: { db: { url: databaseUrl } },
-      });
-      await temp.$connect();
-      await temp.$disconnect();
+      const { client, pool } = createPrismaClient(databaseUrl);
+      await client.$connect();
+      await client.$disconnect();
+      await pool.end();
       return;
     } catch (error) {
       if (attempt === retries) {
@@ -58,12 +74,9 @@ export async function initializeTestDatabase(): Promise<void> {
 
     // 3. Crear cliente Prisma si no existe
     if (!prismaTestClient) {
-      prismaTestClient = new PrismaClient({
-        datasources: {
-          db: { url: testDatabaseUrl },
-        },
-        log: [],
-      });
+      const { client, pool } = createPrismaClient(testDatabaseUrl);
+      prismaTestClient = client;
+      prismaTestPool = pool;
 
       await prismaTestClient.$connect();
     }
@@ -78,20 +91,18 @@ export async function initializeTestDatabase(): Promise<void> {
 
 async function verifyDatabaseConnection(databaseUrl: string): Promise<boolean> {
   try {
-    const tempClient = new PrismaClient({
-      datasources: { db: { url: databaseUrl } },
-    });
+    const { client, pool } = createPrismaClient(databaseUrl);
 
-    console.log({ databaseUrl });
-    await tempClient.$connect();
+    await client.$connect();
 
     // Verificar si las tablas existen
-    const tables = await tempClient.$queryRaw`
+    const tables = await client.$queryRaw`
       SELECT table_name FROM information_schema.tables 
       WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
     `;
 
-    await tempClient.$disconnect();
+    await client.$disconnect();
+    await pool.end();
 
     // Si hay tablas, la base está lista
     return Array.isArray(tables) && tables.length > 0;
@@ -120,6 +131,10 @@ export async function closeTestDatabase(): Promise<void> {
   if (prismaTestClient) {
     await prismaTestClient.$disconnect();
     prismaTestClient = null as any;
+    if (prismaTestPool) {
+      await prismaTestPool.end();
+      prismaTestPool = null;
+    }
     isInitialized = false;
   }
 }
