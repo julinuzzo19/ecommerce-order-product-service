@@ -4,6 +4,9 @@ module.exports = {
       displayName: 'unit',
       preset: 'ts-jest/presets/default-esm',
       testEnvironment: 'node',
+      testEnvironmentOptions: {
+        url: 'http://localhost'
+      },
       rootDir: process.cwd(),
       testMatch: [
         '<rootDir>/src/**/domain/__tests__/unit/**/*.test.ts',
@@ -38,6 +41,9 @@ module.exports = {
       displayName: 'integration',
       preset: 'ts-jest/presets/default-esm',
       testEnvironment: 'node',
+      testEnvironmentOptions: {
+        url: 'http://localhost'
+      },
       rootDir: process.cwd(),
       testMatch: [
         '<rootDir>/src/**/application/__tests__/integration/**/*.test.ts',
@@ -71,6 +77,9 @@ module.exports = {
       displayName: 'e2e',
       preset: 'ts-jest/presets/default-esm',
       testEnvironment: 'node',
+      testEnvironmentOptions: {
+        url: 'http://localhost'
+      },
       rootDir: process.cwd(),
       testMatch: [
         '<rootDir>/src/**/infrastructure/**/__tests__/e2e/**/*.test.ts',

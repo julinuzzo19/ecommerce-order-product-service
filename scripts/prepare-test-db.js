@@ -11,11 +11,55 @@
  * Uso: node scripts/prepare-test-db.js
  */
 
-import { PrismaClient } from '@prisma/client';
 import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { Pool } from 'pg';
 
 const MAX_RETRIES = 40;
 const RETRY_INTERVAL = 500; // ms
+/**
+ * Carga variables de entorno desde un archivo .env simple (KEY=VALUE).
+ * No depende de dotenv porque se usa --env-file en otros scripts.
+ * @param {string} envFilePath
+ */
+function loadEnvFromFile(envFilePath) {
+  if (!fs.existsSync(envFilePath)) {
+    return;
+  }
+
+  const content = fs.readFileSync(envFilePath, 'utf-8');
+  const lines = content.split(/\r?\n/);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue;
+    }
+
+    const separatorIndex = trimmed.indexOf('=');
+    if (separatorIndex <= 0) {
+      continue;
+    }
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    let value = trimmed.slice(separatorIndex + 1).trim();
+
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+
+    if (!(key in process.env)) {
+      process.env[key] = value;
+    }
+  }
+}
+
+loadEnvFromFile(path.resolve(process.cwd(), '.env'));
+
 const DATABASE_URL = process.env.DATABASE_URL_TEST;
 
 if (!DATABASE_URL) {
@@ -31,12 +75,10 @@ async function waitForDatabase() {
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const client = new PrismaClient({
-        datasources: { db: { url: DATABASE_URL } },
-      });
-
-      await client.$connect();
-      await client.$disconnect();
+      const pool = new Pool({ connectionString: DATABASE_URL });
+      const client = await pool.connect();
+      client.release();
+      await pool.end();
 
       console.log('✅ Base de datos accesible');
       return;
@@ -94,8 +136,6 @@ function generatePrismaClient() {
         timeout: 60_000,
       },
     );
-
-    console.log('✅ Cliente de Prisma generado');
   } catch (error) {
     console.error('❌ Error al generar el cliente de Prisma:', error.message);
     throw error;
@@ -104,13 +144,10 @@ function generatePrismaClient() {
 
 async function main() {
   try {
-    console.log('🚀 Preparando base de datos de test...\n');
-
     await waitForDatabase();
     generatePrismaClient();
     applySchema();
 
-    console.log('\n✅ Base de datos de test lista para los tests');
     process.exit(0);
   } catch (error) {
     console.error('\n❌ Error preparando la base de datos de test:', error);

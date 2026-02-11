@@ -1,6 +1,51 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// Cargar variables de entorno desde .env si existe
+function loadEnvFile() {
+  const envPath = path.resolve(process.cwd(), '.env');
+  
+  if (!fs.existsSync(envPath)) {
+    return;
+  }
+
+  const content = fs.readFileSync(envPath, 'utf-8');
+  const lines = content.split(/\r?\n/);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue;
+    }
+
+    const separatorIndex = trimmed.indexOf('=');
+    if (separatorIndex <= 0) {
+      continue;
+    }
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    let value = trimmed.slice(separatorIndex + 1).trim();
+
+    // Remover comillas si existen
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+
+    // Solo establecer si no existe ya en process.env
+    if (!(key in process.env)) {
+      process.env[key] = value;
+    }
+  }
+}
+
+// Cargar variables de entorno al inicio
+loadEnvFile();
 
 export let prismaTestClient: PrismaClient;
 let isInitialized = false;
