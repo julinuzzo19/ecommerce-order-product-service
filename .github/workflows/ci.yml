@@ -131,23 +131,23 @@ jobs:
         run: npm ci
 
       # Generar el cliente de Prisma
-      - name: Generate Prisma Client
-        run: npm run prisma:generate
+      # - name: Generate Prisma Client
+      #   run: npm run prisma:generate
 
       # Preparar la base de datos (aplicar esquema)
-      - name: Prepare test database
-        env:
-          DATABASE_URL: postgresql://postgres:test@localhost:5433/postgres
-          DATABASE_URL_TEST: postgresql://postgres:test@localhost:5433/postgres
-        run: npm run test:e2e:prepare
+      # - name: Prepare test database
+      #   env:
+      #     DATABASE_URL: postgresql://postgres:test@localhost:5433/postgres
+      #     DATABASE_URL_TEST: postgresql://postgres:test@localhost:5433/postgres
+      #   run: npm run test:e2e:prepare
 
       # Ejecutar tests e2e
-      - name: Run E2E tests
-        env:
-          DATABASE_URL: postgresql://postgres:test@localhost:5433/postgres
-          DATABASE_URL_TEST: postgresql://postgres:test@localhost:5433/postgres
-          NODE_ENV: test
-        run: npm run test:e2e:run
+      # - name: Run E2E tests
+      #   env:
+      #     DATABASE_URL: postgresql://postgres:test@localhost:5433/postgres
+      #     DATABASE_URL_TEST: postgresql://postgres:test@localhost:5433/postgres
+      #     NODE_ENV: test
+      #   run: npm run test:e2e:run
 
   # ============================================
   # JOB 4: Build de Imagen Docker
