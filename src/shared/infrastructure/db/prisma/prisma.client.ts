@@ -1,29 +1,36 @@
 import { PrismaClient } from '../../../../generated/prisma/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 
-/**
- * Obtiene la URL de la base de datos desde las variables de entorno.
- * @returns {string} URL de conexión a la base de datos
- */
-const getDatabaseUrl = (): string => {
-  const databaseUrl = process.env.DATABASE_URL;
-
-  if (!databaseUrl) {
-    throw new Error('DATABASE_URL is required to initialize PrismaClient');
-  }
-
-  return databaseUrl;
+const getSchemaFromUrl = (url: string): string => {
+  const m = url.match(/[?&]schema=([^&]+)/);
+  return m ? decodeURIComponent(m[1]) : 'public';
 };
 
 /**
- * Instancia única de PrismaClient para la aplicación.
+ * Lazy singleton: el cliente se crea la primera vez que se usa `prisma`,
+ * no al importar el módulo. Permite que DATABASE_URL sea sobreescrita
+ * (ej. en tests via run-e2e-tests.cjs) antes de la primera query.
  *
- * Prisma v7 requiere pasar un `adapter` (conexión directa) o `accelerateUrl`.
- * Aquí usamos PostgreSQL vía `@prisma/adapter-pg`.
+ * PrismaPg acepta { schema } como segundo argumento para indicar el schema
+ * PostgreSQL — es la forma oficial con driver adapters (Prisma v7).
  */
-const pool = new Pool({ connectionString: getDatabaseUrl() });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+let _prisma: PrismaClient | null = null;
 
-export { prisma };
+function getPrismaClient(): PrismaClient {
+  if (!_prisma) {
+    const url = process.env.DATABASE_URL;
+    if (!url) throw new Error('DATABASE_URL is required');
+    const adapter = new PrismaPg(
+      { connectionString: url },
+      { schema: getSchemaFromUrl(url) },
+    );
+    _prisma = new PrismaClient({ adapter });
+  }
+  return _prisma;
+}
+
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    return (getPrismaClient() as any)[prop];
+  },
+});
