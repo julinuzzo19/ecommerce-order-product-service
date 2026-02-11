@@ -1,3 +1,5 @@
+.agents/
+.claude/
 src/generated/
 node_modules
 build
