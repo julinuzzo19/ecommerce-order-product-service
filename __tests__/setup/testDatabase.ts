@@ -3,6 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import * as fs from 'fs';
 import * as path from 'path';
+import { execSync } from 'child_process';
 
 // Cargar variables de entorno desde .env si existe
 function loadEnvFile() {
@@ -46,6 +47,44 @@ function loadEnvFile() {
 
 // Cargar variables de entorno al inicio
 loadEnvFile();
+
+/**
+ * Extrae el schema de la DATABASE URL (query param `schema=`) o devuelve 'public'.
+ */
+function getSchemaFromUrl(databaseUrl: string): string {
+  if (!databaseUrl) return 'public';
+  const m = databaseUrl.match(/[?&]schema=([^&]+)/);
+  return m ? decodeURIComponent(m[1]) : 'public';
+}
+
+/**
+ * Aplica migraciones con Prisma al `databaseUrl` proporcionado. Intenta
+ * `migrate deploy` y si falla hace `db push` como fallback.
+ */
+function applyMigrations(databaseUrl: string) {
+  if (!databaseUrl) {
+    throw new Error('DATABASE URL requerido para aplicar migraciones');
+  }
+
+  const schemaPath = path.resolve(
+    'src/shared/infrastructure/db/prisma/schema.prisma',
+  );
+
+  console.log('🔧 Aplicando migraciones Prisma al schema de test...');
+
+  try {
+    execSync(`npx prisma migrate deploy --schema=${schemaPath}`, {
+      stdio: 'inherit',
+      env: { ...process.env, DATABASE_URL: databaseUrl },
+    });
+  } catch (err) {
+    console.log('⚠️ migrate deploy falló, intentando db push como fallback');
+    execSync(`npx prisma db push --schema=${schemaPath}`, {
+      stdio: 'inherit',
+      env: { ...process.env, DATABASE_URL: databaseUrl },
+    });
+  }
+}
 
 export let prismaTestClient: PrismaClient;
 let isInitialized = false;
@@ -108,7 +147,14 @@ export async function initializeTestDatabase(): Promise<void> {
     // 1. Esperar a que la base de datos esté accesible
     await waitForDatabase(testDatabaseUrl);
 
-    // 2. Verificar que las tablas existan (el esquema debe haber sido aplicado previamente)
+    // 1.5 Aplicar migraciones / db push para tener las tablas en el schema de test
+    try {
+      applyMigrations(testDatabaseUrl);
+    } catch (err) {
+      console.warn('⚠️ Error aplicando migraciones:', err);
+    }
+
+    // 2. Verificar que las tablas existan (el esquema debe haber sido aplicado ahora)
     const dbReady = await verifyDatabaseConnection(testDatabaseUrl);
     if (!dbReady) {
       throw new Error(
@@ -141,9 +187,10 @@ async function verifyDatabaseConnection(databaseUrl: string): Promise<boolean> {
     await client.$connect();
 
     // Verificar si las tablas existen
+    const schema = getSchemaFromUrl(databaseUrl);
     const tables = await client.$queryRaw`
-      SELECT table_name FROM information_schema.tables 
-      WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+      SELECT table_name FROM information_schema.tables
+      WHERE table_schema = ${schema} AND table_type = 'BASE TABLE'
     `;
 
     await client.$disconnect();
