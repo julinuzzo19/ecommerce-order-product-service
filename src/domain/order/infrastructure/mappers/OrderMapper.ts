@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../../../generated/prisma/client.js";
 import { Order } from "../../domain/Order.js";
 import { OrderItem } from "../../domain/OrderItem.js";
 import { OrderResponseDTO } from "../../application/dtos/OrderResponseDTO.js";

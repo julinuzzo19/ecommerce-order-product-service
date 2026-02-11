@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../../../generated/prisma/client.js";
 import { IProductRepository } from "../../domain/IProductRepository.js";
 import { Product } from "../../domain/Product.js";
 import { ProductMapper } from "../mappers/ProductMapper.js";

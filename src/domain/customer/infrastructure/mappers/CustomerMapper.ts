@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../../../generated/prisma/client.js";
 import { Customer } from "../../domain/Customer.js";
 import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 import { Email } from "../../../../shared/domain/value-objects/Email.js";

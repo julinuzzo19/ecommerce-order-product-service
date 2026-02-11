@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../../../generated/prisma/client.js';
 import { IOrderRepository } from '../../domain/IOrderRepository.js';
 import { Order } from '../../domain/Order.js';
 import { OrderMapper } from '../mappers/OrderMapper.js';

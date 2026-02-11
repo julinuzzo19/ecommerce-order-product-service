@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../../generated/prisma/client.js";
 import { InfrastructureException } from "../exceptions/InfrastructureException.js";
 
 export class PrismaErrorHandler {
