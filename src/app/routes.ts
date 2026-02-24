@@ -23,7 +23,6 @@ export const router = (orderPublisher: OrderEventPublisher) => {
 //  * El router principal de la aplicación.
 //  * Este router es el "puente" entre el servidor y los routers de cada módulo.
 //  */
-// const router = Router();
 
 // /**
 //  * Define las rutas base para cada entidad.
