@@ -1,10 +1,10 @@
-import { IProductRepository } from "../domain/IProductRepository.js";
-import { ProductResponseDTO } from "./dtos/ProductResponseDTO.js";
-import { Product } from "../domain/Product.js";
-import { genericMapToDTO } from "../../../shared/utils/genericMapper.js";
-import { ProductDomainException } from "../../../shared/domain/exceptions/ProductDomainException.js";
-import { ProductApplicationException } from "../../../shared/application/exceptions/ProductApplicationException.js";
-import { NewRelicMonitoring } from "../../../shared/infrastructure/monitoring/NewRelicMonitoring.js";
+import { IProductRepository } from '../domain/IProductRepository.js';
+import { ProductResponseDTO } from './dtos/ProductResponseDTO.js';
+import { Product } from '../domain/Product.js';
+import { genericMapToDTO } from '../../../shared/utils/genericMapper.js';
+import { ProductDomainException } from '../../../shared/domain/exceptions/ProductDomainException.js';
+import { ProductApplicationException } from '../../../shared/application/exceptions/ProductApplicationException.js';
+import { NewRelicMonitoring } from '../../../shared/infrastructure/monitoring/NewRelicMonitoring.js';
 
 export class GetProductsUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
@@ -13,10 +13,8 @@ export class GetProductsUseCase {
     try {
       const products = await this.productRepository.findAll();
 
-      console.log({products})
-
       // Products retrieved event
-      NewRelicMonitoring.recordEvent("ProductsRetrieved", {
+      NewRelicMonitoring.recordEvent('ProductsRetrieved', {
         length: products.length,
       });
 
@@ -30,8 +28,8 @@ export class GetProductsUseCase {
       }
 
       throw ProductApplicationException.useCaseError(
-        "getting products",
-        error instanceof Error ? error.message : String(error)
+        'getting products',
+        error instanceof Error ? error.message : String(error),
       );
     }
   };
