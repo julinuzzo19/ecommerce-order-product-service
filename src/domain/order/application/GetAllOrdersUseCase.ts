@@ -22,15 +22,12 @@ export class GetAllOrdersUseCase {
 
       return result;
     } catch (error) {
-      if (
-        error instanceof OrderDomainException ||
-        error instanceof OrderApplicationException
-      ) {
+      if (error instanceof OrderDomainException || error instanceof OrderApplicationException) {
         throw error;
       }
       throw OrderApplicationException.useCaseError(
         "getting all orders",
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
     }
   };

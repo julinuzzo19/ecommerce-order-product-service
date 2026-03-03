@@ -12,15 +12,12 @@ export class GetOrderByIdUseCase {
       const customId = new CustomId(id);
       return await this.orderQueryRepository.findOrderWithDetails(customId);
     } catch (error) {
-      if (
-        error instanceof OrderDomainException ||
-        error instanceof OrderApplicationException
-      ) {
+      if (error instanceof OrderDomainException || error instanceof OrderApplicationException) {
         throw error;
       }
       throw OrderApplicationException.useCaseError(
         "getting order by ID",
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
     }
   };

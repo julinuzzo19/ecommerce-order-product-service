@@ -3,17 +3,10 @@ import { DomainException } from "../../../../shared/domain/exceptions/DomainExce
 
 export class CustomerDomainException extends DomainException {
   static validationError(details: string): CustomerDomainException {
-    return new CustomerDomainException(
-      `Customer validation failed: ${details}`,
-      ErrorCode.VALIDATION_ERROR
-    );
+    return new CustomerDomainException(`Customer validation failed: ${details}`, ErrorCode.VALIDATION_ERROR);
   }
 
   static notFound(id: string): CustomerDomainException {
-    return new CustomerDomainException(
-      `Customer with ID ${id} not found`,
-      ErrorCode.CUSTOMER_NOT_FOUND,
-      404
-    );
+    return new CustomerDomainException(`Customer with ID ${id} not found`, ErrorCode.CUSTOMER_NOT_FOUND, 404);
   }
 }

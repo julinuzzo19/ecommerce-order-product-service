@@ -3,15 +3,15 @@ import {
   OrderCancelledEvent,
   OrderCreatedEvent,
   ROUTING_KEYS,
-} from '../../../../shared/application/events/types/events.js';
-import { BaseEventPublisher } from '../../../../shared/infrastructure/events/BaseEventPublisher.js';
+} from "../../../../shared/application/events/types/events.js";
+import { BaseEventPublisher } from "../../../../shared/infrastructure/events/BaseEventPublisher.js";
 
 /**
  * Publisher específico para eventos del dominio Order.
  */
 export class OrderEventPublisher extends BaseEventPublisher {
   protected exchangeName = EXCHANGES.ORDERS;
-  protected exchangeType: 'fanout' | 'topic' | 'direct' = 'topic';
+  protected exchangeType: "fanout" | "topic" | "direct" = "topic";
 
   /**
    * Publica el evento OrderCreated.

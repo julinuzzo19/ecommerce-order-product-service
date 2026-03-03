@@ -1,13 +1,13 @@
-import { PrismaClient } from '../../../../generated/prisma/client.js';
-import { Customer } from '../../domain/Customer.js';
-import { ICustomerRepository } from '../../domain/ICustomerRepository.js';
-import { CustomerMapper } from '../mappers/CustomerMapper.js';
-import { CustomId } from '../../../../shared/domain/value-objects/CustomId.js';
-import { PrismaErrorHandler } from '../../../../shared/infrastructure/database/PrismaErrorHandler.js';
+import { PrismaClient } from "../../../../generated/prisma/client.js";
+import { Customer } from "../../domain/Customer.js";
+import { ICustomerRepository } from "../../domain/ICustomerRepository.js";
+import { CustomerMapper } from "../mappers/CustomerMapper.js";
+import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
+import { PrismaErrorHandler } from "../../../../shared/infrastructure/database/PrismaErrorHandler.js";
 
 type PrismaTransactionClient = Omit<
   PrismaClient,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
 >;
 
 export class CustomerPrismaRepository implements ICustomerRepository {
@@ -30,7 +30,7 @@ export class CustomerPrismaRepository implements ICustomerRepository {
         data: CustomerMapper.toPrisma(customer),
       });
     } catch (error) {
-      this.errorHandler.handleError(error, 'save customer');
+      this.errorHandler.handleError(error, "save customer");
     }
   }
 
@@ -41,7 +41,7 @@ export class CustomerPrismaRepository implements ICustomerRepository {
       });
       return customers.map(CustomerMapper.fromPrisma);
     } catch (error) {
-      this.errorHandler.handleError(error, 'find all customers');
+      this.errorHandler.handleError(error, "find all customers");
     }
   }
 
@@ -52,7 +52,7 @@ export class CustomerPrismaRepository implements ICustomerRepository {
         where: { id: id.value },
       });
     } catch (error) {
-      this.errorHandler.handleError(error, 'delete customer');
+      this.errorHandler.handleError(error, "delete customer");
     }
   }
 
@@ -64,7 +64,7 @@ export class CustomerPrismaRepository implements ICustomerRepository {
       });
       return customer ? CustomerMapper.fromPrisma(customer) : null;
     } catch (error) {
-      this.errorHandler.handleError(error, 'find customer by ID');
+      this.errorHandler.handleError(error, "find customer by ID");
     }
   }
 }

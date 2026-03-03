@@ -1,5 +1,5 @@
-import { PrismaClient } from '../../../generated/prisma/client.js';
-import { IUnitOfWork } from '../../domain/IUnitOfWork.js';
+import { PrismaClient } from "../../../generated/prisma/client.js";
+import { IUnitOfWork } from "../../domain/IUnitOfWork.js";
 
 /**
  * Implementación de Unit of Work usando Prisma.
@@ -18,15 +18,7 @@ export class PrismaUnitOfWork implements IUnitOfWork {
    */
   async execute<T>(
     work: (
-      ctx: Omit<
-        PrismaClient,
-        | '$connect'
-        | '$disconnect'
-        | '$on'
-        | '$transaction'
-        | '$use'
-        | '$extends'
-      >,
+      ctx: Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">,
     ) => Promise<T>,
   ): Promise<T> {
     return await this.prisma.$transaction(async (tx) => {

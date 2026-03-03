@@ -30,10 +30,7 @@ const getProductsUseCase = new GetProductsUseCase(productRepo);
 //  */
 
 // const userCtrl = new UserController(userUseCase);
-const productCtrl = new ProductController(
-  createProductUseCase,
-  getProductsUseCase
-);
+const productCtrl = new ProductController(createProductUseCase, getProductsUseCase);
 
 // /**
 //  *

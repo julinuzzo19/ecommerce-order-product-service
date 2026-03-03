@@ -17,21 +17,18 @@ export class EventPublisherException extends InfrastructureException {
     return new EventPublisherException(
       "El publisher no ha sido inicializado. Llama a initialize() primero.",
       ErrorCode.CONFIG_ERROR,
-      500
+      500,
     );
   }
 
   /**
    * Error al publicar un evento.
    */
-  static publishFailed(
-    eventName: string,
-    reason: string
-  ): EventPublisherException {
+  static publishFailed(eventName: string, reason: string): EventPublisherException {
     return new EventPublisherException(
       `Error al publicar evento '${eventName}': ${reason}`,
       ErrorCode.NETWORK_ERROR,
-      500
+      500,
     );
   }
 
@@ -42,21 +39,18 @@ export class EventPublisherException extends InfrastructureException {
     return new EventPublisherException(
       `Error de conexión a RabbitMQ: ${reason}`,
       ErrorCode.NETWORK_ERROR,
-      503
+      503,
     );
   }
 
   /**
    * Error al declarar exchange.
    */
-  static exchangeDeclarationFailed(
-    exchangeName: string,
-    reason: string
-  ): EventPublisherException {
+  static exchangeDeclarationFailed(exchangeName: string, reason: string): EventPublisherException {
     return new EventPublisherException(
       `Error al declarar exchange '${exchangeName}': ${reason}`,
       ErrorCode.CONFIG_ERROR,
-      500
+      500,
     );
   }
 
@@ -64,22 +58,14 @@ export class EventPublisherException extends InfrastructureException {
    * Error al cerrar canal o conexión.
    */
   static closeFailed(reason: string): EventPublisherException {
-    return new EventPublisherException(
-      `Error al cerrar conexión: ${reason}`,
-      ErrorCode.NETWORK_ERROR,
-      500
-    );
+    return new EventPublisherException(`Error al cerrar conexión: ${reason}`, ErrorCode.NETWORK_ERROR, 500);
   }
 
   /**
    * Error de validación del mensaje.
    */
   static invalidMessage(details: string): EventPublisherException {
-    return new EventPublisherException(
-      `Mensaje inválido: ${details}`,
-      ErrorCode.VALIDATION_ERROR,
-      400
-    );
+    return new EventPublisherException(`Mensaje inválido: ${details}`, ErrorCode.VALIDATION_ERROR, 400);
   }
 
   /**
@@ -89,7 +75,7 @@ export class EventPublisherException extends InfrastructureException {
     return new EventPublisherException(
       "Canal no disponible. ¿El publisher está correctamente inicializado?",
       ErrorCode.CONFIG_ERROR,
-      500
+      500,
     );
   }
 }

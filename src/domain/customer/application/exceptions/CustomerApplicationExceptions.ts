@@ -5,17 +5,14 @@ export class CustomerApplicationExceptions extends ApplicationException {
   static validationError(details: string): CustomerApplicationExceptions {
     return new CustomerApplicationExceptions(
       `Customer validation failed: ${details}`,
-      ErrorCode.VALIDATION_ERROR
+      ErrorCode.VALIDATION_ERROR,
     );
   }
 
-  static useCaseError(
-    operation: string,
-    details: string
-  ): CustomerApplicationExceptions {
+  static useCaseError(operation: string, details: string): CustomerApplicationExceptions {
     return new CustomerApplicationExceptions(
       `Customer ${operation} failed: ${details}`,
-      ErrorCode.USE_CASE_ERROR
+      ErrorCode.USE_CASE_ERROR,
     );
   }
 }

@@ -12,10 +12,7 @@ export class EmailValidator {
 
   static validate(email: string): void {
     if (!this.isValid(email)) {
-      throw InfrastructureException.validationError(
-        "email",
-        "Invalid email format"
-      );
+      throw InfrastructureException.validationError("email", "Invalid email format");
     }
   }
 }

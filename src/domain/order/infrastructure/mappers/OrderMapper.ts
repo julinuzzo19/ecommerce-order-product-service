@@ -26,7 +26,7 @@ export class OrderMapper {
           };
         };
       };
-    }>
+    }>,
   ): Order {
     return new Order({
       id: new CustomId(data.id),
@@ -54,7 +54,7 @@ export class OrderMapper {
           };
         };
       };
-    }>
+    }>,
   ): OrderResponseDTO {
     return {
       id: data.id,
@@ -89,7 +89,7 @@ export class OrderMapper {
           };
         };
       };
-    }>
+    }>,
   ): OrderReadDTO {
     return {
       id: data.id,

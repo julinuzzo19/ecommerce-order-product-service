@@ -1,20 +1,18 @@
-import { PrismaClient } from '../../../../generated/prisma/client.js';
-import { IOrderRepository } from '../../domain/IOrderRepository.js';
-import { Order } from '../../domain/Order.js';
-import { OrderMapper } from '../mappers/OrderMapper.js';
-import { IOrderQueryRepository } from '../../application/IOrderQueryRepository.js';
-import { OrderReadDTO } from '../../application/dtos/OrderReadDTO.js';
-import { PrismaErrorHandler } from '../../../../shared/infrastructure/database/PrismaErrorHandler.js';
-import { CustomId } from '../../../../shared/domain/value-objects/CustomId.js';
+import { PrismaClient } from "../../../../generated/prisma/client.js";
+import { IOrderRepository } from "../../domain/IOrderRepository.js";
+import { Order } from "../../domain/Order.js";
+import { OrderMapper } from "../mappers/OrderMapper.js";
+import { IOrderQueryRepository } from "../../application/IOrderQueryRepository.js";
+import { OrderReadDTO } from "../../application/dtos/OrderReadDTO.js";
+import { PrismaErrorHandler } from "../../../../shared/infrastructure/database/PrismaErrorHandler.js";
+import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 
 type PrismaTransactionClient = Omit<
   PrismaClient,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
 >;
 
-export class OrderPrismaRepository
-  implements IOrderRepository, IOrderQueryRepository
-{
+export class OrderPrismaRepository implements IOrderRepository, IOrderQueryRepository {
   constructor(
     private readonly prisma: PrismaClient,
     private readonly errorHandler: PrismaErrorHandler = new PrismaErrorHandler(),
@@ -34,7 +32,7 @@ export class OrderPrismaRepository
         where: { id: id.value },
       });
     } catch (error) {
-      this.errorHandler.handleError(error, 'delete order');
+      this.errorHandler.handleError(error, "delete order");
     }
   }
 
@@ -52,7 +50,7 @@ export class OrderPrismaRepository
 
       return orders.map(OrderMapper.fromPrismaWithOrderItems);
     } catch (error) {
-      this.errorHandler.handleError(error, 'find all orders');
+      this.errorHandler.handleError(error, "find all orders");
     }
   }
 
@@ -73,13 +71,11 @@ export class OrderPrismaRepository
 
       return order ? OrderMapper.fromPrismaWithOrderItems(order) : null;
     } catch (error) {
-      this.errorHandler.handleError(error, 'find order by ID');
+      this.errorHandler.handleError(error, "find order by ID");
     }
   }
 
-  async findByOrderNumber(
-    orderNumber: Order['orderNumber'],
-  ): Promise<Order | null> {
+  async findByOrderNumber(orderNumber: Order["orderNumber"]): Promise<Order | null> {
     try {
       const order = await this.prisma.order.findUnique({
         where: {
@@ -96,7 +92,7 @@ export class OrderPrismaRepository
 
       return order ? OrderMapper.fromPrismaWithOrderItems(order) : null;
     } catch (error) {
-      this.errorHandler.handleError(error, 'find order by order number');
+      this.errorHandler.handleError(error, "find order by order number");
     }
   }
 
@@ -114,14 +110,11 @@ export class OrderPrismaRepository
         });
       }
     } catch (error) {
-      this.errorHandler.handleError(error, 'save order');
+      this.errorHandler.handleError(error, "save order");
     }
   }
 
-  async updateStatus(
-    orderNumber: string,
-    status: Order['status'],
-  ): Promise<void> {
+  async updateStatus(orderNumber: string, status: Order["status"]): Promise<void> {
     try {
       const client = this.getClient();
 
@@ -132,17 +125,14 @@ export class OrderPrismaRepository
         },
       });
     } catch (error) {
-      this.errorHandler.handleError(error, 'save order');
+      this.errorHandler.handleError(error, "save order");
     }
   }
 
   /**
    * Lógica de guardado separada para reutilizar con o sin transacción
    */
-  private async executeSave(
-    client: PrismaTransactionClient,
-    order: Order,
-  ): Promise<void> {
+  private async executeSave(client: PrismaTransactionClient, order: Order): Promise<void> {
     // 1. Upsert Order (crea o actualiza)
     const orderData = OrderMapper.toPrisma(order); // Sin orderItems
 
@@ -162,9 +152,7 @@ export class OrderPrismaRepository
     const existingIds = new Set(existingItems.map((i) => i.sku));
     const currentIds = new Set(currentItems.map((i) => i.sku));
 
-    const toCreate = currentItems.filter(
-      (i) => i.sku && !existingIds.has(i.sku),
-    );
+    const toCreate = currentItems.filter((i) => i.sku && !existingIds.has(i.sku));
     const toUpdate = currentItems.filter(
       (i) =>
         i.sku &&
@@ -212,7 +200,7 @@ export class OrderPrismaRepository
 
       return order ? OrderMapper.toReadDTO(order) : null;
     } catch (error) {
-      this.errorHandler.handleError(error, 'find order with details by ID');
+      this.errorHandler.handleError(error, "find order with details by ID");
     }
   }
 
@@ -230,7 +218,7 @@ export class OrderPrismaRepository
 
       return orders.map(OrderMapper.toReadDTO);
     } catch (error) {
-      this.errorHandler.handleError(error, 'find all orders with details');
+      this.errorHandler.handleError(error, "find all orders with details");
     }
   }
 }

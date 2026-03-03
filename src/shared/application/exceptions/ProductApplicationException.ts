@@ -5,17 +5,14 @@ export class ProductApplicationException extends ApplicationException {
   static validationError(details: string): ProductApplicationException {
     return new ProductApplicationException(
       `Product validation failed: ${details}`,
-      ErrorCode.VALIDATION_ERROR
+      ErrorCode.VALIDATION_ERROR,
     );
   }
 
-  static useCaseError(
-    operation: string,
-    details: string
-  ): ProductApplicationException {
+  static useCaseError(operation: string, details: string): ProductApplicationException {
     return new ProductApplicationException(
       `Product ${operation} failed: ${details}`,
-      ErrorCode.USE_CASE_ERROR
+      ErrorCode.USE_CASE_ERROR,
     );
   }
 }

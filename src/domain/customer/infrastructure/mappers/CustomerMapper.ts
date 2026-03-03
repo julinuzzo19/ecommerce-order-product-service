@@ -27,9 +27,7 @@ export class CustomerMapper {
     };
   }
 
-  static fromPrisma(
-    data: Prisma.CustomerGetPayload<{ include: { address: true } }>
-  ): Customer {
+  static fromPrisma(data: Prisma.CustomerGetPayload<{ include: { address: true } }>): Customer {
     return new Customer({
       id: new CustomId(data.id),
       name: data.name,

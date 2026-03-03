@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
-import { CreateOrUpdateOrderUseCase } from '../application/CreateOrUpdateOrderUseCase.js';
-import { GetAllOrdersUseCase } from '../application/GetAllOrdersUseCase.js';
-import { GetOrderByIdUseCase } from '../application/GetOrderByIdUseCase.js';
-import { UpdateStatusOrderUseCase } from '../application/UpdateStatusOrderUseCase.js';
+import { Request, Response, NextFunction } from "express";
+import { CreateOrUpdateOrderUseCase } from "../application/CreateOrUpdateOrderUseCase.js";
+import { GetAllOrdersUseCase } from "../application/GetAllOrdersUseCase.js";
+import { GetOrderByIdUseCase } from "../application/GetOrderByIdUseCase.js";
+import { UpdateStatusOrderUseCase } from "../application/UpdateStatusOrderUseCase.js";
 
 export class OrderController {
   constructor(
@@ -12,26 +12,18 @@ export class OrderController {
     private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
   ) {}
 
-  public CreateOrUpdateOrderWithItem = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  public CreateOrUpdateOrderWithItem = async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
     const result = await this.createOrUpdateOrderWithItemsUseCase.execute(data);
     return res.status(200).json(result);
   };
 
-  public getAllOrders = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    const userRole = req.headers['x-user-role'];
-    const userEmail = req.headers['x-user-email'];
-    const userId = req.headers['x-user-id'];
-    const gatewaySignature = req.headers['x-gateway-secret'];
-    const requestId = req.headers['x-request-id'];
+  public getAllOrders = async (req: Request, res: Response, next: NextFunction) => {
+    const userRole = req.headers["x-user-role"];
+    const userEmail = req.headers["x-user-email"];
+    const userId = req.headers["x-user-id"];
+    const gatewaySignature = req.headers["x-gateway-secret"];
+    const requestId = req.headers["x-request-id"];
 
     // console.log({
     //   userRole,

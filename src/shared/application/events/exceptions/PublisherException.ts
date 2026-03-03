@@ -1,4 +1,4 @@
-import { ApplicationException } from '../../exceptions/ApplicationException.js';
+import { ApplicationException } from "../../exceptions/ApplicationException.js";
 
 export class PublisherException extends ApplicationException {
   static publishError(details: string): PublisherException {

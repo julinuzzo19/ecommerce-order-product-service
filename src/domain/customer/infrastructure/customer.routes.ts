@@ -22,10 +22,7 @@ const getCustomersUseCase = new GetCustomersUseCase(customerRepository);
 //  * Iniciar User Controller
 //  */
 
-const customerCtrl = new CustomerController(
-  customerCreateUseCase,
-  getCustomersUseCase
-);
+const customerCtrl = new CustomerController(customerCreateUseCase, getCustomersUseCase);
 
 // /**
 //  * Mapping routes to controller methods

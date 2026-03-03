@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { generateUuidV4 } from "../../utils/uuidGenerator.js";
 
-export const requestIdMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export const requestIdMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   // Genera un ID único para la solicitud
   const requestId = generateUuidV4();
 

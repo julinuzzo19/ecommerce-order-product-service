@@ -13,15 +13,12 @@ export class GetCustomersUseCase {
       const customers = await this.customerRepository.findAll();
       return customers.map(this.mapToDTO);
     } catch (error) {
-      if (
-        error instanceof CustomerDomainException ||
-        error instanceof CustomerApplicationExceptions
-      ) {
+      if (error instanceof CustomerDomainException || error instanceof CustomerApplicationExceptions) {
         throw error;
       }
       throw CustomerApplicationExceptions.useCaseError(
         "getting customers",
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
     }
   };

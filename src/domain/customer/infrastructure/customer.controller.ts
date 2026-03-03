@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { CreateCustomerUseCase } from '../application/CreateCustomerUseCase.js';
-import { GetCustomersUseCase } from '../application/GetCustomersUseCase.js';
+import { Request, Response } from "express";
+import { CreateCustomerUseCase } from "../application/CreateCustomerUseCase.js";
+import { GetCustomersUseCase } from "../application/GetCustomersUseCase.js";
 
 export class CustomerController {
   constructor(

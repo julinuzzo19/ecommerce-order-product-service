@@ -1,9 +1,9 @@
-import { PrismaClient } from '../../../../generated/prisma/client.js';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from "../../../../generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 const getSchemaFromUrl = (url: string): string => {
   const m = url.match(/[?&]schema=([^&]+)/);
-  return m ? decodeURIComponent(m[1]) : 'public';
+  return m ? decodeURIComponent(m[1]) : "public";
 };
 
 /**
@@ -19,11 +19,8 @@ let _prisma: PrismaClient | null = null;
 function getPrismaClient(): PrismaClient {
   if (!_prisma) {
     const url = process.env.DATABASE_URL;
-    if (!url) throw new Error('DATABASE_URL is required');
-    const adapter = new PrismaPg(
-      { connectionString: url },
-      { schema: getSchemaFromUrl(url) },
-    );
+    if (!url) throw new Error("DATABASE_URL is required");
+    const adapter = new PrismaPg({ connectionString: url }, { schema: getSchemaFromUrl(url) });
     _prisma = new PrismaClient({ adapter });
   }
   return _prisma;

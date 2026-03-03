@@ -7,13 +7,13 @@ import { CustomId } from "../../../../shared/domain/value-objects/CustomId.js";
 
 type PrismaTransactionClient = Omit<
   PrismaClient,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
 >;
 
 export class ProductPrismaRepository implements IProductRepository {
   constructor(
     private readonly prisma: PrismaClient,
-    private readonly errorHandler: PrismaErrorHandler = new PrismaErrorHandler()
+    private readonly errorHandler: PrismaErrorHandler = new PrismaErrorHandler(),
   ) {}
 
   /**

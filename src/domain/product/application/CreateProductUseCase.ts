@@ -20,7 +20,7 @@ export class CreateProductUseCase {
       const validation = createProductSchema.safeParse(data);
 
       if (!validation.success) {
-        console.log({validation})
+        console.log({ validation });
         const errorDetails = validation.error.issues
           .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
           .join(", ");
@@ -33,16 +33,13 @@ export class CreateProductUseCase {
 
       return this.mapToDTO(product);
     } catch (error) {
-      if (
-        error instanceof ProductDomainException ||
-        error instanceof ProductApplicationException
-      ) {
+      if (error instanceof ProductDomainException || error instanceof ProductApplicationException) {
         throw error;
       }
 
       throw ProductApplicationException.useCaseError(
         "creation",
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
     }
   };

@@ -1,8 +1,4 @@
-import {
-  validate as uuidValidate,
-  version as uuidVersion,
-  v4 as uuidv4,
-} from "uuid";
+import { validate as uuidValidate, version as uuidVersion, v4 as uuidv4 } from "uuid";
 import { ValueObjectException } from "../exceptions/ValidationError.js";
 
 export class CustomId {
@@ -10,9 +6,7 @@ export class CustomId {
 
   constructor(value: string) {
     if (!uuidValidate(value) || uuidVersion(value) !== 4) {
-      throw ValueObjectException.validationError(
-        "The custom ID format is not valid (UUIDv4)."
-      );
+      throw ValueObjectException.validationError("The custom ID format is not valid (UUIDv4).");
     }
     this.value = value;
   }

@@ -1,9 +1,9 @@
-import { CustomId } from '../../../shared/domain/value-objects/CustomId.js';
-import { OrderDomainException } from '../exceptions/OrderDomainException.js';
-import { OrderItem } from './OrderItem.js';
-import { IOrder } from './types/IOrder.js';
-import { OrderStatus } from './types/OrderStatus.js';
-import { v4 as uuidv4 } from 'uuid';
+import { CustomId } from "../../../shared/domain/value-objects/CustomId.js";
+import { OrderDomainException } from "../exceptions/OrderDomainException.js";
+import { OrderItem } from "./OrderItem.js";
+import { IOrder } from "./types/IOrder.js";
+import { OrderStatus } from "./types/OrderStatus.js";
+import { v4 as uuidv4 } from "uuid";
 
 interface OrderProps {
   id?: CustomId;
@@ -27,16 +27,11 @@ export class Order implements IOrder {
   private items: OrderItem[];
   private created_at: Date;
   private updated_at: Date;
-  static STATUS_LIST: OrderStatus[] = [
-    'PENDING',
-    'PAID',
-    'SHIPPED',
-    'CANCELLED',
-  ];
+  static STATUS_LIST: OrderStatus[] = ["PENDING", "PAID", "SHIPPED", "CANCELLED"];
 
   constructor(props: OrderProps) {
     this.id = props.id || CustomId.create();
-    this.status = props.status || 'PENDING';
+    this.status = props.status || "PENDING";
     this.items = props.items || [];
     this.customerId = props.customerId;
     this.orderNumber = props.orderNumber;
@@ -48,16 +43,11 @@ export class Order implements IOrder {
 
   private validate(): void {
     if (!this.orderNumber || this.orderNumber.trim().length < 2) {
-      throw OrderDomainException.validationError(
-        'Order number must be at least 2 characters',
-      );
+      throw OrderDomainException.validationError("Order number must be at least 2 characters");
     }
 
-    if (
-      !this.status ||
-      !['PENDING', 'PAID', 'SHIPPED', 'CANCELLED'].includes(this.status)
-    ) {
-      throw OrderDomainException.validationError('Invalid order status');
+    if (!this.status || !["PENDING", "PAID", "SHIPPED", "CANCELLED"].includes(this.status)) {
+      throw OrderDomainException.validationError("Invalid order status");
     }
   }
 
@@ -86,20 +76,20 @@ export class Order implements IOrder {
    * Este método garantiza que solo el agregado pueda cambiar su estado.
    */
   public markAsPaid(): void {
-    if (this.status === 'PENDING') {
-      this.status = 'PAID';
+    if (this.status === "PENDING") {
+      this.status = "PAID";
     }
   }
 
   public markAsShipped(): void {
-    if (this.status === 'PAID') {
-      this.status = 'SHIPPED';
+    if (this.status === "PAID") {
+      this.status = "SHIPPED";
     }
   }
 
   public markAsCancelled(): void {
-    if (this.status === 'PENDING') {
-      this.status = 'CANCELLED';
+    if (this.status === "PENDING") {
+      this.status = "CANCELLED";
     }
   }
 

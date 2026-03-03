@@ -25,10 +25,7 @@ export class NewRelicMonitoring {
   }
 
   // Error Tracking
-  static noticeError(
-    error: Error,
-    customAttributes?: Record<string, any>
-  ): void {
+  static noticeError(error: Error, customAttributes?: Record<string, any>): void {
     try {
       newrelic.noticeError(error, customAttributes);
     } catch (err) {
@@ -46,10 +43,7 @@ export class NewRelicMonitoring {
   }
 
   // Add custom attributes to current transaction
-  static addCustomAttribute(
-    key: string,
-    value: string | number | boolean
-  ): void {
+  static addCustomAttribute(key: string, value: string | number | boolean): void {
     try {
       newrelic.addCustomAttribute(key, value);
     } catch (error) {

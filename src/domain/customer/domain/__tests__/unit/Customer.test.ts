@@ -17,17 +17,11 @@ describe.skip("Customer Domain Entity", () => {
     expect(customer.getPhoneNumber()).toBe(validCustomerData.phoneNumber);
     expect(customer.getIsActive()).toBe(true);
     expect(customer.getCreatedAt()).toBeInstanceOf(Date);
-    expect(addressCustomer.getStreet()).toBe(
-      validCustomerData?.address?.street
-    );
+    expect(addressCustomer.getStreet()).toBe(validCustomerData?.address?.street);
     expect(addressCustomer.getCity()).toBe(validCustomerData?.address?.city);
     expect(addressCustomer.getState()).toBe(validCustomerData?.address?.state);
-    expect(addressCustomer.getZipCode()).toBe(
-      validCustomerData?.address?.zipCode
-    );
-    expect(addressCustomer.getCountry()).toBe(
-      validCustomerData?.address?.country
-    );
+    expect(addressCustomer.getZipCode()).toBe(validCustomerData?.address?.zipCode);
+    expect(addressCustomer.getCountry()).toBe(validCustomerData?.address?.country);
   });
 
   describe.each([

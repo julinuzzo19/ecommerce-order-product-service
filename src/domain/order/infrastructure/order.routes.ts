@@ -1,15 +1,15 @@
-import { Router } from 'express';
-import { OrderController } from './order.controller.js';
-import { OrderPrismaRepository } from './repository/orderPrismaRepository.js';
-import { prisma } from '../../../shared/infrastructure/db/prisma/prisma.client.js';
-import { CreateOrUpdateOrderUseCase } from '../application/CreateOrUpdateOrderUseCase.js';
-import { ProductPrismaRepository } from '../../product/infrastructure/repository/productPrismaRepository.js';
-import { GetAllOrdersUseCase } from '../application/GetAllOrdersUseCase.js';
-import { GetOrderByIdUseCase } from '../application/GetOrderByIdUseCase.js';
-import { OrderEventPublisher } from '../application/events/OrderEventPublisher.js';
-import { InventoryHttpService } from '../../../shared/infrastructure/external-services/inventory/inventory.http.service.js';
-import { PrismaUnitOfWork } from '../../../shared/infrastructure/database/PrismaUnitOfWork.js';
-import { UpdateStatusOrderUseCase } from '../application/UpdateStatusOrderUseCase.js';
+import { Router } from "express";
+import { OrderController } from "./order.controller.js";
+import { OrderPrismaRepository } from "./repository/orderPrismaRepository.js";
+import { prisma } from "../../../shared/infrastructure/db/prisma/prisma.client.js";
+import { CreateOrUpdateOrderUseCase } from "../application/CreateOrUpdateOrderUseCase.js";
+import { ProductPrismaRepository } from "../../product/infrastructure/repository/productPrismaRepository.js";
+import { GetAllOrdersUseCase } from "../application/GetAllOrdersUseCase.js";
+import { GetOrderByIdUseCase } from "../application/GetOrderByIdUseCase.js";
+import { OrderEventPublisher } from "../application/events/OrderEventPublisher.js";
+import { InventoryHttpService } from "../../../shared/infrastructure/external-services/inventory/inventory.http.service.js";
+import { PrismaUnitOfWork } from "../../../shared/infrastructure/database/PrismaUnitOfWork.js";
+import { UpdateStatusOrderUseCase } from "../application/UpdateStatusOrderUseCase.js";
 
 /**
  * Configura las rutas del dominio Order.
@@ -35,11 +35,7 @@ export default (orderPublisher: OrderEventPublisher) => {
     unitOfWork,
   );
 
-  const updateStatusOrderUseCase = new UpdateStatusOrderUseCase(
-    orderRepository,
-    orderPublisher,
-    unitOfWork,
-  );
+  const updateStatusOrderUseCase = new UpdateStatusOrderUseCase(orderRepository, orderPublisher, unitOfWork);
 
   const getAllOrdersUseCase = new GetAllOrdersUseCase(orderRepository);
   const getOrderByIdUseCase = new GetOrderByIdUseCase(orderRepository);

@@ -3,17 +3,10 @@ import { DomainException } from "../../../shared/domain/exceptions/DomainExcepti
 
 export class OrderDomainException extends DomainException {
   static validationError(details: string): OrderDomainException {
-    return new OrderDomainException(
-      `Order validation failed: ${details}`,
-      ErrorCode.VALIDATION_ERROR
-    );
+    return new OrderDomainException(`Order validation failed: ${details}`, ErrorCode.VALIDATION_ERROR);
   }
 
   static notFound(id: string): OrderDomainException {
-    return new OrderDomainException(
-      `Order with ID ${id} not found`,
-      ErrorCode.ORDER_NOT_FOUND,
-      404
-    );
+    return new OrderDomainException(`Order with ID ${id} not found`, ErrorCode.ORDER_NOT_FOUND, 404);
   }
 }

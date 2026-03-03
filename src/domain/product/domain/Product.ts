@@ -15,7 +15,6 @@ interface ProductProps {
 }
 
 export class Product implements IProduct {
-  
   private id: CustomId;
   private name: string;
   private description?: string;
@@ -41,7 +40,7 @@ export class Product implements IProduct {
   private validate(): void {
     if (!this.name || this.name.trim().length < 2) {
       throw ProductDomainException.validationError(
-        `Invalid name for product ${this.id.toString()}. Given: ${this.name}`
+        `Invalid name for product ${this.id.toString()}. Given: ${this.name}`,
       );
     }
 
@@ -53,7 +52,7 @@ export class Product implements IProduct {
   public updatePrice(newPrice: number): void {
     if (newPrice <= 0) {
       throw ProductDomainException.validationError(
-        `Price must be a positive number for product ${this.id.toString()}. Given: ${newPrice}`
+        `Price must be a positive number for product ${this.id.toString()}. Given: ${newPrice}`,
       );
     }
     this.price = newPrice;

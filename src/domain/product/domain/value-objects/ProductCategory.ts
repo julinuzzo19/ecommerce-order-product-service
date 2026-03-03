@@ -3,9 +3,7 @@ import { ProductDomainException } from "../../../../shared/domain/exceptions/Pro
 export class ProductCategory {
   constructor(private name: string) {
     if (!name || name.trim().length < 2) {
-      throw ProductDomainException.validationError(
-        "Category name must be at least 2 characters"
-      );
+      throw ProductDomainException.validationError("Category name must be at least 2 characters");
     }
   }
 

@@ -37,9 +37,7 @@ export class Customer implements ICustomer {
 
   private validate(): void {
     if (!this.name || this.name.trim().length < 2) {
-      throw CustomerDomainException.validationError(
-        `Invalid name for customer`
-      );
+      throw CustomerDomainException.validationError(`Invalid name for customer`);
     }
   }
 

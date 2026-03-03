@@ -37,7 +37,7 @@ export class PrismaErrorHandler {
 
   private handleKnownRequestError(
     error: Prisma.PrismaClientKnownRequestError,
-    operation: string
+    operation: string,
   ): InfrastructureException {
     const errorMappings: Record<
       string,
@@ -47,64 +47,31 @@ export class PrismaErrorHandler {
       P2002: (err) =>
         InfrastructureException.duplicateRecord(
           operation,
-          `Duplicate value for field: ${this.getTargetFromMeta(err.meta)}`
+          `Duplicate value for field: ${this.getTargetFromMeta(err.meta)}`,
         ),
       // Record not found
       P2025: (err) =>
-        InfrastructureException.recordNotFound(
-          operation,
-          "Record not found for the given criteria"
-        ),
+        InfrastructureException.recordNotFound(operation, "Record not found for the given criteria"),
       // Foreign key constraint violation
       P2003: (err) =>
         InfrastructureException.foreignKeyConstraint(
           operation,
-          `Foreign key constraint failed on field: ${this.getTargetFromMeta(
-            err.meta
-          )}`
+          `Foreign key constraint failed on field: ${this.getTargetFromMeta(err.meta)}`,
         ),
       // Required relation missing
-      P2014: (err) =>
-        InfrastructureException.invalidData(
-          operation,
-          "Required relation is missing"
-        ),
+      P2014: (err) => InfrastructureException.invalidData(operation, "Required relation is missing"),
       // Query interpretation error
-      P2016: (err) =>
-        InfrastructureException.invalidData(
-          operation,
-          "Query interpretation error"
-        ),
+      P2016: (err) => InfrastructureException.invalidData(operation, "Query interpretation error"),
       // Table does not exist
-      P2021: (err) =>
-        InfrastructureException.configurationError(
-          operation,
-          "Database table does not exist"
-        ),
+      P2021: (err) => InfrastructureException.configurationError(operation, "Database table does not exist"),
       // Column does not exist
-      P2022: (err) =>
-        InfrastructureException.configurationError(
-          operation,
-          "Database column does not exist"
-        ),
+      P2022: (err) => InfrastructureException.configurationError(operation, "Database column does not exist"),
       // Inconsistent column data
-      P2023: (err) =>
-        InfrastructureException.invalidData(
-          operation,
-          "Inconsistent column data"
-        ),
+      P2023: (err) => InfrastructureException.invalidData(operation, "Inconsistent column data"),
       // Timed out fetching a new connection
-      P2024: (err) =>
-        InfrastructureException.timeoutError(
-          operation,
-          "Database connection timeout"
-        ),
+      P2024: (err) => InfrastructureException.timeoutError(operation, "Database connection timeout"),
       // Too many database connections
-      P2034: (err) =>
-        InfrastructureException.resourceError(
-          operation,
-          "Too many database connections"
-        ),
+      P2034: (err) => InfrastructureException.resourceError(operation, "Too many database connections"),
     };
 
     const handler = errorMappings[error.code];
@@ -115,56 +82,40 @@ export class PrismaErrorHandler {
     // Error de Prisma no mapeado específicamente
     return InfrastructureException.databaseError(
       operation,
-      `Unhandled Prisma error code ${error.code}: ${error.message}`
+      `Unhandled Prisma error code ${error.code}: ${error.message}`,
     );
   }
 
   private handleUnknownRequestError(
     error: Prisma.PrismaClientUnknownRequestError,
-    operation: string
+    operation: string,
   ): InfrastructureException {
-    return InfrastructureException.databaseError(
-      operation,
-      "Unknown database error occurred"
-    );
+    return InfrastructureException.databaseError(operation, "Unknown database error occurred");
   }
 
   private handleRustPanicError(
     error: Prisma.PrismaClientRustPanicError,
-    operation: string
+    operation: string,
   ): InfrastructureException {
-    return InfrastructureException.databaseError(
-      operation,
-      "Database engine encountered a critical error"
-    );
+    return InfrastructureException.databaseError(operation, "Database engine encountered a critical error");
   }
 
   private handleInitializationError(
     error: Prisma.PrismaClientInitializationError,
-    operation: string
+    operation: string,
   ): InfrastructureException {
-    return InfrastructureException.connectionError(
-      operation,
-      `Database connection failed`
-    );
+    return InfrastructureException.connectionError(operation, `Database connection failed`);
   }
 
   private handleValidationError(
     error: Prisma.PrismaClientValidationError,
-    operation: string
+    operation: string,
   ): InfrastructureException {
-    return InfrastructureException.validationError(
-      operation,
-      `Invalid query parameters: ${error.message}`
-    );
+    return InfrastructureException.validationError(operation, `Invalid query parameters: ${error.message}`);
   }
 
-  private handleGenericError(
-    error: unknown,
-    operation: string
-  ): InfrastructureException {
-    const message =
-      error instanceof Error ? error.message : "Unknown error occurred";
+  private handleGenericError(error: unknown, operation: string): InfrastructureException {
+    const message = error instanceof Error ? error.message : "Unknown error occurred";
     return InfrastructureException.unexpectedError(operation, message);
   }
 

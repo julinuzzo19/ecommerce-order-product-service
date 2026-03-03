@@ -1,19 +1,19 @@
-import { CustomId } from '../../../../../shared/domain/value-objects/CustomId.js';
-import { IInventoryService } from '../../../../../shared/services/inventory.service.interface.js';
-import { generateUuidV4 } from '../../../../../shared/utils/uuidGenerator.js';
-import { IProductRepository } from '../../../../product/domain/IProductRepository.js';
-import { Product } from '../../../../product/domain/Product.js';
-import { ProductCategory } from '../../../../product/domain/value-objects/ProductCategory.js';
-import { IOrderRepository } from '../../../domain/IOrderRepository.js';
-import { CreateOrUpdateOrderUseCase } from '../../CreateOrUpdateOrderUseCase.js';
-import { CreateOrUpdateOrderDTO } from '../../dtos/CreateOrUpdateOrderDTO.js';
-import { OrderEventPublisher } from '../../events/OrderEventPublisher.js';
-import { Order } from '../../../domain/Order.js';
-import { ProductDomainException } from '../../../../../shared/domain/exceptions/ProductDomainException.js';
-import { IUnitOfWork } from '../../../../../shared/domain/IUnitOfWork.js';
-import { OrderApplicationException } from '../../exceptions/OrderApplicationException.js';
+import { CustomId } from "../../../../../shared/domain/value-objects/CustomId.js";
+import { IInventoryService } from "../../../../../shared/services/inventory.service.interface.js";
+import { generateUuidV4 } from "../../../../../shared/utils/uuidGenerator.js";
+import { IProductRepository } from "../../../../product/domain/IProductRepository.js";
+import { Product } from "../../../../product/domain/Product.js";
+import { ProductCategory } from "../../../../product/domain/value-objects/ProductCategory.js";
+import { IOrderRepository } from "../../../domain/IOrderRepository.js";
+import { CreateOrUpdateOrderUseCase } from "../../CreateOrUpdateOrderUseCase.js";
+import { CreateOrUpdateOrderDTO } from "../../dtos/CreateOrUpdateOrderDTO.js";
+import { OrderEventPublisher } from "../../events/OrderEventPublisher.js";
+import { Order } from "../../../domain/Order.js";
+import { ProductDomainException } from "../../../../../shared/domain/exceptions/ProductDomainException.js";
+import { IUnitOfWork } from "../../../../../shared/domain/IUnitOfWork.js";
+import { OrderApplicationException } from "../../exceptions/OrderApplicationException.js";
 
-describe('create order', () => {
+describe("create order", () => {
   let createOrderUseCase: CreateOrUpdateOrderUseCase;
   let mockOrderRepository: jest.Mocked<IOrderRepository>;
   let mockProductRepository: jest.Mocked<IProductRepository>;
@@ -64,25 +64,25 @@ describe('create order', () => {
     mockOrderPublisher.publishOrderCreated.mockResolvedValue(undefined);
   });
 
-  it('should create an order successfully with valid data', async () => {
+  it("should create an order successfully with valid data", async () => {
     // arrange
 
     const prod1 = new Product({
       id: new CustomId(generateUuidV4()),
-      sku: 'prod-001',
-      name: 'Product 1',
-      description: 'Description 1',
+      sku: "prod-001",
+      name: "Product 1",
+      description: "Description 1",
       price: 100,
-      category: new ProductCategory('ELECTRONICS'),
+      category: new ProductCategory("ELECTRONICS"),
     });
 
     const prod2 = new Product({
       id: new CustomId(generateUuidV4()),
-      sku: 'prod-002',
-      name: 'Product 2',
-      description: 'Description 2',
+      sku: "prod-002",
+      name: "Product 2",
+      description: "Description 2",
       price: 200,
-      category: new ProductCategory('BOOKS'),
+      category: new ProductCategory("BOOKS"),
     });
 
     const item1 = { sku: prod1.getSku(), quantity: 2 };
@@ -92,17 +92,17 @@ describe('create order', () => {
       id: generateUuidV4(),
       customerId: generateUuidV4(),
       items: [item1, item2],
-      orderNumber: 'ORD-0001',
-      status: 'PENDING',
+      orderNumber: "ORD-0001",
+      status: "PENDING",
     };
 
     mockOrderRepository.save.mockResolvedValue(undefined);
 
     mockProductRepository.findBySku.mockImplementation(async (sku: string) => {
-      if (sku === 'prod-001') {
+      if (sku === "prod-001") {
         return prod1;
       }
-      if (sku === 'prod-002') {
+      if (sku === "prod-002") {
         return prod2;
       }
       return null;
@@ -110,7 +110,7 @@ describe('create order', () => {
 
     mockInventoryService.checkAvailability.mockResolvedValue({
       available: true,
-      message: 'Stock available',
+      message: "Stock available",
     });
 
     // act
@@ -118,9 +118,8 @@ describe('create order', () => {
 
     // assert
 
-    expect(result).toBe('Order saved successfully');
-    const savedOrder = (mockOrderRepository.save as jest.Mock).mock
-      .calls[0]?.[0] as Order;
+    expect(result).toBe("Order saved successfully");
+    const savedOrder = (mockOrderRepository.save as jest.Mock).mock.calls[0]?.[0] as Order;
 
     // order saved
     expect(savedOrder.getOrderNumber()).toBe(orderData.orderNumber);
@@ -152,29 +151,27 @@ describe('create order', () => {
 
     expect(mockProductRepository.findBySku).toHaveBeenCalledTimes(2);
 
-    expect(mockInventoryService.checkAvailability).toHaveBeenCalledWith(
-      orderData.items,
-    );
+    expect(mockInventoryService.checkAvailability).toHaveBeenCalledWith(orderData.items);
   });
 
-  it('should throw validation error for insufficient stock', async () => {
+  it("should throw validation error for insufficient stock", async () => {
     // arrange
     const prod1 = new Product({
       id: new CustomId(generateUuidV4()),
-      sku: 'prod-001',
-      name: 'Product 1',
-      description: 'Description 1',
+      sku: "prod-001",
+      name: "Product 1",
+      description: "Description 1",
       price: 100,
-      category: new ProductCategory('ELECTRONICS'),
+      category: new ProductCategory("ELECTRONICS"),
     });
 
     const prod2 = new Product({
       id: new CustomId(generateUuidV4()),
-      sku: 'prod-002',
-      name: 'Product 2',
-      description: 'Description 2',
+      sku: "prod-002",
+      name: "Product 2",
+      description: "Description 2",
       price: 200,
-      category: new ProductCategory('BOOKS'),
+      category: new ProductCategory("BOOKS"),
     });
 
     const item1 = { sku: prod1.getSku(), quantity: 2 };
@@ -184,17 +181,17 @@ describe('create order', () => {
       id: generateUuidV4(),
       customerId: generateUuidV4(),
       items: [item1, item2],
-      orderNumber: 'ORD-0001',
-      status: 'PENDING',
+      orderNumber: "ORD-0001",
+      status: "PENDING",
     };
 
     mockOrderRepository.save.mockResolvedValue(undefined);
 
     mockProductRepository.findBySku.mockImplementation(async (sku: string) => {
-      if (sku === 'prod-001') {
+      if (sku === "prod-001") {
         return prod1;
       }
-      if (sku === 'prod-002') {
+      if (sku === "prod-002") {
         return prod2;
       }
       return null;
@@ -202,22 +199,20 @@ describe('create order', () => {
 
     mockInventoryService.checkAvailability.mockResolvedValue({
       available: false,
-      message: '',
+      message: "",
     });
 
     // assert
-    await expect(createOrderUseCase.execute(orderData)).rejects.toThrow(
-      ProductDomainException,
-    );
+    await expect(createOrderUseCase.execute(orderData)).rejects.toThrow(ProductDomainException);
   });
 
-  it('should throw validation error for invalid order', async () => {
+  it("should throw validation error for invalid order", async () => {
     const orderData: CreateOrUpdateOrderDTO = {
-      id: '',
-      customerId: '',
+      id: "",
+      customerId: "",
       items: [],
-      orderNumber: '',
-      status: 'PAID',
+      orderNumber: "",
+      status: "PAID",
     };
 
     mockOrderRepository.save.mockResolvedValue(undefined);
@@ -225,7 +220,7 @@ describe('create order', () => {
     mockOrderPublisher.publishOrderCreated.mockResolvedValue(undefined);
     mockInventoryService.checkAvailability.mockResolvedValue({
       available: true,
-      message: 'Stock available',
+      message: "Stock available",
     });
 
     const p = createOrderUseCase.execute(orderData);
@@ -239,14 +234,14 @@ describe('create order', () => {
     expect(err.message).toMatch(/items:/i);
   });
 
-  it('should throw not found error for non existing product', async () => {
+  it("should throw not found error for non existing product", async () => {
     const prod1 = new Product({
       id: new CustomId(generateUuidV4()),
-      sku: 'prod-001',
-      name: 'Product 1',
-      description: 'Description 1',
+      sku: "prod-001",
+      name: "Product 1",
+      description: "Description 1",
       price: 100,
-      category: new ProductCategory('ELECTRONICS'),
+      category: new ProductCategory("ELECTRONICS"),
     });
 
     const item1 = { sku: prod1.getSku(), quantity: 2 };
@@ -255,8 +250,8 @@ describe('create order', () => {
       id: generateUuidV4(),
       customerId: generateUuidV4(),
       items: [item1],
-      orderNumber: 'ORD-0001',
-      status: 'PENDING',
+      orderNumber: "ORD-0001",
+      status: "PENDING",
     };
 
     mockProductRepository.findBySku.mockResolvedValue(null);
