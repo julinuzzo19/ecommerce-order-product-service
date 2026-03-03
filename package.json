@@ -10,6 +10,7 @@
     "lint": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "dev": "npx tsx watch --env-file=.env --clear-screen=false src/app/server.ts",
+    "debug:docker": "NODE_OPTIONS='--inspect=0.0.0.0:9229' npx tsx watch --clear-screen=false src/app/server.ts",
     "prisma:generate": "node --env-file=.env ./node_modules/prisma/build/index.js generate --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:migrate:dev": "node --env-file=.env ./node_modules/prisma/build/index.js migrate dev --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
     "prisma:migrate:prod": "node --env-file=.env ./node_modules/prisma/build/index.js migrate deploy --schema=./src/shared/infrastructure/db/prisma/schema.prisma",
