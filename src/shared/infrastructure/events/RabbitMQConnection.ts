@@ -63,7 +63,7 @@ export class RabbitMQConnection {
   private scheduleReconnect(): void {
     const delay = Math.min(
       INITIAL_DELAY_MS * Math.pow(BACKOFF_MULTIPLIER, this.reconnectAttempt),
-      MAX_DELAY_MS
+      MAX_DELAY_MS,
     );
     this.reconnectAttempt++;
 
@@ -109,14 +109,28 @@ export class RabbitMQConnection {
    */
   async close(): Promise<void> {
     this.isShuttingDown = true;
-    try {
-      await this.channel?.close();
-      await this.connection?.close();
-      console.log("✅ Conexión RabbitMQ cerrada correctamente");
-    } catch (error) {
-      console.error("❌ Error cerrando conexión RabbitMQ:", error);
-      const message = error instanceof Error ? error.message : String(error);
-      throw EventPublisherException.closeFailed(message);
+
+    if (this.channel) {
+      try {
+        await this.channel.close();
+      } catch {
+        // Channel may already be closed by the broker — safe to ignore
+      }
+      this.channel = null;
     }
+
+    if (this.connection) {
+      try {
+        await this.connection.close();
+      } catch (error) {
+        console.error("❌ Error cerrando conexión RabbitMQ:", error);
+        const message = error instanceof Error ? error.message : String(error);
+        this.connection = null;
+        throw EventPublisherException.closeFailed(message);
+      }
+      this.connection = null;
+    }
+
+    console.log("✅ Conexión RabbitMQ cerrada correctamente");
   }
 }
